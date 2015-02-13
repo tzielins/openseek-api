@@ -10,18 +10,16 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.sample.SampleF
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterion;
-import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
-import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 
 import java.util.List;
 
 /**
  * Created by quyennguyen on 13/02/15.
  */
-public class ExperimentQuery {
+public class OpenbisQuery {
 
     public static void main(String[] args){
-        ExperimentQuery query = new ExperimentQuery();
+        OpenbisQuery query = new OpenbisQuery();
         List <Experiment> experiments = query.experiment("Study_1");
         List <Sample> samples = query.sample("Study_1");
 
