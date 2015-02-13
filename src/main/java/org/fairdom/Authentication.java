@@ -21,16 +21,21 @@ public class Authentication {
         password = startPassword;
     }
 
-    public String authentication() {
+    public IApplicationServerApi api() {
         String AS_URL = endpoint + "/openbis";
+        SslCertificateHelper.trustAnyCertificate(AS_URL);
+        IApplicationServerApi api = HttpInvokerUtils
+                .createServiceStub(IApplicationServerApi.class, AS_URL
+                        + IApplicationServerApi.SERVICE_URL, 500000);
+
+        return api;
+    }
+
+    public String authentication() {
         String sessionToken;
         try {
-            SslCertificateHelper.trustAnyCertificate(AS_URL);
-            IApplicationServerApi v3 = HttpInvokerUtils
-                    .createServiceStub(IApplicationServerApi.class, AS_URL
-                            + IApplicationServerApi.SERVICE_URL, 500000);
-
-            sessionToken = v3.login(username, password);
+            IApplicationServerApi api = api();
+            sessionToken = api.login(username, password);
             if(sessionToken == null) {
                 sessionToken = "Invalid username or password";
             }
