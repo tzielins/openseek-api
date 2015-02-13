@@ -20,15 +20,15 @@ public class AuthenticationTest {
     @Before
     public void setUp(){
         endpoint = new String("https://openbis-testing.fair-dom.org/openbis");
-        username = new String("guester");
-        password = new String("guester");
+        username = new String("api-user");
+        password = new String("api-user");
     }
 
     @Test
     public void successfullyAuthenticated() throws Exception {
         Authentication au = new Authentication(endpoint, username, password);
         String sessionToken = au.authentication();
-        //assertTrue(sessionToken.matches(username.concat("(.*)")));
+        assertTrue(sessionToken.matches(username.concat("(.*)")));
     }
 
     @Test
