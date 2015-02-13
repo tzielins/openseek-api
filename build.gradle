@@ -12,6 +12,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 
+jar {
+    baseName = 'openbis-api'
+    version =  '0.1.0'
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
 }
