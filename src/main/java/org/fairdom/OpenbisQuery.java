@@ -10,7 +10,9 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.sample.SampleF
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterion;
+import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
 
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -20,18 +22,29 @@ public class OpenbisQuery {
 
     public static void main(String[] args){
         OpenbisQuery query = new OpenbisQuery();
-        List <Experiment> experiments = query.experiment("Study_1");
-        List <Sample> samples = query.sample("Study_1");
+        List <Experiment> experiments = query.experiments("Study_1");
+        List <Sample> samples = query.samples("Study_1");
 
         System.out.println("Result:");
+        System.out.println(query.jsonResult("Experiment","Study_1"));
 
         for (Experiment experiment : experiments){
+            GenericObjectMapper mapper = new GenericObjectMapper();
+
+            try {
+                //StringWriter sw = new StringWriter();
+                //mapper.writeValue(sw, experiments);
+                //System.out.println(sw.toString());
+            }catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
             System.out.println(experiment.getIdentifier());
             System.out.println(experiment.getProperties().get("SEEK_STUDY_ID"));
         }
     }
 
-    public List <Experiment> experiment(String SeekID){
+    public List <Experiment> experiments(String SeekID){
         ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
         criterion.withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
 
@@ -47,7 +60,25 @@ public class OpenbisQuery {
         return experiments;
     }
 
-    public List <Sample> sample(String SeekID){
+    public String jsonResult(String type, String SeekID){
+        GenericObjectMapper mapper = new GenericObjectMapper();
+        StringWriter sw = new StringWriter();
+        try {
+            if (type == "Experiment"){
+                mapper.writeValue(sw, experiments(SeekID));
+            }else if (type == "Sample"){
+                mapper.writeValue(sw, samples(SeekID));
+            }else{
+                mapper.writeValue(sw, dataSets(SeekID));
+            }
+
+        }catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        return sw.toString();
+    }
+
+    public List <Sample> samples(String SeekID){
         SampleSearchCriterion criterion = new SampleSearchCriterion();
         criterion.withExperiment().withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
 
@@ -63,7 +94,7 @@ public class OpenbisQuery {
         return samples;
     }
 
-    public List <DataSet> dataSet(String SeekID){
+    public List <DataSet> dataSets(String SeekID){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
         criterion.withExperiment().withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
 

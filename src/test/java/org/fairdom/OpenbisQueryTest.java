@@ -21,7 +21,7 @@ public class OpenbisQueryTest {
     public void getExperimentWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "Study_1";
-        List<Experiment> experiments = query.experiment(seekStudyID);
+        List<Experiment> experiments = query.experiments(seekStudyID);
         assertEquals(1, experiments.size());
         Experiment experiment = experiments.get(0);
         assertEquals(seekStudyID, experiment.getProperties().get("SEEK_STUDY_ID"));
@@ -31,7 +31,7 @@ public class OpenbisQueryTest {
     public void getExperimentWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "someID";
-        List<Experiment> experiments = query.experiment(seekStudyID);
+        List<Experiment> experiments = query.experiments(seekStudyID);
         assertEquals(0, experiments.size());
     }
 
@@ -39,7 +39,7 @@ public class OpenbisQueryTest {
     public void getSampleWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "Study_1";
-        List<Sample> samples = query.sample(seekStudyID);
+        List<Sample> samples = query.samples(seekStudyID);
         assertEquals(1, samples.size());
         Sample sample = samples.get(0);
         Experiment experiment = sample.getExperiment();
@@ -53,7 +53,7 @@ public class OpenbisQueryTest {
     public void getSampleWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "SomeID";
-        List<Sample> samples = query.sample(seekStudyID);
+        List<Sample> samples = query.samples(seekStudyID);
         assertEquals(0, samples.size());
     }
 
@@ -61,7 +61,7 @@ public class OpenbisQueryTest {
     public void getDataSetWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "Study_1";
-        List<DataSet> dataSets = query.dataSet(seekStudyID);
+        List<DataSet> dataSets = query.dataSets(seekStudyID);
         assertEquals(1, dataSets.size());
         DataSet dataSet = dataSets.get(0);
         Experiment experiment = dataSet.getExperiment();
@@ -73,7 +73,15 @@ public class OpenbisQueryTest {
     public void getDatasetWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
         String seekStudyID = "SomeID";
-        List<Sample> samples = query.sample(seekStudyID);
+        List<Sample> samples = query.samples(seekStudyID);
         assertEquals(0, samples.size());
+    }
+
+    @Test
+    public void jsonResultforExperiment() throws Exception {
+        OpenbisQuery query = new OpenbisQuery();
+        String seekStudyID = "Study_1";;
+        String jsonResult = query.jsonResult("Experiment", seekStudyID);
+        assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
 }
