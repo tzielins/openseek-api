@@ -20,27 +20,15 @@ import java.util.List;
  */
 public class OpenbisQuery {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         OpenbisQuery query = new OpenbisQuery();
-        List <Experiment> experiments = query.experiments("Study_1");
-        List <Sample> samples = query.samples("Study_1");
-
-        System.out.println("Result:");
-        System.out.println(query.jsonResult("Experiment","Study_1"));
-
-        for (Experiment experiment : experiments){
-            GenericObjectMapper mapper = new GenericObjectMapper();
-
-            try {
-                //StringWriter sw = new StringWriter();
-                //mapper.writeValue(sw, experiments);
-                //System.out.println(sw.toString());
-            }catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-
-            System.out.println(experiment.getIdentifier());
-            System.out.println(experiment.getProperties().get("SEEK_STUDY_ID"));
+        String result = query.jsonResult(args[0], args[1]);
+        try {
+            System.out.println(result);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -73,7 +61,7 @@ public class OpenbisQuery {
             }
 
         }catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.err.println(ex.getMessage());
         }
         return sw.toString();
     }
