@@ -1,7 +1,6 @@
 apply plugin: 'java'
-apply plugin: 'java'
-apply plugin: 'application'
-mainClassName = 'org.fairdom.OpenbisQuery'
+//apply plugin: 'application'
+//mainClassName = 'org.fairdom.OpenbisQuery'
 
 //sourceCompatibility = 1.5
 version = '1.0'
@@ -19,9 +18,28 @@ dependencies {
             'org.reflections:reflections:0.9.9-RC1'
 }
 
-jar {
+task copyJarFiles(type: Copy){
+    from configurations.compile
+    into "$buildDir/libs/lib"
+}
+
+task archiveJar(type: Jar, dependsOn: copyJarFiles) {
+    File libDir = file("$buildDir/libs/lib")
+    FileCollection collection = files{ libDir.listFiles() }
+    def classPath = []
+    collection.each {File file ->
+        classPath << 'lib/' + file.name
+    }
+
+    def classPathJoined = classPath.join(' ')
     baseName = 'openbis-api'
     version =  '0.1.0'
+    manifest.attributes('Main-Class': 'org.fairdom.OpenbisQuery',
+                        'Class-Path': "$classPathJoined")
+    into('lib') {
+        from "$buildDir/libs/lib"
+    }
+    with jar
 }
 
 task wrapper(type: Wrapper) {
