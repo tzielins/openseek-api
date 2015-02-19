@@ -38,46 +38,44 @@ public class OpenbisQueryTest {
     }
 
     @Test
-    public void getSampleWithSeekStudyID() throws Exception {
+    public void getSampleWithSeekAssayID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String property = "SEEK_STUDY_ID";
-        String propertyValue = "Study_1";
+        String property = "SEEK_ASSAY_ID";
+        String propertyValue = "Assay_1";
         List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(1, samples.size());
         Sample sample = samples.get(0);
-        Experiment experiment = sample.getExperiment();
 
-        assertEquals(propertyValue, experiment.getProperties().get(property));
+        assertEquals(propertyValue, sample.getProperties().get(property));
         SampleIdentifier identifier = new SampleIdentifier("/API_TEST/SAMPLE_1");
         assertEquals(identifier, sample.getIdentifier());
     }
 
     @Test
-    public void getSampleWithSeekStudyIDNoResult() throws Exception {
+    public void getSampleWithSeekAssayIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String property = "SEEK_STUDY_ID";
+        String property = "SEEK_ASSAY_ID";
         String propertyValue = "SomeID";
         List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(0, samples.size());
     }
 
     @Test
-    public void getDataSetWithSeekStudyID() throws Exception {
+    public void getDataSetWithSeekDataFileID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String property = "SEEK_STUDY_ID";
-        String propertyValue = "Study_1";
+        String property = "SEEK_DATAFILE_ID";
+        String propertyValue = "DataFile_1";
         List<DataSet> dataSets = query.dataSets(property, propertyValue);
         assertEquals(1, dataSets.size());
         DataSet dataSet = dataSets.get(0);
-        Experiment experiment = dataSet.getExperiment();
 
-        assertEquals(propertyValue, experiment.getProperties().get(property));
+        assertEquals(propertyValue, dataSet.getProperties().get(property));
     }
 
     @Test
-    public void getDatasetWithSeekStudyIDNoResult() throws Exception {
+    public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String property = "SEEK_STUDY_ID";
+        String property = "SEEK_DATAFILE_ID";
         String propertyValue = "SomeID";
         List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(0, samples.size());

@@ -58,7 +58,7 @@ public class OpenbisQuery {
 
     public List <Sample> samples(String property, String propertyValue){
         SampleSearchCriterion criterion = new SampleSearchCriterion();
-        criterion.withExperiment().withProperty(property).thatEquals(propertyValue);
+        criterion.withProperty(property).thatEquals(propertyValue);
 
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
@@ -74,7 +74,7 @@ public class OpenbisQuery {
 
     public List <DataSet> dataSets(String property, String propertyValue){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
-        criterion.withExperiment().withProperty(property).thatEquals(propertyValue);
+        criterion.withProperty(property).thatEquals(propertyValue);
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
