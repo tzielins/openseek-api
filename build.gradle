@@ -36,9 +36,6 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
     version =  '0.1.0'
     manifest.attributes('Main-Class': 'org.fairdom.OpenbisQuery',
                         'Class-Path': "$classPathJoined")
-    into('lib') {
-        from "$buildDir/libs/lib"
-    }
     with jar
 }
 
