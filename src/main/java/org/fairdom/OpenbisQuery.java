@@ -30,6 +30,7 @@ public class OpenbisQuery {
             ex.printStackTrace();
             System.exit(-1);
         }
+        System.exit(0);
     }
 
     public List <Experiment> experiments(String SeekID){
