@@ -20,19 +20,6 @@ import java.util.List;
  */
 public class OpenbisQuery {
 
-    public static void main(String[] args) {
-        OpenbisQuery query = new OpenbisQuery();
-        String result = query.jsonResult(args[0], args[1]);
-        try {
-            System.out.println(result);
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(-1);
-        }
-        System.exit(0);
-    }
-
     public List <Experiment> experiments(String SeekID){
         ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
         criterion.withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
@@ -53,9 +40,9 @@ public class OpenbisQuery {
         GenericObjectMapper mapper = new GenericObjectMapper();
         StringWriter sw = new StringWriter();
         try {
-            if (type == "Experiment"){
+            if (type.equals("Experiment")){
                 mapper.writeValue(sw, experiments(SeekID));
-            }else if (type == "Sample"){
+            }else if (type.equals("Sample")){
                 mapper.writeValue(sw, samples(SeekID));
             }else{
                 mapper.writeValue(sw, dataSets(SeekID));
