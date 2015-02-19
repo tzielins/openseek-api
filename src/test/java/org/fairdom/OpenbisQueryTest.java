@@ -1,10 +1,12 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.sample.Sample;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.sample.SampleIdentifier;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.String;
@@ -17,9 +19,19 @@ import static org.junit.Assert.*;
  */
 public class OpenbisQueryTest {
 
+    protected IApplicationServerApi api;
+    protected String sessionToken;
+
+    @Before
+    public void setUp(){
+        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
+        api = au.api();
+        sessionToken = au.authentication();
+    }
+
     @Test
     public void getExperimentWithSeekStudyID() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
         List<Experiment> experiments = query.experiments(property, propertyValue);
@@ -30,7 +42,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void getExperimentWithSeekStudyIDNoResult() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_STUDY_ID";
         String propertyValue = "SomeID";
         List<Experiment> experiments = query.experiments(property, propertyValue);
@@ -39,7 +51,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void getSampleWithSeekAssayID() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "Assay_1";
         List<Sample> samples = query.samples(property, propertyValue);
@@ -53,7 +65,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void getSampleWithSeekAssayIDNoResult() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "SomeID";
         List<Sample> samples = query.samples(property, propertyValue);
@@ -62,7 +74,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void getDataSetWithSeekDataFileID() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List<DataSet> dataSets = query.dataSets(property, propertyValue);
@@ -74,7 +86,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "SomeID";
         List<Sample> samples = query.samples(property, propertyValue);
@@ -83,7 +95,7 @@ public class OpenbisQueryTest {
 
     @Test
     public void jsonResultforExperiment() throws Exception {
-        OpenbisQuery query = new OpenbisQuery();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";

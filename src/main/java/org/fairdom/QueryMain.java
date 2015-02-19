@@ -1,5 +1,7 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
+
 import java.util.List;
 
 /**
@@ -17,7 +19,11 @@ public class QueryMain {
         }
 
         try {
-            OpenbisQuery query = new OpenbisQuery();
+            Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
+            IApplicationServerApi api = au.api();
+            String sessionToken = au.authentication();
+
+            OpenbisQuery query = new OpenbisQuery(api, sessionToken);
             List result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
             String jsonResult = query.jsonResult(result);
             System.out.println(jsonResult);

@@ -19,21 +19,12 @@ import java.util.List;
  * Created by quyennguyen on 13/02/15.
  */
 public class OpenbisQuery {
+    private IApplicationServerApi api;
+    private String sessionToken;
 
-    public List <Experiment> experiments(String property, String propertyValue){
-        ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
-        criterion.withProperty(property).thatEquals(propertyValue);
-
-        ExperimentFetchOptions options = new ExperimentFetchOptions();
-        options.withProperties();
-        options.withProject();
-
-        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
-        IApplicationServerApi api = au.api();
-        String sessionToken = au.authentication();
-
-        List <Experiment> experiments = api.searchExperiments(sessionToken, criterion, options);
-        return experiments;
+    public OpenbisQuery(IApplicationServerApi startApi, String startSessionToken ){
+        api = startApi;
+        sessionToken = startSessionToken;
     }
 
     public List query(String type, String property, String propertyValue) throws InvalidOptionException {
@@ -62,17 +53,23 @@ public class OpenbisQuery {
         return sw.toString();
     }
 
+    public List <Experiment> experiments(String property, String propertyValue){
+        ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
+        criterion.withProperty(property).thatEquals(propertyValue);
+
+        ExperimentFetchOptions options = new ExperimentFetchOptions();
+        options.withProperties();
+
+        List <Experiment> experiments = api.searchExperiments(sessionToken, criterion, options);
+        return experiments;
+    }
+
     public List <Sample> samples(String property, String propertyValue){
         SampleSearchCriterion criterion = new SampleSearchCriterion();
         criterion.withProperty(property).thatEquals(propertyValue);
 
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
-        options.withExperiment().withProperties();
-
-        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
-        IApplicationServerApi api = au.api();
-        String sessionToken = au.authentication();
 
         List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;
@@ -84,11 +81,6 @@ public class OpenbisQuery {
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
-        options.withExperiment().withProperties();
-
-        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
-        IApplicationServerApi api = au.api();
-        String sessionToken = au.authentication();
 
         List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
         return dataSets;
