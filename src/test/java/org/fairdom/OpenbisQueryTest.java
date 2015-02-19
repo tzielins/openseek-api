@@ -20,31 +20,34 @@ public class OpenbisQueryTest {
     @Test
     public void getExperimentWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "Study_1";
-        List<Experiment> experiments = query.experiments(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "Study_1";
+        List<Experiment> experiments = query.experiments(property, propertyValue);
         assertEquals(1, experiments.size());
         Experiment experiment = experiments.get(0);
-        assertEquals(seekStudyID, experiment.getProperties().get("SEEK_STUDY_ID"));
+        assertEquals(propertyValue, experiment.getProperties().get(property));
     }
 
     @Test
     public void getExperimentWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "someID";
-        List<Experiment> experiments = query.experiments(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "SomeID";
+        List<Experiment> experiments = query.experiments(property, propertyValue);
         assertEquals(0, experiments.size());
     }
 
     @Test
     public void getSampleWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "Study_1";
-        List<Sample> samples = query.samples(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "Study_1";
+        List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(1, samples.size());
         Sample sample = samples.get(0);
         Experiment experiment = sample.getExperiment();
 
-        assertEquals(seekStudyID, experiment.getProperties().get("SEEK_STUDY_ID"));
+        assertEquals(propertyValue, experiment.getProperties().get(property));
         SampleIdentifier identifier = new SampleIdentifier("/API_TEST/SAMPLE_1");
         assertEquals(identifier, sample.getIdentifier());
     }
@@ -52,36 +55,41 @@ public class OpenbisQueryTest {
     @Test
     public void getSampleWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "SomeID";
-        List<Sample> samples = query.samples(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "SomeID";
+        List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(0, samples.size());
     }
 
     @Test
     public void getDataSetWithSeekStudyID() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "Study_1";
-        List<DataSet> dataSets = query.dataSets(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "Study_1";
+        List<DataSet> dataSets = query.dataSets(property, propertyValue);
         assertEquals(1, dataSets.size());
         DataSet dataSet = dataSets.get(0);
         Experiment experiment = dataSet.getExperiment();
 
-        assertEquals(seekStudyID, experiment.getProperties().get("SEEK_STUDY_ID"));
+        assertEquals(propertyValue, experiment.getProperties().get(property));
     }
 
     @Test
     public void getDatasetWithSeekStudyIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "SomeID";
-        List<Sample> samples = query.samples(seekStudyID);
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "SomeID";
+        List<Sample> samples = query.samples(property, propertyValue);
         assertEquals(0, samples.size());
     }
 
     @Test
     public void jsonResultforExperiment() throws Exception {
         OpenbisQuery query = new OpenbisQuery();
-        String seekStudyID = "Study_1";;
-        String jsonResult = query.jsonResult("Experiment", seekStudyID);
+        String type = "Experiment";
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "Study_1";
+        String jsonResult = query.jsonResult(type, property, propertyValue);
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
 }

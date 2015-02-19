@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class OpenbisQuery {
 
-    public List <Experiment> experiments(String SeekID){
+    public List <Experiment> experiments(String property, String propertyValue){
         ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
-        criterion.withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
+        criterion.withProperty(property).thatEquals(propertyValue);
 
         ExperimentFetchOptions options = new ExperimentFetchOptions();
         options.withProperties();
@@ -36,17 +36,19 @@ public class OpenbisQuery {
         return experiments;
     }
 
-    public String jsonResult(String type, String SeekID){
+    public String jsonResult(String type, String property, String propertyValue){
         GenericObjectMapper mapper = new GenericObjectMapper();
         StringWriter sw = new StringWriter();
+        List result = null;
         try {
             if (type.equals("Experiment")){
-                mapper.writeValue(sw, experiments(SeekID));
+                result = experiments(property, propertyValue);
             }else if (type.equals("Sample")){
-                mapper.writeValue(sw, samples(SeekID));
+                result = samples(property, propertyValue);
             }else{
-                mapper.writeValue(sw, dataSets(SeekID));
+                result = dataSets(property, propertyValue);
             }
+            mapper.writeValue(sw, result);
 
         }catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -54,9 +56,9 @@ public class OpenbisQuery {
         return sw.toString();
     }
 
-    public List <Sample> samples(String SeekID){
+    public List <Sample> samples(String property, String propertyValue){
         SampleSearchCriterion criterion = new SampleSearchCriterion();
-        criterion.withExperiment().withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
+        criterion.withExperiment().withProperty(property).thatEquals(propertyValue);
 
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
@@ -70,9 +72,9 @@ public class OpenbisQuery {
         return samples;
     }
 
-    public List <DataSet> dataSets(String SeekID){
+    public List <DataSet> dataSets(String property, String propertyValue){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
-        criterion.withExperiment().withProperty("SEEK_STUDY_ID").thatEquals(SeekID);
+        criterion.withExperiment().withProperty(property).thatEquals(propertyValue);
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();

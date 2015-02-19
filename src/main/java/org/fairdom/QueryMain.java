@@ -15,7 +15,7 @@ public class QueryMain {
         }
 
         OpenbisQuery query = new OpenbisQuery();
-        String result = query.jsonResult(options.getType(),options.getPropertyValue());
+        String result = query.jsonResult(options.getType(), options.getProperty(), options.getPropertyValue());
         try {
             System.out.println(result);
         } catch (Exception ex) {
