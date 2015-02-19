@@ -87,7 +87,8 @@ public class OpenbisQueryTest {
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        String jsonResult = query.jsonResult(type, property, propertyValue);
+        List result = query.query(type, property, propertyValue);
+        String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
 }

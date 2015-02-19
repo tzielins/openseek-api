@@ -1,5 +1,7 @@
 package org.fairdom;
 
+import java.util.List;
+
 /**
  * Created by quyennguyen on 19/02/15.
  */
@@ -14,10 +16,11 @@ public class QueryMain {
             System.exit(-1);
         }
 
-        OpenbisQuery query = new OpenbisQuery();
-        String result = query.jsonResult(options.getType(), options.getProperty(), options.getPropertyValue());
         try {
-            System.out.println(result);
+            OpenbisQuery query = new OpenbisQuery();
+            List result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
+            String jsonResult = query.jsonResult(result);
+            System.out.println(jsonResult);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();

@@ -36,20 +36,26 @@ public class OpenbisQuery {
         return experiments;
     }
 
-    public String jsonResult(String type, String property, String propertyValue){
+    public List query(String type, String property, String propertyValue) throws InvalidOptionException {
+        List result = null;
+        if (type.equals("Experiment")){
+            result = experiments(property, propertyValue);
+        }else if (type.equals("Sample")){
+            result = samples(property, propertyValue);
+        }else if (type.equals("DataSet")){
+            result = dataSets(property, propertyValue);
+        }else{
+            throw new InvalidOptionException("Unrecognised type: " + type);
+        }
+        return result;
+    }
+
+
+    public String jsonResult(List result){
         GenericObjectMapper mapper = new GenericObjectMapper();
         StringWriter sw = new StringWriter();
-        List result = null;
         try {
-            if (type.equals("Experiment")){
-                result = experiments(property, propertyValue);
-            }else if (type.equals("Sample")){
-                result = samples(property, propertyValue);
-            }else{
-                result = dataSets(property, propertyValue);
-            }
             mapper.writeValue(sw, result);
-
         }catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
