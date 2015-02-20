@@ -18,26 +18,32 @@ public class OptionParser {
             if (arg.equals("-t")) {
                 i++;
                 setType(args[i]);
+                handleEmptyOptionValue(arg, getType());
             }
             else if (arg.equals("-p")) {
                 i++;
                 setProperty(args[i]);
+                handleEmptyOptionValue(arg, getProperty());
             }
             else if (arg.equals("-pv")) {
                 i++;
                 setPropertyValue(args[i]);
+                handleEmptyOptionValue(arg, getPropertyValue());
             }
             else if (arg.equals("-u")) {
                 i++;
                 setUsername(args[i]);
+                handleEmptyOptionValue(arg, getUsername());
             }
             else if (arg.equals("-pw")) {
                 i++;
                 setPassword(args[i]);
+                handleEmptyOptionValue(arg, getPassword());
             }
             else if (arg.equals("-e")) {
                 i++;
                 setEndpoint(args[i]);
+                handleEmptyOptionValue(arg, getEndpoint());
             }
             else {
                 throw new InvalidOptionException("Unrecognised option: " + args[i]);
@@ -91,5 +97,11 @@ public class OptionParser {
 
     public String getEndpoint() {
         return endpoint;
+    }
+
+    private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
+        if (value.equals("")){
+            throw new InvalidOptionException("Empty value for: " + option);
+        }
     }
 }

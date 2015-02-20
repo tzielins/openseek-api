@@ -81,8 +81,14 @@ public class OptionParserTest {
     }
 
     @Test(expected = InvalidOptionException.class)
-    public void testBadSheet() throws Exception {
+    public void testInvalidArg() throws Exception {
         String[] args = new String[] { "-ss", "something" };
+        new OptionParser(args);
+    }
+
+    @Test(expected = InvalidOptionException.class)
+    public void testEmptyOptionValue() throws Exception {
+        String[] args = new String[] { "-t", "" };
         new OptionParser(args);
     }
 }
