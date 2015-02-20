@@ -23,10 +23,10 @@ public class OpenbisQueryTest {
     protected String sessionToken;
 
     @Before
-    public void setUp(){
+    public void setUp() throws AuthenticationException{
         Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
         api = au.api();
-        sessionToken = au.authentication();
+        sessionToken = au.sessionToken();
     }
 
     @Test

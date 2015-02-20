@@ -6,6 +6,7 @@ import org.junit.runner.notification.Failure;
 
 import org.junit.Test;
 import org.junit.Before;
+import org.springframework.remoting.RemoteAccessException;
 
 import java.lang.String;
 import java.lang.System;
@@ -27,25 +28,23 @@ public class AuthenticationTest {
     @Test
     public void successfullyAuthenticated() throws Exception {
         Authentication au = new Authentication(endpoint, username, password);
-        String sessionToken = au.authentication();
+        String sessionToken = au.sessionToken();
         assertTrue(sessionToken.matches(username.concat("(.*)")));
     }
 
-    @Test
+    @Test (expected = AuthenticationException.class)
     public void invalidAccount() throws Exception {
         String invalidUsername = new String("test");
         String invalidPassword = new String("test");
         Authentication au = new Authentication(endpoint, invalidUsername, invalidPassword);
-        String sessionToken = au.authentication();
-        assertEquals("Invalid username or password", sessionToken);
+        au.sessionToken();
     }
 
-    @Test
+    @Test(expected = RemoteAccessException.class)
     public void invalidEndpoint() throws Exception {
         String invalidEndpoint = new String("https://example.com");
         Authentication au = new Authentication(invalidEndpoint, username, password);
-        String sessionToken = au.authentication();
-        assertTrue(sessionToken.matches("Could not access(.*)"));
+        au.sessionToken();
     }
 
 }

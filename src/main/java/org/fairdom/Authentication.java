@@ -31,16 +31,12 @@ public class Authentication {
         return api;
     }
 
-    public String authentication() {
+    public String sessionToken() throws AuthenticationException {
         String sessionToken;
-        try {
-            IApplicationServerApi api = api();
-            sessionToken = api.login(username, password);
-            if(sessionToken == null) {
-                sessionToken = "Invalid username or password";
-            }
-        } catch (Exception ex) {
-            sessionToken = ex.getMessage();
+        IApplicationServerApi api = api();
+        sessionToken = api.login(username, password);
+        if (sessionToken == null){
+            throw new AuthenticationException("Invalid username or password");
         }
         return sessionToken;
     }

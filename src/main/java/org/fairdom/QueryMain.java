@@ -21,7 +21,7 @@ public class QueryMain {
         try {
             Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
             IApplicationServerApi api = au.api();
-            String sessionToken = au.authentication();
+            String sessionToken = au.sessionToken();
 
             OpenbisQuery query = new OpenbisQuery(api, sessionToken);
             List result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
