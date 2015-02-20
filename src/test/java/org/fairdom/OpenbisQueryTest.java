@@ -103,4 +103,13 @@ public class OpenbisQueryTest {
         String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
+
+    @Test(expected = InvalidOptionException.class)
+    public void unrecognizedType() throws Exception {
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+        String type = "SomeType";
+        String property = "SEEK_STUDY_ID";
+        String propertyValue = "Study_1";
+        query.query(type, property, propertyValue);
+    }
 }
