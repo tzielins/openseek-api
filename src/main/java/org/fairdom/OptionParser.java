@@ -8,6 +8,9 @@ public class OptionParser {
     private String type = null;
     private String property = null;
     private String propertyValue = null;
+    private String username = null;
+    private String password = null;
+    private String endpoint = null;
 
     public OptionParser(String[] args) throws InvalidOptionException {
         for (int i = 0; i < args.length; i++) {
@@ -23,6 +26,18 @@ public class OptionParser {
             else if (arg.equals("-pv")) {
                 i++;
                 setPropertyValue(args[i]);
+            }
+            else if (arg.equals("-u")) {
+                i++;
+                setUsername(args[i]);
+            }
+            else if (arg.equals("-pw")) {
+                i++;
+                setPassword(args[i]);
+            }
+            else if (arg.equals("-e")) {
+                i++;
+                setEndpoint(args[i]);
             }
             else {
                 throw new InvalidOptionException("Unrecognised option: " + args[i]);
@@ -52,5 +67,29 @@ public class OptionParser {
 
     public String getPropertyValue() {
         return propertyValue;
+    }
+
+    private void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    private void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    private void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
     }
 }

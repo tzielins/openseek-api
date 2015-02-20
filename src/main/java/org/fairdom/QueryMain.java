@@ -19,7 +19,7 @@ public class QueryMain {
         }
 
         try {
-            Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis", "api-user", "api-user");
+            Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
             IApplicationServerApi api = au.api();
             String sessionToken = au.authentication();
 
