@@ -16,6 +16,12 @@ script:
   - jdk_switcher use openjdk6
   - gradle test
 
+env:
+- TERM=dumb
+
+after_success:
+- gradle jacocoTestReport coveralls
+
 notifications:
   email:
     recipients:

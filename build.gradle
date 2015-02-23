@@ -1,9 +1,25 @@
 apply plugin: 'java'
 apply plugin: 'application'
 mainClassName = 'org.fairdom.QueryMain'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
-//sourceCompatibility = 1.5
-version = '1.0'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
 
 repositories {
     mavenCentral()
