@@ -1,0 +1,24 @@
+language: java
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
+
+script:
+  - jdk_switcher use oraclejdk8
+  - gradle test
+  - jdk_switcher use oraclejdk7
+  - gradle test
+  - jdk_switcher use openjdk7
+  - gradle test
+  - jdk_switcher use openjdk6
+  - gradle test
+
+notifications:
+  email:
+    recipients:
+      - thucquyendn@gmail.com
+    on_failure: change
+    on_success: never
