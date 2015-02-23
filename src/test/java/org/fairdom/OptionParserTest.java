@@ -88,7 +88,7 @@ public class OptionParserTest {
 
     @Test(expected = InvalidOptionException.class)
     public void testEmptyOptionValue() throws Exception {
-        String[] args = new String[] { "-t", "" };
+        String[] args = new String[] { "-t", "", "-p", "   ", "-pv", null };
         new OptionParser(args);
     }
 }

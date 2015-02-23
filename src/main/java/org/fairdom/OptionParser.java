@@ -100,7 +100,7 @@ public class OptionParser {
     }
 
     private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
-        if (value.isEmpty()){
+        if (value.trim().isEmpty()){
             throw new InvalidOptionException("Empty value for: " + option);
         }
     }
