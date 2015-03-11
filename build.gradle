@@ -1,25 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'application'
 mainClassName = 'org.fairdom.QueryMain'
-apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'jacoco' // test reporter
+apply plugin: 'com.github.kt3k.coveralls' //coveralls plugin
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
-}
 
 repositories {
     mavenCentral()
@@ -62,5 +46,24 @@ task wrapper(type: Wrapper) {
 run {
     if ( project.hasProperty("appArgs") ) {
         args Eval.me(appArgs)
+    }
+}
+
+
+// This part is for sending test report to coveralls
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
     }
 }
