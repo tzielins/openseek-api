@@ -5,3 +5,5 @@ build/
 gradle-app.setting
 
 .idea
+.project
+.classpath
