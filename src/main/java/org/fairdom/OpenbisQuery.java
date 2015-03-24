@@ -15,7 +15,12 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterio
 import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonFactory.Feature;
 
 /**
  * Created by quyennguyen on 13/02/15.
@@ -58,15 +63,79 @@ public class OpenbisQuery {
     }
 
     public String jsonResult(List result){
-        GenericObjectMapper mapper = new GenericObjectMapper();
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	for (Object item : result) {    		
+    		if (item instanceof Experiment) {
+    			if (!map.containsKey("experiments")) {
+    				map.put("experiments", new ArrayList<Object>());
+    			}
+    			((List)map.get("experiments")).add(jsonMap((Experiment)item));    			
+    		}
+    		if (item instanceof DataSet) {
+    			if (!map.containsKey("datasets")) {
+    				map.put("datasets", new ArrayList<Object>());
+    			}
+    			((List)map.get("datasets")).add(jsonMap((DataSet)item));    			
+    		}
+    		if (item instanceof Sample) {
+    			if (!map.containsKey("samples")) {
+    				map.put("samples", new ArrayList<Object>());
+    			}
+    			((List)map.get("samples")).add(jsonMap((Sample)item));    			
+    		}
+    	}
+        GenericObjectMapper mapper = new GenericObjectMapper();        
         StringWriter sw = new StringWriter();
         try {
-            mapper.writeValue(sw, result);
+            mapper.writeValue(sw, map);
         }catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
         return sw.toString();
     }  
+    
+    private Map<String,Object> jsonMap(Experiment experiment) {
+    	Map<String,Object> map = new HashMap<String, Object>();
+    	map.put("permId", experiment.getPermId().getPermId());
+    	map.put("code", experiment.getCode());
+    	map.put("project", experiment.getProject().getPermId().getPermId());
+    	map.put("properties", experiment.getProperties());
+    	map.put("modificationDate", experiment.getModificationDate());
+    	map.put("registrationDate", experiment.getRegistrationDate());
+    	map.put("identifier",experiment.getIdentifier().getIdentifier());
+    	map.put("modifier",experiment.getModifier().getUserId());
+    	map.put("tags", experiment.getTags());
+    	return map;
+    }
+    
+    private Map<String,Object> jsonMap(DataSet dataset) {
+    	Map<String,Object> map = new HashMap<String, Object>();
+    	map.put("permId", dataset.getPermId().getPermId());
+    	map.put("code", dataset.getCode());    	
+    	map.put("properties", dataset.getProperties());
+    	map.put("modificationDate", dataset.getModificationDate());
+    	map.put("registrationDate", dataset.getRegistrationDate());    	
+    	map.put("modifier",dataset.getModifier().getUserId());
+    	map.put("experiment", dataset.getExperiment().getPermId().getPermId());
+    	map.put("tags", dataset.getTags());
+    	return map;
+    }
+    
+    private Map<String,Object> jsonMap(Sample sample) {
+    	Map<String,Object> map = new HashMap<String, Object>();
+    	map.put("permId", sample.getPermId().getPermId());
+    	map.put("code", sample.getCode());    	
+    	map.put("properties", sample.getProperties());
+    	map.put("modificationDate", sample.getModificationDate());
+    	map.put("registrationDate", sample.getRegistrationDate());    	
+    	map.put("modifier",sample.getModifier().getUserId());
+    	if (sample.getExperiment()!=null) {
+    		map.put("experiment", sample.getExperiment().getPermId().getPermId());
+    	}
+    	
+    	map.put("tags", sample.getTags());
+    	return map;
+    }
     
     public List<Experiment> experimentsByAttribute(String attribute,String value) throws InvalidOptionException {
     	ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
@@ -75,6 +144,9 @@ public class OpenbisQuery {
         options.withProperties();
         options.withSamples();
         options.withDataSets();
+        options.withProject();
+        options.withModifier();
+        options.withTags();
         
         return api.searchExperiments(sessionToken, criterion, options);
     }
@@ -87,6 +159,8 @@ public class OpenbisQuery {
         options.withProperties();
         options.withSample();
         options.withExperiment();
+        options.withModifier();
+        options.withTags();        
 
         List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
         return dataSets;
@@ -100,6 +174,8 @@ public class OpenbisQuery {
         options.withProperties();
         options.withExperiment();
         options.withDataSets();
+        options.withModifier();
+        options.withTags();
 
         List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;

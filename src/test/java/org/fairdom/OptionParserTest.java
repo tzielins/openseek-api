@@ -50,6 +50,14 @@ public class OptionParserTest {
         OptionParser p = new OptionParser(args);
         assertEquals(attrValue, p.getAttributeValue());
     }
+    
+    @Test
+    public void testEmptyAttributeValue() throws Exception {
+    	String attrValue = "";
+        String[] args = new String[] { "-av", attrValue};
+        OptionParser p = new OptionParser(args);
+        assertEquals(attrValue, p.getAttributeValue());
+    }
             
 
     @Test

@@ -13,7 +13,7 @@ public class OptionParser {
     private String property = null;
     private String propertyValue = null;
     private String attribute=null;
-    private String attributeValue=null;
+    private String attributeValue="";
     private String username = null;
     private String password = null;
     private String endpoint = null;
@@ -35,8 +35,7 @@ public class OptionParser {
             }
             else if (arg.equals("-av")) {
             	i++;
-            	setAttributeValue(args[i]);
-            	handleEmptyOptionValue(arg, getAttributeValue());
+            	setAttributeValue(args[i]);            	
             }
             else if (arg.equals("-p")) {
                 i++;
