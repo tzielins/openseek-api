@@ -105,17 +105,7 @@ public class OpenbisQueryTest {
         DataSet dataSet = dataSets.get(0);
 
         assertEquals(propertyValue, dataSet.getProperties().get(property));
-    }
-    
-    @Test
-    public void dataSets() throws Exception {
-    	TestHelper.Credentials creds = TestHelper.readCredentials();
-        Authentication au = new Authentication(creds.getEndpoint(),creds.getUsername(),creds.getPassword());
-        api = au.api();
-        sessionToken = au.sessionToken();
-        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
-        query.dataSets();
-    }
+    }        
     
     @Test
     public void getDatasetWithSeekDataFileIDNoResult() throws Exception {

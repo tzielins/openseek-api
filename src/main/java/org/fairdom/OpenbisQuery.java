@@ -135,20 +135,7 @@ public class OpenbisQuery {
 
         List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;
-    }
-    
-    public void dataSets() {
-    	DataSetSearchCriterion criterion = new DataSetSearchCriterion();
-        criterion.withPermId().thatContains("");
-        DataSetFetchOptions options = new DataSetFetchOptions();
-        options.withProperties();
-        options.withExternalData();
-        List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
-        System.out.println(dataSets.get(0).getExternalData().getLocation());
-        System.out.println(dataSets.get(0).getExternalData().getSize());
-        
-    }
-    
+    }        
 
     public List <DataSet> dataSetsByProperty(String property, String propertyValue){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
