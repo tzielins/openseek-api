@@ -30,17 +30,16 @@ public class OpenbisQuery {
     public List query(String type, String property, String propertyValue) throws InvalidOptionException {
         List result = null;
         if (type.equals("Experiment")){
-            result = experiments(property, propertyValue);
+            result = experimentsByProperty(property, propertyValue);
         }else if (type.equals("Sample")){
-            result = samples(property, propertyValue);
+            result = samplesByProperty(property, propertyValue);
         }else if (type.equals("DataSet")){
-            result = dataSets(property, propertyValue);
+            result = dataSetsByProperty(property, propertyValue);
         }else{
             throw new InvalidOptionException("Unrecognised type: " + type);
         }
         return result;
     }
-
 
     public String jsonResult(List result){
         GenericObjectMapper mapper = new GenericObjectMapper();
@@ -51,20 +50,20 @@ public class OpenbisQuery {
             System.err.println(ex.getMessage());
         }
         return sw.toString();
-    }
+    }       
 
-    public List <Experiment> experiments(String property, String propertyValue){
+    public List <Experiment> experimentsByProperty(String property, String propertyValue){
         ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
         criterion.withProperty(property).thatEquals(propertyValue);
 
         ExperimentFetchOptions options = new ExperimentFetchOptions();
-        options.withProperties();
+        options.withProperties();        
 
         List <Experiment> experiments = api.searchExperiments(sessionToken, criterion, options);
         return experiments;
     }
 
-    public List <Sample> samples(String property, String propertyValue){
+    public List <Sample> samplesByProperty(String property, String propertyValue){
         SampleSearchCriterion criterion = new SampleSearchCriterion();
         criterion.withProperty(property).thatEquals(propertyValue);
 
@@ -75,7 +74,7 @@ public class OpenbisQuery {
         return samples;
     }
 
-    public List <DataSet> dataSets(String property, String propertyValue){
+    public List <DataSet> dataSetsByProperty(String property, String propertyValue){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
         criterion.withProperty(property).thatEquals(propertyValue);
 
