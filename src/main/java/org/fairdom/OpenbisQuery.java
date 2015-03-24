@@ -7,6 +7,8 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.sample.Sample;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.dataset.DataSetFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.experiment.ExperimentFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.sample.SampleFetchOptions;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.AbstractEntitySearchCriterion;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.AbstractSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterion;
@@ -27,17 +29,31 @@ public class OpenbisQuery {
         sessionToken = startSessionToken;
     }
 
-    public List query(String type, String property, String propertyValue) throws InvalidOptionException {
+    public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
         List result = null;
-        if (type.equals("Experiment")){
-            result = experimentsByProperty(property, propertyValue);
-        }else if (type.equals("Sample")){
-            result = samplesByProperty(property, propertyValue);
-        }else if (type.equals("DataSet")){
-            result = dataSetsByProperty(property, propertyValue);
-        }else{
-            throw new InvalidOptionException("Unrecognised type: " + type);
+        if (queryType==QueryType.PROPERTY) {
+        	if (type.equals("Experiment")){
+                result = experimentsByProperty(key, value);
+            }else if (type.equals("Sample")){
+                result = samplesByProperty(key, value);
+            }else if (type.equals("DataSet")){
+                result = dataSetsByProperty(key, value);
+            }else{
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
         }
+        else if (queryType==QueryType.ATTRIBUTE) {
+        	if (type.equals("Experiment")) {
+                result = experimentsByAttribute(key, value);
+            }else if (type.equals("Sample")) {
+                result = samplesByAttribute(key, value);
+            }else if (type.equals("DataSet")) {
+                result = dataSetsByAttribute(key, value);
+            }else {
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }
+        
         return result;
     }
 
@@ -50,7 +66,54 @@ public class OpenbisQuery {
             System.err.println(ex.getMessage());
         }
         return sw.toString();
-    }       
+    }  
+    
+    public List<Experiment> experimentsByAttribute(String attribute,String value) throws InvalidOptionException {
+    	ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
+    	updateCriterianForAttribute(criterion, attribute, value);
+    	ExperimentFetchOptions options = new ExperimentFetchOptions();
+        options.withProperties();
+        options.withSamples();
+        options.withDataSets();
+        
+        return api.searchExperiments(sessionToken, criterion, options);
+    }
+    
+    public List <DataSet> dataSetsByAttribute(String attribute, String value) throws InvalidOptionException{
+        DataSetSearchCriterion criterion = new DataSetSearchCriterion();
+        updateCriterianForAttribute(criterion, attribute, value);
+
+        DataSetFetchOptions options = new DataSetFetchOptions();
+        options.withProperties();
+        options.withSample();
+        options.withExperiment();
+
+        List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
+        return dataSets;
+    }
+    
+    public List <Sample> samplesByAttribute(String attribute, String value) throws InvalidOptionException{
+        SampleSearchCriterion criterion = new SampleSearchCriterion();
+        updateCriterianForAttribute(criterion, attribute, value);
+        
+        SampleFetchOptions options = new SampleFetchOptions();
+        options.withProperties();
+        options.withExperiment();
+        options.withDataSets();
+
+        List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
+        return samples;
+    }
+        
+    
+    private void updateCriterianForAttribute(AbstractEntitySearchCriterion<?> criterion,String key,String value) throws InvalidOptionException {
+    	if (key.equalsIgnoreCase("permid")) {
+    		criterion.withPermId().thatContains(value);
+    	}    	
+    	else {
+    		throw new InvalidOptionException("Invalid attribute name:"+key);
+    	}
+    }
 
     public List <Experiment> experimentsByProperty(String property, String propertyValue){
         ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
@@ -73,6 +136,19 @@ public class OpenbisQuery {
         List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;
     }
+    
+    public void dataSets() {
+    	DataSetSearchCriterion criterion = new DataSetSearchCriterion();
+        criterion.withPermId().thatContains("");
+        DataSetFetchOptions options = new DataSetFetchOptions();
+        options.withProperties();
+        options.withExternalData();
+        List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
+        System.out.println(dataSets.get(0).getExternalData().getLocation());
+        System.out.println(dataSets.get(0).getExternalData().getSize());
+        
+    }
+    
 
     public List <DataSet> dataSetsByProperty(String property, String propertyValue){
         DataSetSearchCriterion criterion = new DataSetSearchCriterion();
@@ -84,5 +160,7 @@ public class OpenbisQuery {
         List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
         return dataSets;
     }
+    
+    
 
 }

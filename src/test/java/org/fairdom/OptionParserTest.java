@@ -27,6 +27,30 @@ public class OptionParserTest {
         OptionParser p = new OptionParser(args);
         assertEquals(property, p.getProperty());
     }
+    
+    @Test
+    public void testAttribute() throws Exception {
+    	String attr = "permID";
+        String[] args = new String[] { "-a", attr};
+        OptionParser p = new OptionParser(args);
+        assertEquals(attr, p.getAttribute());
+    }
+        
+    @Test(expected = InvalidOptionException.class)
+    public void testInvalidAttribute() throws Exception {
+    	String attr = "something";
+        String[] args = new String[] { "-a", attr};
+        OptionParser p = new OptionParser(args);        
+    }
+    
+    @Test
+    public void testAttributeValue() throws Exception {
+    	String attrValue = "XXX-XXX";
+        String[] args = new String[] { "-av", attrValue};
+        OptionParser p = new OptionParser(args);
+        assertEquals(attrValue, p.getAttributeValue());
+    }
+            
 
     @Test
     public void testPropertyValue() throws Exception {

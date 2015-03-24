@@ -30,6 +30,27 @@ public class OpenbisQueryTest {
         api = au.api();
         sessionToken = au.sessionToken();
     }
+    
+    @Test
+    public void getExperiments() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<Experiment> experiments = query.experimentsByAttribute("permId","");
+    	assertTrue(experiments.size()>0);    	
+    }
+    
+    @Test
+    public void getSamples() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<Sample> samples = query.samplesByAttribute("permId","");
+    	assertTrue(samples.size()>0);    	
+    }
+    
+    @Test
+    public void getDatasets() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<DataSet> data = query.dataSetsByAttribute("permId","");
+    	assertTrue(data.size()>0);    	
+    }      
 
     @Test
     public void getExperimentWithSeekStudyID() throws Exception {
@@ -85,7 +106,17 @@ public class OpenbisQueryTest {
 
         assertEquals(propertyValue, dataSet.getProperties().get(property));
     }
-
+    
+    @Test
+    public void dataSets() throws Exception {
+    	TestHelper.Credentials creds = TestHelper.readCredentials();
+        Authentication au = new Authentication(creds.getEndpoint(),creds.getUsername(),creds.getPassword());
+        api = au.api();
+        sessionToken = au.sessionToken();
+        OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+        query.dataSets();
+    }
+    
     @Test
     public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
         OpenbisQuery query = new OpenbisQuery(api, sessionToken);
@@ -101,7 +132,7 @@ public class OpenbisQueryTest {
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        List result = query.query(type, property, propertyValue);
+        List result = query.query(type, QueryType.PROPERTY,property, propertyValue);
         String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
@@ -112,6 +143,6 @@ public class OpenbisQueryTest {
         String type = "SomeType";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        query.query(type, property, propertyValue);
+        query.query(type, QueryType.PROPERTY,property, propertyValue);
     }
 }

@@ -24,7 +24,14 @@ public class QueryMain {
             String sessionToken = au.sessionToken();
 
             OpenbisQuery query = new OpenbisQuery(api, sessionToken);
-            List result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
+            List result;
+            if (options.getQueryType()==QueryType.PROPERTY) {
+            	result = query.query(options.getType(), options.getQueryType(),options.getProperty(), options.getPropertyValue());            	
+            }
+            else {
+            	result = query.query(options.getType(), options.getQueryType(),options.getAttribute(), options.getAttributeValue());
+            }
+            
             String jsonResult = query.jsonResult(result);
             System.out.println(jsonResult);
         } catch (Exception ex) {

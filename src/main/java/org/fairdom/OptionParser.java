@@ -1,5 +1,9 @@
 package org.fairdom;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by quyennguyen on 19/02/15.
  */
@@ -8,9 +12,13 @@ public class OptionParser {
     private String type = null;
     private String property = null;
     private String propertyValue = null;
+    private String attribute=null;
+    private String attributeValue=null;
     private String username = null;
     private String password = null;
     private String endpoint = null;
+    
+    private final List<String> validAttributes = new ArrayList<String>(Arrays.asList(new String[]{"permId","code"}));
 
     public OptionParser(String[] args) throws InvalidOptionException {
         for (int i = 0; i < args.length; i++) {
@@ -19,6 +27,16 @@ public class OptionParser {
                 i++;
                 setType(args[i]);
                 handleEmptyOptionValue(arg, getType());
+            }
+            else if (arg.equals("-a")) {
+            	i++;
+            	setAttribute(args[i]);
+            	handleEmptyOptionValue(arg, getAttribute());
+            }
+            else if (arg.equals("-av")) {
+            	i++;
+            	setAttributeValue(args[i]);
+            	handleEmptyOptionValue(arg, getAttributeValue());
             }
             else if (arg.equals("-p")) {
                 i++;
@@ -49,6 +67,18 @@ public class OptionParser {
                 throw new InvalidOptionException("Unrecognised option: " + args[i]);
             }
         }
+    }
+    
+    public QueryType getQueryType() throws InvalidOptionException {
+    	if (getProperty()!=null) {
+    		return QueryType.PROPERTY;
+    	}
+    	else if (getAttribute()!=null) {
+    		return QueryType.ATTRIBUTE;
+    	}
+    	else {
+    		throw new InvalidOptionException("No property or attribute has been defined");
+    	}
     }
 
     private void setType(String type) {
@@ -104,4 +134,26 @@ public class OptionParser {
             throw new InvalidOptionException("Empty value for: " + option);
         }
     }
+
+	public String getAttribute() {
+		return attribute;
+	}
+
+	public void setAttribute(String attribute) throws InvalidOptionException {
+		if (validAttributes.contains(attribute)) {
+			this.attribute = attribute;
+		}
+		else {
+			throw new InvalidOptionException("The attribute "+attribute+" is invalid");
+		}
+		
+	}
+
+	public String getAttributeValue() {
+		return attributeValue;
+	}
+
+	public void setAttributeValue(String attributeValue) {
+		this.attributeValue = attributeValue;
+	}
 }
