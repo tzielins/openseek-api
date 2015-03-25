@@ -2,6 +2,8 @@ package org.fairdom;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.remoting.RemoteAccessException;
@@ -12,10 +14,11 @@ public class AuthenticationTest {
     protected String password;
 
     @Before
-    public void setUp(){
-        endpoint = new String("https://openbis-testing.fair-dom.org/openbis");
-        username = new String("api-user");
-        password = new String("api-user");
+    public void setUp() throws IOException{
+    	TestHelper.readCredentials().getEndpoint();
+        endpoint = TestHelper.readCredentials().getEndpoint();
+        username = TestHelper.readCredentials().getUsername();
+        password = TestHelper.readCredentials().getPassword();
     }
 
     @Test

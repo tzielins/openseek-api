@@ -105,6 +105,18 @@ public class OpenbisQuery {
     	map.put("identifier",experiment.getIdentifier().getIdentifier());
     	map.put("modifier",experiment.getModifier().getUserId());
     	map.put("tags", experiment.getTags());
+    	map.put("registerator", experiment.getRegistrator().getUserId());
+    	Map<String,String> expType = new HashMap<String, String>();
+    	if (experiment.getType()!=null) {
+    		if (experiment.getType().getDescription()!=null) {
+    			expType.put("description",experiment.getType().getDescription() );
+    		}
+    		else {
+    			expType.put("description","");
+    		}
+        	expType.put("code", experiment.getType().getCode());
+    	}    	    	    	
+    	map.put("experiment_type", expType);
     	List<String> sampleIds = new ArrayList<String>();
     	for (Sample sample : experiment.getSamples()) {
     		sampleIds.add(sample.getPermId().getPermId());
@@ -126,8 +138,22 @@ public class OpenbisQuery {
     	map.put("modificationDate", dataset.getModificationDate());
     	map.put("registrationDate", dataset.getRegistrationDate());    	
     	map.put("modifier",dataset.getModifier().getUserId());
+    	map.put("registerator", dataset.getRegistrator().getUserId());
     	map.put("experiment", dataset.getExperiment().getPermId().getPermId());
     	map.put("tags", dataset.getTags());
+    	
+    	Map<String,String> dsType = new HashMap<String, String>();
+    	if (dataset.getType()!=null) {
+    		if (dataset.getType().getDescription()!=null) {
+    			dsType.put("description",dataset.getType().getDescription() );
+    		}
+    		else {
+    			dsType.put("description","");
+    		}
+    		dsType.put("code", dataset.getType().getCode());
+    	}    	    	    	
+    	map.put("dataset_type", dsType);    	
+    	
     	List<String> sampleIds = new ArrayList<String>();
     	if (dataset.getSample()!=null) {
     		sampleIds.add(dataset.getSample().getPermId().getPermId());
@@ -144,10 +170,23 @@ public class OpenbisQuery {
     	map.put("modificationDate", sample.getModificationDate());
     	map.put("registrationDate", sample.getRegistrationDate());    	
     	map.put("modifier",sample.getModifier().getUserId());
+    	map.put("registerator", sample.getRegistrator().getUserId());
+    	
+    	Map<String,String> sampleType = new HashMap<String, String>();
+    	if (sample.getType()!=null) {
+    		if (sample.getType().getDescription()!=null) {
+    			sampleType.put("description",sample.getType().getDescription() );
+    		}
+    		else {
+    			sampleType.put("description","");
+    		}
+    		sampleType.put("code", sample.getType().getCode());
+    	}    	    	    	
+    	map.put("sample_type", sampleType);    	    
+    	
     	if (sample.getExperiment()!=null) {
     		map.put("experiment", sample.getExperiment().getPermId().getPermId());
-    	}
-    	
+    	}    	
     	map.put("tags", sample.getTags());
     	List<String> datasetIds = new ArrayList<String>();
     	for (DataSet dataset : sample.getDataSets()) {
@@ -166,7 +205,9 @@ public class OpenbisQuery {
         options.withDataSets();
         options.withProject();
         options.withModifier();
+        options.withRegistrator();
         options.withTags();
+        options.withType();
         
         return api.searchExperiments(sessionToken, criterion, options);
     }
@@ -180,7 +221,10 @@ public class OpenbisQuery {
         options.withSample();
         options.withExperiment();
         options.withModifier();
-        options.withTags();        
+        options.withRegistrator();
+        options.withTags();       
+        options.withExternalData();
+        options.withType();
 
         List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
         return dataSets;
@@ -195,7 +239,9 @@ public class OpenbisQuery {
         options.withExperiment();
         options.withDataSets();
         options.withModifier();
+        options.withRegistrator();
         options.withTags();
+        options.withType();
 
         List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;
