@@ -109,12 +109,17 @@ public class OpenbisQuery {
     	Map<String,String> expType = new HashMap<String, String>();
     	if (experiment.getType()!=null) {
     		if (experiment.getType().getDescription()!=null) {
-    			expType.put("description",experiment.getType().getDescription() );
+    			expType.put("description",experiment.getType().getDescription());
     		}
     		else {
     			expType.put("description","");
     		}
-        	expType.put("code", experiment.getType().getCode());
+    		if (experiment.getType().getCode()!=null) {
+    			expType.put("code", experiment.getType().getCode());
+    		}
+    		else {
+    			expType.put("code","");
+    		}        	
     	}    	    	    	
     	map.put("experiment_type", expType);
     	List<String> sampleIds = new ArrayList<String>();
@@ -150,7 +155,12 @@ public class OpenbisQuery {
     		else {
     			dsType.put("description","");
     		}
-    		dsType.put("code", dataset.getType().getCode());
+    		if (dataset.getType().getCode()!=null) {
+    			dsType.put("code", dataset.getType().getCode());
+    		}
+    		else {
+    			dsType.put("code","");
+    		}   
     	}    	    	    	
     	map.put("dataset_type", dsType);    	
     	
@@ -180,6 +190,12 @@ public class OpenbisQuery {
     		else {
     			sampleType.put("description","");
     		}
+    		if (sample.getType().getCode()!=null) {
+    			sampleType.put("code", sample.getType().getCode());
+    		}
+    		else {
+    			sampleType.put("code","");
+    		}  
     		sampleType.put("code", sample.getType().getCode());
     	}    	    	    	
     	map.put("sample_type", sampleType);    	    

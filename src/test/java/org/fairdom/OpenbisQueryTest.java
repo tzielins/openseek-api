@@ -9,6 +9,11 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.sample.SampleIdentifier;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import java.io.IOException;
 import java.lang.String;
 import java.util.List;
@@ -35,21 +40,28 @@ public class OpenbisQueryTest {
     public void getExperiments() throws Exception {
     	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
     	List<Experiment> experiments = query.experimentsByAttribute("permId","");
-    	assertTrue(experiments.size()>0);    	
+    	assertTrue(experiments.size()>0);    
+    	String json = query.jsonResult(experiments);
+    	System.out.println(json);
+    	assertTrue(isValidJSON(json));
     }
     
     @Test
     public void getSamples() throws Exception {
     	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
     	List<Sample> samples = query.samplesByAttribute("permId","");
-    	assertTrue(samples.size()>0);    	
+    	assertTrue(samples.size()>0);   
+    	String json = query.jsonResult(samples);
+    	assertTrue(isValidJSON(json));
     }
     
     @Test
     public void getDatasets() throws Exception {
     	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
     	List<DataSet> data = query.dataSetsByAttribute("permId","");
-    	assertTrue(data.size()>0);    	
+    	assertTrue(data.size()>0);
+    	String json = query.jsonResult(data);
+    	assertTrue(isValidJSON(json));
     }      
 
     @Test
@@ -135,4 +147,22 @@ public class OpenbisQueryTest {
         String propertyValue = "Study_1";
         query.query(type, QueryType.PROPERTY,property, propertyValue);
     }
+    
+    public boolean isValidJSON(final String json) {
+    	   boolean valid = false;
+    	   try {
+    	      final JsonParser parser = new ObjectMapper().getJsonFactory()
+    	            .createJsonParser(json);
+    	      while (parser.nextToken() != null) {
+    	      }
+    	      valid = true;
+    	   } catch (JsonParseException jpe) {
+    	      jpe.printStackTrace();
+    	   } catch (IOException ioe) {
+    	      ioe.printStackTrace();
+    	   }
+
+    	   return valid;
+    }
+
 }
