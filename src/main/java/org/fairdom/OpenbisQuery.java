@@ -138,7 +138,7 @@ public class OpenbisQuery {
     private Map<String,Object> jsonMap(DataSet dataset) {
     	Map<String,Object> map = new HashMap<String, Object>();
     	map.put("permId", dataset.getPermId().getPermId());
-    	map.put("code", dataset.getCode());    	
+    	map.put("code", dataset.getCode());    	    	
     	map.put("properties", dataset.getProperties());
     	map.put("modificationDate", dataset.getModificationDate());
     	map.put("registrationDate", dataset.getRegistrationDate());    	
@@ -177,6 +177,7 @@ public class OpenbisQuery {
     	map.put("permId", sample.getPermId().getPermId());
     	map.put("code", sample.getCode());    	
     	map.put("properties", sample.getProperties());
+    	map.put("identifier",sample.getIdentifier().getIdentifier());
     	map.put("modificationDate", sample.getModificationDate());
     	map.put("registrationDate", sample.getRegistrationDate());    	
     	map.put("modifier",sample.getModifier().getUserId());
