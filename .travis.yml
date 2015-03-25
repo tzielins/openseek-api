@@ -6,6 +6,10 @@ jdk:
   - openjdk7
   - openjdk6
 
+branches:
+  except: updates-hack-for-demo
+
+
 script:
   - jdk_switcher use oraclejdk8
   - gradle test
