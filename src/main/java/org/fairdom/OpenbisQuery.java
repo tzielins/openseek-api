@@ -105,6 +105,16 @@ public class OpenbisQuery {
     	map.put("identifier",experiment.getIdentifier().getIdentifier());
     	map.put("modifier",experiment.getModifier().getUserId());
     	map.put("tags", experiment.getTags());
+    	List<String> sampleIds = new ArrayList<String>();
+    	for (Sample sample : experiment.getSamples()) {
+    		sampleIds.add(sample.getPermId().getPermId());
+    	}
+    	map.put("samples", sampleIds);
+    	List<String> datasetIds = new ArrayList<String>();
+    	for (DataSet dataset : experiment.getDataSets()) {
+    		datasetIds.add(dataset.getPermId().getPermId());
+    	}
+    	map.put("datasets", datasetIds);
     	return map;
     }
     
@@ -118,6 +128,11 @@ public class OpenbisQuery {
     	map.put("modifier",dataset.getModifier().getUserId());
     	map.put("experiment", dataset.getExperiment().getPermId().getPermId());
     	map.put("tags", dataset.getTags());
+    	List<String> sampleIds = new ArrayList<String>();
+    	if (dataset.getSample()!=null) {
+    		sampleIds.add(dataset.getSample().getPermId().getPermId());
+    	}
+    	map.put("samples", sampleIds);
     	return map;
     }
     
@@ -134,6 +149,11 @@ public class OpenbisQuery {
     	}
     	
     	map.put("tags", sample.getTags());
+    	List<String> datasetIds = new ArrayList<String>();
+    	for (DataSet dataset : sample.getDataSets()) {
+    		datasetIds.add(dataset.getPermId().getPermId());
+    	}
+    	map.put("datasets", datasetIds);
     	return map;
     }
     
