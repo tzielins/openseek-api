@@ -13,7 +13,7 @@ public class OptionParser {
     private String property = null;
     private String propertyValue = null;
     private String attribute=null;
-    private List<String> attributeValues=new ArrayList<String>();
+    private List<String> attributeValues=new ArrayList<String>(Arrays.asList(new String[]{""}));
     private String username = null;
     private String password = null;
     private String endpoint = null;
@@ -160,6 +160,9 @@ public class OptionParser {
 			if (value.length()>0) {
 				attributeValues.add(value);
 			}
+		}
+		if (attributeValues.isEmpty()) {
+			attributeValues.add("");
 		}
 	}
 }

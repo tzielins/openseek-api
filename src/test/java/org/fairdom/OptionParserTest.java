@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -65,7 +66,7 @@ public class OptionParserTest {
     	String attrValue = "";
         String[] args = new String[] { "-av", attrValue};
         OptionParser p = new OptionParser(args);
-        assertEquals(new ArrayList<String>(), p.getAttributeValues());
+        assertEquals(new ArrayList<String>(Arrays.asList(new String[]{""})), p.getAttributeValues());
     }
             
 
