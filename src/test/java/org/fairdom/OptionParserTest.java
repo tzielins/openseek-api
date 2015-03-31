@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 public class OptionParserTest {
@@ -30,7 +32,7 @@ public class OptionParserTest {
     
     @Test
     public void testAttribute() throws Exception {
-    	String attr = "permID";
+    	String attr = "permId";
         String[] args = new String[] { "-a", attr};
         OptionParser p = new OptionParser(args);
         assertEquals(attr, p.getAttribute());
@@ -44,19 +46,26 @@ public class OptionParserTest {
     }
     
     @Test
-    public void testAttributeValue() throws Exception {
+    public void testAttributeValues() throws Exception {
     	String attrValue = "XXX-XXX";
         String[] args = new String[] { "-av", attrValue};
         OptionParser p = new OptionParser(args);
-        assertEquals(attrValue, p.getAttributeValue());
+        assertEquals(new String[]{attrValue}, p.getAttributeValues().toArray(new String[]{}));
+        
+        attrValue = "XXX-XXX,YYY-YYY, ZZZ-ZZZ";
+        args = new String[] { "-av", attrValue};
+        p = new OptionParser(args);
+        assertEquals(new String[]{"XXX-XXX","YYY-YYY","ZZZ-ZZZ"}, p.getAttributeValues().toArray(new String[]{}));
     }
+    
+    
     
     @Test
     public void testEmptyAttributeValue() throws Exception {
     	String attrValue = "";
         String[] args = new String[] { "-av", attrValue};
         OptionParser p = new OptionParser(args);
-        assertEquals(attrValue, p.getAttributeValue());
+        assertEquals(new ArrayList<String>(), p.getAttributeValues());
     }
             
 

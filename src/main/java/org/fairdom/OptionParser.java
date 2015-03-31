@@ -13,12 +13,12 @@ public class OptionParser {
     private String property = null;
     private String propertyValue = null;
     private String attribute=null;
-    private String attributeValue="";
+    private List<String> attributeValues=new ArrayList<String>();
     private String username = null;
     private String password = null;
     private String endpoint = null;
     
-    private final List<String> validAttributes = new ArrayList<String>(Arrays.asList(new String[]{"permId","code"}));
+    private final List<String> validAttributes = new ArrayList<String>(Arrays.asList(new String[]{"permId"}));
 
     public OptionParser(String[] args) throws InvalidOptionException {
         for (int i = 0; i < args.length; i++) {
@@ -35,7 +35,7 @@ public class OptionParser {
             }
             else if (arg.equals("-av")) {
             	i++;
-            	setAttributeValue(args[i]);            	
+            	setAttributeValues(args[i]);            	
             }
             else if (arg.equals("-p")) {
                 i++;
@@ -148,11 +148,18 @@ public class OptionParser {
 		
 	}
 
-	public String getAttributeValue() {
-		return attributeValue;
+	public List<String> getAttributeValues() {
+		return attributeValues;
 	}
 
-	public void setAttributeValue(String attributeValue) {
-		this.attributeValue = attributeValue;
+	public void setAttributeValues(String attributeValue) {
+		String[] values = attributeValue.split(",");
+		attributeValues=new ArrayList<String>();
+		for (String value : values) {
+			value = value.trim();
+			if (value.length()>0) {
+				attributeValues.add(value);
+			}
+		}
 	}
 }

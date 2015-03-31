@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 
 import java.io.IOException;
 import java.lang.String;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -59,10 +61,41 @@ public class OpenbisQueryTest {
     public void getDatasets() throws Exception {
     	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
     	List<DataSet> data = query.dataSetsByAttribute("permId","");
-    	assertTrue(data.size()>0);
+    	assertNotEquals(0, data.size());
     	String json = query.jsonResult(data);
     	assertTrue(isValidJSON(json));
-    }      
+    }  
+    
+    @Test
+    public void getDatasetsWithList() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<String> ids=new ArrayList<String>(Arrays.asList(new String[]{"20150311140253714-271","20150323162504464-366","20150323162328428-362"}));
+    	List<DataSet> data = query.dataSetsByAttribute("permId",ids);
+    	assertEquals(3, data.size());
+    	String json = query.jsonResult(data);    	
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getSamplesWithList() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<String> ids=new ArrayList<String>(Arrays.asList(new String[]{"20150319155418281-304","20150309172707806-242"}));
+    	List<Sample> samples = query.samplesByAttribute("permId",ids);
+    	assertEquals(2, samples.size());
+    	String json = query.jsonResult(samples);    	    
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getExperimentsWithList() throws Exception {
+    	OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+    	List<String> ids=new ArrayList<String>(Arrays.asList(new String[]{"20150319121918550-280","20150319125925820-293","20150319163047131-344"}));
+    	List<Experiment> exp = query.experimentsByAttribute("permId",ids);
+    	assertEquals(3, exp.size());
+    	String json = query.jsonResult(exp);    	
+    	assertTrue(isValidJSON(json));
+    }
+    
 
     @Test
     public void getExperimentWithSeekStudyID() throws Exception {

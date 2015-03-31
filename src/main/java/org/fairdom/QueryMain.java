@@ -29,7 +29,7 @@ public class QueryMain {
             	result = query.query(options.getType(), options.getQueryType(),options.getProperty(), options.getPropertyValue());            	
             }
             else {
-            	result = query.query(options.getType(), options.getQueryType(),options.getAttribute(), options.getAttributeValue());
+            	result = query.query(options.getType(), options.getQueryType(),options.getAttribute(), options.getAttributeValues());
             }
             
             String jsonResult = query.jsonResult(result);

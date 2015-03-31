@@ -1,5 +1,12 @@
 package org.fairdom;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.experiment.Experiment;
@@ -7,20 +14,17 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.sample.Sample;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.dataset.DataSetFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.experiment.ExperimentFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.sample.SampleFetchOptions;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.dataset.DataSetPermId;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.dataset.IDataSetId;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.experiment.ExperimentPermId;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.experiment.IExperimentId;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.sample.ISampleId;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.id.sample.SamplePermId;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.AbstractEntitySearchCriterion;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.AbstractSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterion;
 import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonFactory.Feature;
 
 /**
  * Created by quyennguyen on 13/02/15.
@@ -54,6 +58,23 @@ public class OpenbisQuery {
                 result = samplesByAttribute(key, value);
             }else if (type.equals("DataSet")) {
                 result = dataSetsByAttribute(key, value);
+            }else {
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }
+        
+        return result;
+    }
+    
+    public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+        List result = null;
+        if (queryType==QueryType.ATTRIBUTE) {
+        	if (type.equals("Experiment")) {
+                result = experimentsByAttribute(key, values);
+            }else if (type.equals("Sample")) {
+                result = samplesByAttribute(key, values);
+            }else if (type.equals("DataSet")) {
+                result = dataSetsByAttribute(key, values);
             }else {
                 throw new InvalidOptionException("Unrecognised type: " + type);
             }
@@ -213,9 +234,7 @@ public class OpenbisQuery {
     	return map;
     }
     
-    public List<Experiment> experimentsByAttribute(String attribute,String value) throws InvalidOptionException {
-    	ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
-    	updateCriterianForAttribute(criterion, attribute, value);
+    public List<Experiment> experimentsByAttribute(String attribute,List<String> values) throws InvalidOptionException {    	
     	ExperimentFetchOptions options = new ExperimentFetchOptions();
         options.withProperties();
         options.withSamples();
@@ -226,12 +245,31 @@ public class OpenbisQuery {
         options.withTags();
         options.withType();
         
-        return api.searchExperiments(sessionToken, criterion, options);
+        List<ExperimentPermId> permIds = buildExperimentPermIdArray(values);
+
+
+        //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
+        //the attribute paramater is currently redundant, as we can search by permId only
+        if (permIds.size()>0) {
+        	Map<IExperimentId, Experiment> mapExperiments = api.mapExperiments(sessionToken, permIds, options);
+            return Arrays.asList(mapExperiments.values().toArray(new Experiment []{}));
+        }
+        else {
+        	ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
+            updateCriterianForAttribute(criterion, attribute, values.get(0));
+            return api.searchExperiments(sessionToken, criterion, options);
+        }
     }
     
-    public List <DataSet> dataSetsByAttribute(String attribute, String value) throws InvalidOptionException{
-        DataSetSearchCriterion criterion = new DataSetSearchCriterion();
-        updateCriterianForAttribute(criterion, attribute, value);
+    public List<Experiment> experimentsByAttribute(String attribute,String value) throws InvalidOptionException {
+    	List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
+        return experimentsByAttribute(attribute,values);
+    	
+    }
+    
+    public List <DataSet> dataSetsByAttribute(String attribute, List<String> values) throws InvalidOptionException{    	
+        
+    	List<DataSetPermId> permIds = buildDataSetPermIdArray(values);
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
@@ -243,14 +281,61 @@ public class OpenbisQuery {
         options.withExternalData();
         options.withType();
 
-        List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
-        return dataSets;
+        //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
+        //the attribute paramater is currently redundant, as we can search by permId only
+        if (permIds.size()>0) {
+        	Map<IDataSetId, DataSet> mapDataSets = api.mapDataSets(sessionToken, permIds, options);
+            return Arrays.asList(mapDataSets.values().toArray(new DataSet []{}));
+        }
+        else {
+        	DataSetSearchCriterion criterion = new DataSetSearchCriterion();
+            updateCriterianForAttribute(criterion, attribute, values.get(0));
+            return api.searchDataSets(sessionToken, criterion, options);
+        }
+        
+    }
+
+	private List<DataSetPermId> buildDataSetPermIdArray(List<String> values) {
+		List<DataSetPermId> permIds = new ArrayList<DataSetPermId>();
+    	for (String value : values) {
+    		if (value.length()>0) {
+    			permIds.add(new DataSetPermId(value));
+    		}
+    	}
+		return permIds;
+	}
+	
+	private List<ExperimentPermId> buildExperimentPermIdArray(List<String> values) {
+		List<ExperimentPermId> permIds = new ArrayList<ExperimentPermId>();
+    	for (String value : values) {
+    		if (value.length()>0) {
+    			permIds.add(new ExperimentPermId(value));
+    		}
+    	}
+		return permIds;
+	}
+	
+	private List<SamplePermId> buildSamplePermIdArray(List<String> values) {
+		List<SamplePermId> permIds = new ArrayList<SamplePermId>();
+    	for (String value : values) {
+    		if (value.length()>0) {
+    			permIds.add(new SamplePermId(value));
+    		}
+    	}
+		return permIds;
+	}
+    
+    public List <DataSet> dataSetsByAttribute(String attribute, String value) throws InvalidOptionException{
+        List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
+        return dataSetsByAttribute(attribute,values);
     }
     
     public List <Sample> samplesByAttribute(String attribute, String value) throws InvalidOptionException{
-        SampleSearchCriterion criterion = new SampleSearchCriterion();
-        updateCriterianForAttribute(criterion, attribute, value);
-        
+    	List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
+        return samplesByAttribute(attribute,values);
+    }
+    
+    public List <Sample> samplesByAttribute(String attribute, List<String> values) throws InvalidOptionException{                
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
         options.withExperiment();
@@ -259,9 +344,22 @@ public class OpenbisQuery {
         options.withRegistrator();
         options.withTags();
         options.withType();
+        
+        List<SamplePermId> permIds = buildSamplePermIdArray(values);
 
-        List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
-        return samples;
+      //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
+        //the attribute paramater is currently redundant, as we can search by permId only
+        if (permIds.size()>0) {
+        	Map<ISampleId, Sample> mapSamples = api.mapSamples(sessionToken, permIds, options);
+            return Arrays.asList(mapSamples.values().toArray(new Sample []{}));
+        }
+        else {
+        	SampleSearchCriterion criterion = new SampleSearchCriterion();
+            updateCriterianForAttribute(criterion, attribute, values.get(0));
+            return api.searchSamples(sessionToken, criterion, options);
+        }
+
+        
     }
         
     
