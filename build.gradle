@@ -33,14 +33,14 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
 
     def classPathJoined = classPath.join(' ')
     baseName = 'openbis-api'
-    version =  '0.2.0'
+    version =  '0.3.0'
     manifest.attributes('Main-Class': 'org.fairdom.QueryMain',
                         'Class-Path': "$classPathJoined")
     with jar
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.9'
 }
 
 run {

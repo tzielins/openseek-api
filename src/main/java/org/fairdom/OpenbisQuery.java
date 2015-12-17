@@ -7,9 +7,11 @@ import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.sample.Sample;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.dataset.DataSetFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.experiment.ExperimentFetchOptions;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.fetchoptions.sample.SampleFetchOptions;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriterion;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriterion;
+import ch.ethz.sis.openbis.generic.dss.api.v3.dto.search.DataSetFileSearchCriteria;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.DataSetSearchCriteria;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriteria;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SampleSearchCriteria;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
 import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
 
 import java.io.StringWriter;
@@ -27,8 +29,8 @@ public class OpenbisQuery {
         sessionToken = startSessionToken;
     }
 
-    public List query(String type, String property, String propertyValue) throws InvalidOptionException {
-        List result = null;
+    public SearchResult query(String type, String property, String propertyValue) throws InvalidOptionException {
+    	SearchResult result = null;
         if (type.equals("Experiment")){
             result = experiments(property, propertyValue);
         }else if (type.equals("Sample")){
@@ -42,7 +44,7 @@ public class OpenbisQuery {
     }
 
 
-    public String jsonResult(List result){
+    public String jsonResult(SearchResult result){
         GenericObjectMapper mapper = new GenericObjectMapper();
         StringWriter sw = new StringWriter();
         try {
@@ -53,36 +55,36 @@ public class OpenbisQuery {
         return sw.toString();
     }
 
-    public List <Experiment> experiments(String property, String propertyValue){
-        ExperimentSearchCriterion criterion = new ExperimentSearchCriterion();
+    public SearchResult <Experiment> experiments(String property, String propertyValue){
+        ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
         criterion.withProperty(property).thatEquals(propertyValue);
 
         ExperimentFetchOptions options = new ExperimentFetchOptions();
         options.withProperties();
 
-        List <Experiment> experiments = api.searchExperiments(sessionToken, criterion, options);
+        SearchResult<Experiment> experiments = api.searchExperiments(sessionToken, criterion, options);
         return experiments;
     }
 
-    public List <Sample> samples(String property, String propertyValue){
-        SampleSearchCriterion criterion = new SampleSearchCriterion();
+    public SearchResult <Sample> samples(String property, String propertyValue){
+        SampleSearchCriteria criterion = new SampleSearchCriteria();
         criterion.withProperty(property).thatEquals(propertyValue);
 
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
 
-        List <Sample> samples = api.searchSamples(sessionToken, criterion, options);
+        SearchResult<Sample> samples = api.searchSamples(sessionToken, criterion, options);
         return samples;
     }
 
-    public List <DataSet> dataSets(String property, String propertyValue){
-        DataSetSearchCriterion criterion = new DataSetSearchCriterion();
+    public SearchResult <DataSet> dataSets(String property, String propertyValue){
+        DataSetSearchCriteria criterion = new DataSetSearchCriteria();
         criterion.withProperty(property).thatEquals(propertyValue);
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
 
-        List <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
+        SearchResult <DataSet> dataSets = api.searchDataSets(sessionToken, criterion, options);
         return dataSets;
     }
 

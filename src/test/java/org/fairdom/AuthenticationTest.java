@@ -1,17 +1,10 @@
 package org.fairdom;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.remoting.RemoteAccessException;
-
-import java.lang.String;
-import java.lang.System;
-
-import static org.junit.Assert.*;
 
 public class AuthenticationTest {
     protected String endpoint;

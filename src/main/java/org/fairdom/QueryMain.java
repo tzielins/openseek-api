@@ -1,6 +1,7 @@
 package org.fairdom;
 
 import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
+import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class QueryMain {
             String sessionToken = au.sessionToken();
 
             OpenbisQuery query = new OpenbisQuery(api, sessionToken);
-            List result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
+            SearchResult result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
             String jsonResult = query.jsonResult(result);
             System.out.println(jsonResult);
         } catch (Exception ex) {
