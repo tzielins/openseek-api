@@ -1,9 +1,8 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
-
-import java.util.List;
 
 /**
  * Created by quyennguyen on 19/02/15.
@@ -21,10 +20,11 @@ public class QueryMain {
 
         try {
             Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
-            IApplicationServerApi api = au.api();
+            IApplicationServerApi as = au.as();
+            IDataStoreServerApi dss = au.dss();
             String sessionToken = au.sessionToken();
 
-            OpenbisQuery query = new OpenbisQuery(api, sessionToken);
+            OpenbisQuery query = new OpenbisQuery(as, dss, sessionToken);
             SearchResult result = query.query(options.getType(), options.getProperty(), options.getPropertyValue());
             String jsonResult = query.jsonResult(result);
             System.out.println(jsonResult);
