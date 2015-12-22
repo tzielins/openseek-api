@@ -103,7 +103,8 @@ public class OpenbisQueryTest {
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List <DataSetFile> files = query.dataSetFile(property, propertyValue);
-        assertEquals("20151217153943290-5#original/api-test", files.get(files.size() - 1).getPermId());       
+        String perID = "20151217153943290-5#original/api-test";        
+        assertEquals(perID, files.get(files.size() - 1).getPermId().toString());
     }
 
 	@Test
