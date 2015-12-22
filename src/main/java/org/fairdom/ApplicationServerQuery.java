@@ -1,20 +1,8 @@
 package org.fairdom;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 
 import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownload;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownloadOptions;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownloadReader;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.entity.datasetfile.DataSetFile;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.id.datasetfile.DataSetFilePermId;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.search.DataSetFileSearchCriteria;
 import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.experiment.Experiment;
@@ -31,17 +19,42 @@ import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
 /**
  * Created by quyennguyen on 13/02/15.
  */
-public class OpenbisQuery {
-    private IApplicationServerApi as;
-    private IDataStoreServerApi dss;
+public class ApplicationServerQuery {
+    private IApplicationServerApi as;    
     private String sessionToken;
 
-    public OpenbisQuery(IApplicationServerApi startAs, IDataStoreServerApi startDss, String startSessionToken ){
+    public ApplicationServerQuery(IApplicationServerApi startAs, String startSessionToken ){
         as = startAs;
-        dss = startDss;
         sessionToken = startSessionToken;
     }
+    
+    public static void main(String[] args) {
+        OptionParser options = null;
+        try {
+            options = new OptionParser(args);
+        } catch (InvalidOptionException e) {
+            System.err.println("Invalid option: " + e.getMessage());
+            System.exit(-1);
+        }
 
+        try {
+            Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
+            IApplicationServerApi as = au.as();
+            IDataStoreServerApi dss = au.dss();
+            String sessionToken = au.sessionToken();
+
+            ApplicationServerQuery asQuery = new ApplicationServerQuery(as, sessionToken);           
+            SearchResult result = asQuery.query(options.getType(), options.getProperty(), options.getPropertyValue());
+            String jsonResult = asQuery.jsonResult(result);
+            System.out.println(jsonResult);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(-1);
+        }
+        System.exit(0);
+    }
+    
     public SearchResult query(String type, String property, String propertyValue) throws InvalidOptionException {
     	SearchResult result = null;
         if (type.equals("Experiment")){
@@ -100,32 +113,4 @@ public class OpenbisQuery {
         SearchResult <DataSet> dataSets = as.searchDataSets(sessionToken, criterion, options);
         return dataSets;
     }
-    
-    public List <DataSetFile> dataSetFile(String property, String propertyValue){
-    	 DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
-    	 criteria.withDataSet().withProperty(property).thatEquals(propertyValue);
-
-         List<DataSetFile> searchFiles = dss.searchFiles(sessionToken, criteria);
-         return searchFiles;
-    }
-    
-    public String downloadDataSetFile(List<DataSetFile> files) throws IOException{
-    	 DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
-         List<DataSetFilePermId> fileIds = new ArrayList<DataSetFilePermId> ();
-         for (int i = 0; i < files.size(); i++) {
-         	fileIds.add(files.get(i).getPermId());
-         	}
-         
- 		 InputStream stream = dss.downloadFiles(sessionToken, fileIds, options);
-         DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-        
-
-         DataSetFileDownload download = null;
-         String content = new String();
-         while ((download = reader.read()) != null)         {                         
-             content = IOUtils.toString(download.getInputStream());
-         }
-         return content;
-   }
-
 }
