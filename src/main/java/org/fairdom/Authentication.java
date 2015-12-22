@@ -10,18 +10,20 @@ import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
  * Created by quyennguyen on 09/02/15.
  */
 public class Authentication {
-    private String endpoint;
+    private String asEndpoint;
+    private String dssEndpoint;
     private String username;
     private String password;
 
-    public Authentication(String startEndpoint, String startUsername, String startPassword){
-        endpoint = startEndpoint;
+    public Authentication(String startAsEndpoint, String startDssEndpoint, String startUsername, String startPassword){
+    	asEndpoint = startAsEndpoint;
+    	dssEndpoint = startDssEndpoint;
         username = startUsername;
         password = startPassword;
     }
 
     public IApplicationServerApi as() {
-        String AS_URL = endpoint + "/openbis/openbis";
+        String AS_URL = asEndpoint;
         SslCertificateHelper.trustAnyCertificate(AS_URL);
         IApplicationServerApi as = HttpInvokerUtils
                 .createServiceStub(IApplicationServerApi.class, AS_URL
@@ -31,7 +33,7 @@ public class Authentication {
     }
     
     public IDataStoreServerApi dss() {    	
-        String DSS_URL = endpoint + ":444/datastore_server";        
+        String DSS_URL = dssEndpoint;        
         SslCertificateHelper.trustAnyCertificate(DSS_URL);
         IDataStoreServerApi dss = HttpInvokerUtils
         		.createStreamSupportingServiceStub(IDataStoreServerApi.class, DSS_URL

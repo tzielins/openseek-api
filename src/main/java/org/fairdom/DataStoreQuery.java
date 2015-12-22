@@ -40,7 +40,7 @@ public class DataStoreQuery {
         }
 
         try {
-            Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
+            Authentication au = new Authentication(options.getAsEndpoint(), options.getDssEndpoint(), options.getUsername(), options.getPassword());
             IDataStoreServerApi dss = au.dss();
             String sessionToken = au.sessionToken();
             

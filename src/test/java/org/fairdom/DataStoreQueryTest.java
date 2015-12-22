@@ -22,7 +22,10 @@ public class DataStoreQueryTest {
 
     @Before
     public void setUp() throws AuthenticationException{
-        Authentication au = new Authentication("https://openbis-testing.fair-dom.org", "api-user", "api-user");
+        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis/openbis", 
+        		"https://openbis-testing.fair-dom.org:444/datastore_server", 
+        		"api-user",
+        		"api-user");
         dss = au.dss();
         sessionToken = au.sessionToken();
     }

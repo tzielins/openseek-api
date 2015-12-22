@@ -4,9 +4,6 @@ package org.fairdom;
  * Created by quyennguyen on 19/02/15.
  */
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -53,11 +50,19 @@ public class OptionParserTest {
     }
 
     @Test
-    public void testEndpoint() throws Exception {
+    public void testAsEndpoint() throws Exception {
         String endpoint = "http://example.com";
-        String[] args = new String[] { "-e", endpoint};
+        String[] args = new String[] { "-ae", endpoint};
         OptionParser p = new OptionParser(args);
-        assertEquals(endpoint, p.getEndpoint());
+        assertEquals(endpoint, p.getAsEndpoint());
+    }
+    
+    @Test
+    public void testDssEndpoint() throws Exception {
+        String endpoint = "http://example.com";
+        String[] args = new String[] { "-de", endpoint};
+        OptionParser p = new OptionParser(args);
+        assertEquals(endpoint, p.getDssEndpoint());
     }
 
     @Test
@@ -67,17 +72,19 @@ public class OptionParserTest {
         String propertyValue = "Study_1";
         String username = "test";
         String password = "test";
-        String endpoint = "http://example.com";
+        String asEndpoint = "http://as.example.com";
+        String dssEndpoint = "http://dss.example.com";
 
         String[] args = new String[] { "-t", type, "-p", property, "-pv", propertyValue,
-                                       "-u", username, "-pw", password, "-e", endpoint};
+                                       "-u", username, "-pw", password, "-ae", asEndpoint, "-de", dssEndpoint};
         OptionParser p = new OptionParser(args);
         assertEquals(type, p.getType());
         assertEquals(property, p.getProperty());
         assertEquals(propertyValue, p.getPropertyValue());
         assertEquals(username, p.getUsername());
         assertEquals(password, p.getPassword());
-        assertEquals(endpoint, p.getEndpoint());
+        assertEquals(asEndpoint, p.getAsEndpoint());
+        assertEquals(dssEndpoint, p.getDssEndpoint());
     }
 
     @Test(expected = InvalidOptionException.class)

@@ -2,7 +2,6 @@ package org.fairdom;
 
 import java.io.StringWriter;
 
-import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.experiment.Experiment;
@@ -38,9 +37,8 @@ public class ApplicationServerQuery {
         }
 
         try {
-            Authentication au = new Authentication(options.getEndpoint(), options.getUsername(), options.getPassword());
+        	Authentication au = new Authentication(options.getAsEndpoint(), options.getDssEndpoint(), options.getUsername(), options.getPassword());
             IApplicationServerApi as = au.as();
-            IDataStoreServerApi dss = au.dss();
             String sessionToken = au.sessionToken();
 
             ApplicationServerQuery asQuery = new ApplicationServerQuery(as, sessionToken);           

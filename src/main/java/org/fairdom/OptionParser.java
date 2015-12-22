@@ -10,7 +10,8 @@ public class OptionParser {
     private String propertyValue = null;
     private String username = null;
     private String password = null;
-    private String endpoint = null;
+    private String asEndpoint = null;
+    private String dssEndpoint = null;
 
     public OptionParser(String[] args) throws InvalidOptionException {
         for (int i = 0; i < args.length; i++) {
@@ -40,10 +41,15 @@ public class OptionParser {
                 setPassword(args[i]);
                 handleEmptyOptionValue(arg, getPassword());
             }
-            else if (arg.equals("-e")) {
+            else if (arg.equals("-ae")) {
                 i++;
-                setEndpoint(args[i]);
-                handleEmptyOptionValue(arg, getEndpoint());
+                setAsEndpoint(args[i]);
+                handleEmptyOptionValue(arg, getAsEndpoint());
+            }
+            else if (arg.equals("-de")) {
+                i++;
+                setDssEndpoint(args[i]);
+                handleEmptyOptionValue(arg, getDssEndpoint());
             }
             else {
                 throw new InvalidOptionException("Unrecognised option: " + args[i]);
@@ -91,12 +97,20 @@ public class OptionParser {
         return password;
     }
 
-    private void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    private void setAsEndpoint(String asEndpoint) {
+        this.asEndpoint = asEndpoint;
     }
 
-    public String getEndpoint() {
-        return endpoint;
+    public String getAsEndpoint() {
+        return asEndpoint;
+    }
+    
+    private void setDssEndpoint(String dssEndpoint) {
+        this.dssEndpoint = dssEndpoint;
+    }
+
+    public String getDssEndpoint() {
+        return dssEndpoint;
     }
 
     private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
