@@ -35,9 +35,12 @@ public class DataStoreQueryTest {
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List <DataSetFile> files = query.dataSetFile(property, propertyValue);
-        String perID = "20151217153943290-5#original/api-test";        
-        assertEquals(perID, files.get(files.size() - 1).getPermId().toString());
-    }
+        DataSetFile file = files.get(files.size() - 1);
+        String perID = "20151217153943290-5#original/api-test";   
+        long fileLength = 25;        
+        assertEquals(perID, file.getPermId().toString());
+        assertEquals(fileLength, file.getFileLength());
+	}        
 
 	@Test
     public void downloadDataSetFileWithSeekDataFileID() throws Exception {
