@@ -8,10 +8,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.entity.datasetfile.DataSetFile;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
-
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
+import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 /**
  * Created by quyennguyen on 13/02/15.
  */
@@ -22,8 +21,8 @@ public class DataStoreQueryTest {
 
     @Before
     public void setUp() throws AuthenticationException{
-        Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis/openbis", 
-        		"https://openbis-testing.fair-dom.org:444/datastore_server", 
+        Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
+        		"https://openbis-api.fair-dom.org:444/datastore_server", 
         		"api-user",
         		"api-user");
         dss = au.dss();

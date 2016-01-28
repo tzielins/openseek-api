@@ -8,15 +8,15 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownload;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownloadOptions;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.download.DataSetFileDownloadReader;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.entity.datasetfile.DataSetFile;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.id.datasetfile.DataSetFilePermId;
-import ch.ethz.sis.openbis.generic.dss.api.v3.dto.search.DataSetFileSearchCriteria;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
-import ch.systemsx.cisd.openbis.generic.shared.api.v3.json.GenericObjectMapper;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
+import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFileDownload;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFileDownloadOptions;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFileDownloadReader;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.id.DataSetFilePermId;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
+import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
 
 /**
  * Created by quyennguyen on 13/02/15.

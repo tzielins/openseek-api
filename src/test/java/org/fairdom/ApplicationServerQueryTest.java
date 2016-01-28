@@ -6,11 +6,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.dataset.DataSet;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.experiment.Experiment;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.entity.sample.Sample;
-import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.SearchResult;
+import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 
 /**
  * Created by quyennguyen on 13/02/15.
@@ -22,8 +22,8 @@ public class ApplicationServerQueryTest {
 
     @Before
     public void setUp() throws AuthenticationException{
-    	Authentication au = new Authentication("https://openbis-testing.fair-dom.org/openbis/openbis", 
-    			"https://openbis-testing.fair-dom.org:444/datastore_server", 
+    	Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
+    			"https://openbis-api.fair-dom.org:444/datastore_server", 
     			"api-user", 
     			"api-user");
         as = au.as();

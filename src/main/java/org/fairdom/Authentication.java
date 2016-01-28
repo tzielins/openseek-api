@@ -1,8 +1,8 @@
 package org.fairdom;
 
-import ch.ethz.sis.openbis.generic.dss.api.v3.IDataStoreServerApi;
-import ch.ethz.sis.openbis.generic.shared.api.v3.IApplicationServerApi;
-//import ch.ethz.sis.openbis.generic.shared.api.v3.dto.search.ExperimentSearchCriterion;
+
+import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
+import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 
