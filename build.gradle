@@ -32,7 +32,7 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
     }
 
     def classPathJoined = classPath.join(' ')
-    baseName = 'openbis-api'
+    baseName = 'openseek-api'
     version =  'S220'
     manifest.attributes('Main-Class': 'org.fairdom.QueryMain',
                         'Class-Path': "$classPathJoined")
