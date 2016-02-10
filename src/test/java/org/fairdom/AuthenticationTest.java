@@ -15,9 +15,9 @@ public class AuthenticationTest {
     @Before
     public void setUp(){
         asEndpoint = new String("https://openbis-api.fair-dom.org/openbis/openbis");
-        dssEndpoint = new String("https://openbis-api.fair-dom.org:444/datastore_server");
-        username = new String("api-user");
-        password = new String("api-user");
+        dssEndpoint = new String("https://openbis-api.fair-dom.org/datastore_server");
+        username = new String("apiuser");
+        password = new String("apiuser");
     }
 
     @Test

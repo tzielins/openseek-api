@@ -22,10 +22,10 @@ public class ApplicationServerQueryTest {
 
     @Before
     public void setUp() throws AuthenticationException{
-    	Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
-    			"https://openbis-api.fair-dom.org:444/datastore_server", 
-    			"api-user", 
-    			"api-user");
+		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
+    			"https://openbis-api.fair-dom.org/datastore_server", 
+    			"apiuser", 
+    			"apiuser");
         as = au.as();
         sessionToken = au.sessionToken();
     }
