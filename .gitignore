@@ -7,3 +7,4 @@ gradle-app.setting
 .idea
 .project
 .classpath
+src/test/java/resources/*

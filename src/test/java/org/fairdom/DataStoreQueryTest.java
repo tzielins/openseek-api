@@ -15,6 +15,7 @@ import org.junit.Test;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
+import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
 /**
  * Created by quyennguyen on 13/02/15.
  */
@@ -67,7 +68,121 @@ public class DataStoreQueryTest {
         assertEquals(25, attr.size());
 
     }
-		
+	
+	@Test
+    public void downloadUtf8File() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160210130359377-22";
+        String source = "original/utf8.txt";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/utf8.txt";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        query.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        assertEquals(49, attr.size());        
+
+    }
+	
+	@Test
+    public void downloadChineseCharatersFile() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160212141703195-28";
+        String source = "original/chinese";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/chinese";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        query.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        assertEquals(44, attr.size());
+
+    }
+	
+	@Test
+    public void downloadWesternEncodeFile() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160212140647105-27";
+        String source = "original/western.txt";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/western.txt";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        query.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        assertEquals(44, attr.size());
+
+    }
+	
+	@Test
+    public void downloadImageFile() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160210130454955-23";
+        String source = "original/autumn.jpg";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/autumn.jpg";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        query.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        assertEquals("537k", MemorySizeFormatter.format(attr.size()));
+
+    }
+
+/*	
+ * Comment this test out, to avoid time for downloading a big file
+    @Test
+    public void downloadSingleLargeFile() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160212120108123-26";
+        String source = "original/SEEK-v0.23.0.ova";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/SEEK-v0.23.0.ova";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        query.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        
+        assertEquals("2.3gb", MemorySizeFormatter.format(attr.size()));
+
+    }
+	*/
+	
     @Test
     public void jsonResultforDataSetFile() throws Exception {
     	DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
