@@ -214,6 +214,31 @@ public class DataStoreQueryTest {
         assertEquals("Stanford_et_al-2015-Molecular_Systems_Biology.pdf", filesInFolder.get(1));
     }
 	
+	@Test
+    public void downloadDataSetFiles() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20151217153943290-5";        
+        String sourceRelativeFolder = "original";
+        String basePath = new File("").getAbsolutePath();
+        String destinationFolder = basePath + "/src/test/java/resources/";
+        
+        
+        File file = new File(destinationFolder + sourceRelativeFolder); 
+        if (file.exists()){
+        	FileUtils.deleteDirectory(file);
+        }    
+      
+        query.downloadDataSetFiles(permId, destinationFolder);
+                       
+        Path path = Paths.get(destinationFolder + sourceRelativeFolder);
+        DirectoryStream<Path> stream = Files.newDirectoryStream(path);        
+        List<String> filesInFolder = new ArrayList<String>();
+        for (Path outputFile: stream) {
+            filesInFolder.add(outputFile.getFileName().toString());
+        }
+        assertEquals("api-test", filesInFolder.get(0));        
+    }
+	
     @Test
     public void jsonResultforDataSetFile() throws Exception {
     	DataStoreQuery query = new DataStoreQuery(dss, sessionToken);

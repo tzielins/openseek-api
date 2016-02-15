@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -109,6 +110,41 @@ public class DataStoreQuery {
 	   IDataSetFileId filesToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelativeFolder);
 
 	   InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(filesToDownload), options);
+	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
+	   DataSetFileDownload file = null;
+	   
+	   while ((file = reader.read()) != null)	   
+	   {
+		   InputStream inputStream = file.getInputStream();
+		   DataSetFile dataSetFile = file.getDataSetFile();
+		   if (dataSetFile.isDirectory()){
+			   Path dir = Paths.get(destinationFolder + dataSetFile.getPath());			   
+			   Files.createDirectories(dir);
+		   }else{
+			   File outputFile = new File(destinationFolder + dataSetFile.getPath());
+			   OutputStream fileOutputStream = new FileOutputStream(outputFile);
+		       
+			   IOUtils.copyLarge(inputStream, fileOutputStream);
+			   fileOutputStream.close();
+		   }	   
+	   }
+   }
+
+   
+   public void downloadDataSetFiles(String permId, String destinationFolder)throws IOException{
+	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
+	   options.setRecursive(true);
+	   
+	   DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
+	   criteria.withDataSet().withCode().thatEquals(permId);
+	   List<DataSetFile> files = dss.searchFiles(sessionToken, criteria);
+	   
+	   List<IDataSetFileId> filesToDownload = new LinkedList<IDataSetFileId>();
+	   for (DataSetFile file : files)
+		   filesToDownload.add(file.getPermId());	   
+	   
+
+	   InputStream stream = dss.downloadFiles(sessionToken, filesToDownload, options);
 	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
 	   DataSetFileDownload file = null;
 	   
