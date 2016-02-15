@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,10 +85,10 @@ public class DataStoreQuery {
     }
 
    
-   public void downloadSingleFile(String permId, String source, String destination)throws IOException{
+   public void downloadSingleFile(String permId, String sourceRelative, String destination)throws IOException{
 	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
 	   options.setRecursive(false);
-	   IDataSetFileId fileToDownload = new DataSetFilePermId(new DataSetPermId(permId), source);
+	   IDataSetFileId fileToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelative);
 
 	   InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(fileToDownload), options);
 	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
@@ -98,6 +101,32 @@ public class DataStoreQuery {
        
 	   IOUtils.copyLarge(inputStream, fileOutputStream);
 	   fileOutputStream.close();	   
+   }
+   
+   public void downloadFolder(String permId, String sourceRelativeFolder, String destinationFolder)throws IOException{
+	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
+	   options.setRecursive(true);
+	   IDataSetFileId filesToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelativeFolder);
+
+	   InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(filesToDownload), options);
+	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
+	   DataSetFileDownload file = null;
+	   
+	   while ((file = reader.read()) != null)	   
+	   {
+		   InputStream inputStream = file.getInputStream();
+		   DataSetFile dataSetFile = file.getDataSetFile();
+		   if (dataSetFile.isDirectory()){
+			   Path dir = Paths.get(destinationFolder + dataSetFile.getPath());			   
+			   Files.createDirectories(dir);
+		   }else{
+			   File outputFile = new File(destinationFolder + dataSetFile.getPath());
+			   OutputStream fileOutputStream = new FileOutputStream(outputFile);
+		       
+			   IOUtils.copyLarge(inputStream, fileOutputStream);
+			   fileOutputStream.close();
+		   }	   
+	   }
    }
 
 

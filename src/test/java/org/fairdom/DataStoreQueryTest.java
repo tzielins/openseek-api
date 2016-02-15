@@ -5,10 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -182,6 +187,32 @@ public class DataStoreQueryTest {
 
     }
 	*/
+	
+	@Test
+    public void downloadFolder() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+        String permId = "20160215111736723-31";
+        String sourceRelativeFolder = "original/DEFAULT";
+        String basePath = new File("").getAbsolutePath();
+        String destinationFolder = basePath + "/src/test/java/resources/";
+        
+        
+        File file = new File(destinationFolder + sourceRelativeFolder); 
+        if (file.exists()){
+        	FileUtils.deleteDirectory(file);
+        }    
+      
+        query.downloadFolder(permId, sourceRelativeFolder, destinationFolder);
+                       
+        Path path = Paths.get(destinationFolder + sourceRelativeFolder);
+        DirectoryStream<Path> stream = Files.newDirectoryStream(path);        
+        List<String> filesInFolder = new ArrayList<String>();
+        for (Path outputFile: stream) {
+            filesInFolder.add(outputFile.getFileName().toString());
+        }
+        assertEquals("fairdom-logo-compact.svg", filesInFolder.get(0));
+        assertEquals("Stanford_et_al-2015-Molecular_Systems_Biology.pdf", filesInFolder.get(1));
+    }
 	
     @Test
     public void jsonResultforDataSetFile() throws Exception {
