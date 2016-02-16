@@ -21,6 +21,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
+
 /**
  * Created by quyennguyen on 13/02/15.
  */
@@ -248,5 +249,6 @@ public class DataStoreQueryTest {
         SearchResult<DataSetFile> result = new SearchResult<DataSetFile>(files, files.size());
         String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)20151217153943290-5(.*)"));
-    }  
+    }
+   
 }

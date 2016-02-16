@@ -15,7 +15,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:+',
             'com.fasterxml.jackson.core:jackson-annotations:+',
             'com.fasterxml.jackson.core:jackson-databind:+',
-            'org.reflections:reflections:0.9.9-RC1'
+            'org.reflections:reflections:0.9.9-RC1',
+            'com.googlecode.json-simple:json-simple:1.1'
 }
 
 task copyJarFiles(type: Copy){

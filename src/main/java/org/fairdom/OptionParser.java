@@ -1,117 +1,95 @@
 package org.fairdom;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /**
  * Created by quyennguyen on 19/02/15.
+ * Parse Java command line arguments
+ * Argument structure with example value
+ * -account:{"username":"test","password":"test"}
+ * -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com"}
+ * -query:{"entityType":"Experiment","property":"SEEK_STUDY_ID","propertyValue":"Study_1"}
+ * -download:{"type":"file","permID":"ID100","source":"original/file","dest":"/home/test/file"}
  */
 public class OptionParser {
-
-    private String type = null;
-    private String property = null;
-    private String propertyValue = null;
-    private String username = null;
-    private String password = null;
-    private String asEndpoint = null;
-    private String dssEndpoint = null;
-
-    public OptionParser(String[] args) throws InvalidOptionException {
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-            if (arg.equals("-t")) {
-                i++;
-                setType(args[i]);
-                handleEmptyOptionValue(arg, getType());
-            }
-            else if (arg.equals("-p")) {
-                i++;
-                setProperty(args[i]);
-                handleEmptyOptionValue(arg, getProperty());
-            }
-            else if (arg.equals("-pv")) {
-                i++;
-                setPropertyValue(args[i]);
-                handleEmptyOptionValue(arg, getPropertyValue());
-            }
-            else if (arg.equals("-u")) {
-                i++;
-                setUsername(args[i]);
-                handleEmptyOptionValue(arg, getUsername());
-            }
-            else if (arg.equals("-pw")) {
-                i++;
-                setPassword(args[i]);
-                handleEmptyOptionValue(arg, getPassword());
-            }
-            else if (arg.equals("-ae")) {
-                i++;
-                setAsEndpoint(args[i]);
-                handleEmptyOptionValue(arg, getAsEndpoint());
-            }
-            else if (arg.equals("-de")) {
-                i++;
-                setDssEndpoint(args[i]);
-                handleEmptyOptionValue(arg, getDssEndpoint());
-            }
-            else {
-                throw new InvalidOptionException("Unrecognised option: " + args[i]);
-            }
-        }
-    }
-
-    private void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    private void setProperty(String property) {
-        this.property = property;
-    }
-
-    public String getProperty() {
-        return property;
-    }
-
-    private void setPropertyValue(String propertyValue) {
-        this.propertyValue = propertyValue;
-    }
-
-    public String getPropertyValue() {
-        return propertyValue;
-    }
-
-    private void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    private void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    private void setAsEndpoint(String asEndpoint) {
-        this.asEndpoint = asEndpoint;
-    }
-
-    public String getAsEndpoint() {
-        return asEndpoint;
+	private JSONObject account = null;
+	private JSONObject endpoints = null;
+	private JSONObject query = null;
+	private JSONObject download = null;	
+	
+	public OptionParser(String[] args) throws InvalidOptionException, ParseException {
+      for (int i = 0; i < args.length; i++) {
+          String arg = args[i];
+          if (arg.equals("-account")) {
+              i++;
+              handleEmptyOptionValue(arg, args[i]);
+              setAccount(args[i]);
+          }
+          else if (arg.equals("-endpoints")) {
+              i++;
+              handleEmptyOptionValue(arg, args[i]);
+              setEndpoints(args[i]);
+          }
+          else if (arg.equals("-query")) {
+              i++;
+              handleEmptyOptionValue(arg, args[i]);
+              setQuery(args[i]);
+          }
+          else if (arg.equals("-download")) {
+              i++;
+              handleEmptyOptionValue(arg, args[i]);
+              setDownload(args[i]);
+          }
+          else {
+              throw new InvalidOptionException("Unrecognised option: " + args[i]);
+          }
+      }
+	}
+		
+    public JSONObject stringToJson(String str) throws ParseException {    	
+		JSONParser parser = new JSONParser();
+		Object obj = parser.parse(str);
+		JSONObject jsonObj = (JSONObject) obj;
+		return jsonObj;         
     }
     
-    private void setDssEndpoint(String dssEndpoint) {
-        this.dssEndpoint = dssEndpoint;
-    }
+    private void setAccount(String account) throws ParseException {
+    	JSONObject acc = stringToJson(account);
+		this.account = acc;
+	}
 
-    public String getDssEndpoint() {
-        return dssEndpoint;
-    }
+	public JSONObject getAccount() {
+		return account;
+	}
+	
+	private void setEndpoints(String endpoints) throws ParseException {
+    	JSONObject ep = stringToJson(endpoints);
+		this.endpoints = ep;
+	}
+
+	public JSONObject getEndpoints() {
+		return endpoints;
+	}
+	
+	private void setQuery(String query) throws ParseException {
+    	JSONObject q = stringToJson(query);
+		this.query = q;
+	}
+
+	public JSONObject getQuery() {
+		return query;
+	}
+	
+	private void setDownload(String download) throws ParseException {
+    	JSONObject dl = stringToJson(download);
+		this.download = dl;
+	}
+
+	public JSONObject getDownload() {
+		return download;
+	}
 
     private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
         if (value.trim().isEmpty()){

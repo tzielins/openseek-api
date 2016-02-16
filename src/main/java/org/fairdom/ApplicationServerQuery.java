@@ -2,6 +2,9 @@ package org.fairdom;
 
 import java.io.StringWriter;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
@@ -28,21 +31,29 @@ public class ApplicationServerQuery {
     }
     
     public static void main(String[] args) {
-        OptionParser options = null;
+    	OptionParser options = null;
         try {
             options = new OptionParser(args);
         } catch (InvalidOptionException e) {
             System.err.println("Invalid option: " + e.getMessage());
             System.exit(-1);
-        }
+		} catch (ParseException pe) {
+			System.out.println("position: " + pe.getPosition());
+			System.out.println(pe);
+			System.exit(-1);
+		}
 
         try {
-        	Authentication au = new Authentication(options.getAsEndpoint(), options.getDssEndpoint(), options.getUsername(), options.getPassword());
+        	JSONObject account = options.getAccount();
+        	JSONObject endpoints = options.getEndpoints();
+        	JSONObject query = options.getQuery();
+        	
+            Authentication au = new Authentication(endpoints.get("as").toString(), endpoints.get("dss").toString(), account.get("username").toString(), account.get("password").toString());
             IApplicationServerApi as = au.as();
             String sessionToken = au.sessionToken();
 
             ApplicationServerQuery asQuery = new ApplicationServerQuery(as, sessionToken);           
-            SearchResult result = asQuery.query(options.getType(), options.getProperty(), options.getPropertyValue());
+            SearchResult result = asQuery.query(query.get("entityType").toString(), query.get("property").toString(), query.get("propertyValue").toString());
             String jsonResult = asQuery.jsonResult(result);
             System.out.println(jsonResult);
         } catch (Exception ex) {
