@@ -17,7 +17,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.id.DataSetPermId;
-import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFileDownload;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFileDownloadOptions;
@@ -25,24 +24,19 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFil
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.id.DataSetFilePermId;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.id.IDataSetFileId;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
-import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
-import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 
 /**
  * Created by quyennguyen on 13/02/15.
  */
-public class DataStoreDownload {    
-	private static String endpoint;
-    private static String sessionToken;
-    private static IDataStoreServerApi dss;
-
-    public DataStoreDownload(String startEndpoint, String startSessionToken ){        
-        endpoint = startEndpoint;
-        sessionToken = startSessionToken;
-        dss = DataStoreDownload.dss(endpoint);
-    }
+public class DataStoreDownload extends DataStoreStream{    
+	
   
-    public static void main(String[] args) {
+    public DataStoreDownload(String startEndpoint, String startSessionToken) {
+		super(startEndpoint, startSessionToken);
+		// TODO Auto-generated constructor stub
+	}
+
+	public static void main(String[] args) {
     	OptionParser options = null;
         try {
             options = new OptionParser(args);
@@ -87,15 +81,7 @@ public class DataStoreDownload {
         }
         System.exit(0);
     } 
-    
-    public static IDataStoreServerApi dss(String endpoint) {
-        SslCertificateHelper.trustAnyCertificate(endpoint);
-        IDataStoreServerApi dss = HttpInvokerUtils
-        		.createStreamSupportingServiceStub(IDataStoreServerApi.class, endpoint
-        				+ IDataStoreServerApi.SERVICE_URL, 500000);
-        return dss;
-    }
-    
+      
    public void downloadSingleFile(String permId, String sourceRelative, String destination)throws IOException{
 	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
 	   options.setRecursive(false);
