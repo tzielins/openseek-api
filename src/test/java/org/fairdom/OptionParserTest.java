@@ -23,12 +23,13 @@ public class OptionParserTest {
 	
 	@Test
 	public void testEndpoints() throws Exception {
-		String endpoints = "{\"as\":\"http://as.example.com\", \"dss\":\"http://dss.example.com\"}";
+		String endpoints = "{\"as\":\"http://as.example.com\", \"dss\":\"http://dss.example.com\", \"sessionToken\":\"somevalue\"}";
 		String[] args = new String[] { "-endpoints", endpoints};
 		OptionParser p = new OptionParser(args);
 		JSONObject endpointsArgs = p.getEndpoints();
 		assertEquals("http://as.example.com", endpointsArgs.get("as"));
 		assertEquals("http://dss.example.com", endpointsArgs.get("dss"));
+		assertEquals("somevalue", endpointsArgs.get("sessionToken"));
 	}
 	
 	@Test
