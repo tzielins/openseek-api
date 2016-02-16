@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
@@ -16,23 +15,22 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
  * Created by quyennguyen on 13/02/15.
  */
 public class ApplicationServerQueryTest {
-
-    protected IApplicationServerApi as;
-    protected String sessionToken;
+	
+	private static String endpoint;
+    private static String sessionToken;
 
     @Before
     public void setUp() throws AuthenticationException{
-		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
-    			"https://openbis-api.fair-dom.org/datastore_server", 
+		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis",    			
     			"apiuser", 
-    			"apiuser");
-        as = au.as();
+    			"apiuser");        
         sessionToken = au.sessionToken();
+        endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
     }
 
     @Test
     public void getExperimentWithSeekStudyID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
         SearchResult<Experiment> experiments = query.experiments(property, propertyValue);
@@ -43,7 +41,7 @@ public class ApplicationServerQueryTest {
 
     @Test
     public void getExperimentWithSeekStudyIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_STUDY_ID";
         String propertyValue = "SomeID";
         SearchResult<Experiment> experiments = query.experiments(property, propertyValue);
@@ -52,7 +50,7 @@ public class ApplicationServerQueryTest {
 
     @Test
     public void getSampleWithSeekAssayID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "Assay_1";
         SearchResult<Sample> samples = query.samples(property, propertyValue);
@@ -66,7 +64,7 @@ public class ApplicationServerQueryTest {
 
     @Test
     public void getSampleWithSeekAssayIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "SomeID";
         SearchResult<Sample> samples = query.samples(property, propertyValue);
@@ -75,7 +73,7 @@ public class ApplicationServerQueryTest {
 
     @Test
     public void getDataSetWithSeekDataFileID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         SearchResult<DataSet> dataSets = query.dataSets(property, propertyValue);
@@ -87,7 +85,7 @@ public class ApplicationServerQueryTest {
 
     @Test
     public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "SomeID";
         SearchResult<Sample> samples = query.samples(property, propertyValue);
@@ -96,7 +94,7 @@ public class ApplicationServerQueryTest {
     	
     @Test
     public void jsonResultforExperiment() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
@@ -107,7 +105,7 @@ public class ApplicationServerQueryTest {
 
     @Test(expected = InvalidOptionException.class)
     public void unrecognizedType() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(as, sessionToken);
+        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
         String type = "SomeType";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";

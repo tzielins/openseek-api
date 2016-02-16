@@ -16,18 +16,22 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSear
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
+import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
+import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
 
 /**
  * Created by quyennguyen on 13/02/15.
  */
 public class ApplicationServerQuery {
-    private IApplicationServerApi as;    
-    private String sessionToken;
+    private static String endpoint;    
+    private static String sessionToken;
+    private static IApplicationServerApi as;
 
-    public ApplicationServerQuery(IApplicationServerApi startAs, String startSessionToken ){
-        as = startAs;
+    public ApplicationServerQuery(String startEndpoint, String startSessionToken ){
+    	endpoint = startEndpoint;
         sessionToken = startSessionToken;
+        as = ApplicationServerQuery.as(endpoint);
     }
     
     public static void main(String[] args) {
@@ -47,12 +51,8 @@ public class ApplicationServerQuery {
         	JSONObject account = options.getAccount();
         	JSONObject endpoints = options.getEndpoints();
         	JSONObject query = options.getQuery();
-        	
-            Authentication au = new Authentication(endpoints.get("as").toString(), endpoints.get("dss").toString(), account.get("username").toString(), account.get("password").toString());
-            IApplicationServerApi as = au.as();
-            String sessionToken = au.sessionToken();
-
-            ApplicationServerQuery asQuery = new ApplicationServerQuery(as, sessionToken);           
+        
+        	ApplicationServerQuery asQuery = new ApplicationServerQuery(endpoints.get("as").toString(), endpoints.get("sessionToken").toString());           
             SearchResult result = asQuery.query(query.get("entityType").toString(), query.get("property").toString(), query.get("propertyValue").toString());
             String jsonResult = asQuery.jsonResult(result);
             System.out.println(jsonResult);
@@ -62,6 +62,15 @@ public class ApplicationServerQuery {
             System.exit(-1);
         }
         System.exit(0);
+    }
+    
+    public static IApplicationServerApi as(String endpoint) {       
+        SslCertificateHelper.trustAnyCertificate(endpoint);
+        IApplicationServerApi as = HttpInvokerUtils
+                .createServiceStub(IApplicationServerApi.class, endpoint
+                        + IApplicationServerApi.SERVICE_URL, 500000);
+
+        return as;
     }
     
     public SearchResult query(String type, String property, String propertyValue) throws InvalidOptionException {

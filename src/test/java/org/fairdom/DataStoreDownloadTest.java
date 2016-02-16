@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
 
 /**
@@ -25,22 +24,21 @@ import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
  */
 public class DataStoreDownloadTest {
     
-    protected IDataStoreServerApi dss;
-    protected String sessionToken;
+	private static String endpoint;
+    private static String sessionToken;
 
     @Before
     public void setUp() throws AuthenticationException{
-        Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
-        		"https://openbis-api.fair-dom.org/datastore_server", 
+        Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis",        		 
         		"apiuser",
         		"apiuser");
-        dss = au.dss();
+        endpoint = "https://openbis-api.fair-dom.org/datastore_server";
         sessionToken = au.sessionToken();
     }
-    	
+        	
 	@Test
     public void downloadSingleFile() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20151217153943290-5";
         String source = "original/api-test";
         String basePath = new File("").getAbsolutePath();
@@ -62,7 +60,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadUtf8File() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160210130359377-22";
         String source = "original/utf8.txt";
         String basePath = new File("").getAbsolutePath();
@@ -84,7 +82,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadChineseCharatersFile() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160212141703195-28";
         String source = "original/chinese";
         String basePath = new File("").getAbsolutePath();
@@ -106,7 +104,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadWesternEncodeFile() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160212140647105-27";
         String source = "original/western.txt";
         String basePath = new File("").getAbsolutePath();
@@ -128,7 +126,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadImageFile() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160210130454955-23";
         String source = "original/autumn.jpg";
         String basePath = new File("").getAbsolutePath();
@@ -176,7 +174,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadFolder() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160215111736723-31";
         String sourceRelativeFolder = "original/DEFAULT";
         String basePath = new File("").getAbsolutePath();
@@ -202,7 +200,7 @@ public class DataStoreDownloadTest {
 	
 	@Test
     public void downloadDataSetFiles() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20151217153943290-5";        
         String sourceRelativeFolder = "original";
         String basePath = new File("").getAbsolutePath();

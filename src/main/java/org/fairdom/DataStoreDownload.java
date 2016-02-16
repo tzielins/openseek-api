@@ -25,17 +25,21 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.download.DataSetFil
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.id.DataSetFilePermId;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.id.IDataSetFileId;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
+import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
+import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 
 /**
  * Created by quyennguyen on 13/02/15.
  */
 public class DataStoreDownload {    
-    private IDataStoreServerApi dss;
-    private String sessionToken;
+	private static String endpoint;
+    private static String sessionToken;
+    private static IDataStoreServerApi dss;
 
-    public DataStoreDownload(IDataStoreServerApi startDss, String startSessionToken ){        
-        dss = startDss;
+    public DataStoreDownload(String startEndpoint, String startSessionToken ){        
+        endpoint = startEndpoint;
         sessionToken = startSessionToken;
+        dss = DataStoreDownload.dss(endpoint);
     }
   
     public static void main(String[] args) {
@@ -51,15 +55,11 @@ public class DataStoreDownload {
 			System.exit(-1);
 		}
 
-        try {
-        	JSONObject account = options.getAccount();
+        try {        	
         	JSONObject endpoints = options.getEndpoints();
         	JSONObject download = options.getDownload();
-            Authentication au = new Authentication(endpoints.get("as").toString(), endpoints.get("dss").toString(), account.get("username").toString(), account.get("password").toString());
-            IDataStoreServerApi dss = au.dss();
-            String sessionToken = au.sessionToken();
-            
-            DataStoreDownload dssDownload = new DataStoreDownload(dss, sessionToken);
+                        
+            DataStoreDownload dssDownload = new DataStoreDownload(endpoints.get("dss").toString(), endpoints.get("sessionToken").toString());
             
             String downloadType = download.get("type").toString();
             String permID = download.get("permID").toString();
@@ -88,6 +88,13 @@ public class DataStoreDownload {
         System.exit(0);
     } 
     
+    public static IDataStoreServerApi dss(String endpoint) {
+        SslCertificateHelper.trustAnyCertificate(endpoint);
+        IDataStoreServerApi dss = HttpInvokerUtils
+        		.createStreamSupportingServiceStub(IDataStoreServerApi.class, endpoint
+        				+ IDataStoreServerApi.SERVICE_URL, 500000);
+        return dss;
+    }
     
    public void downloadSingleFile(String permId, String sourceRelative, String destination)throws IOException{
 	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();

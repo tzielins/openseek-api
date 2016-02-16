@@ -10,18 +10,22 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
+import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
+import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
 
 /**
  * Created by quyennguyen on 13/02/15.
  */
 public class DataStoreQuery {    
-    private IDataStoreServerApi dss;
-    private String sessionToken;
+    private static String endpoint;
+    private static String sessionToken;
+    private static IDataStoreServerApi dss;
 
-    public DataStoreQuery(IDataStoreServerApi startDss, String startSessionToken ){        
-        dss = startDss;
+    public DataStoreQuery(String startEndpoint, String startSessionToken ){        
+        endpoint = startEndpoint;
         sessionToken = startSessionToken;
+        dss = DataStoreQuery.dss(endpoint);
     }
   
     public static void main(String[] args) {
@@ -37,15 +41,11 @@ public class DataStoreQuery {
 			System.exit(-1);
 		}
 
-        try {
-        	JSONObject account = options.getAccount();
+        try {        	
         	JSONObject endpoints = options.getEndpoints();
         	JSONObject query = options.getQuery();
-            Authentication au = new Authentication(endpoints.get("as").toString(), endpoints.get("dss").toString(), account.get("username").toString(), account.get("password").toString());
-            IDataStoreServerApi dss = au.dss();
-            String sessionToken = au.sessionToken();
             
-            DataStoreQuery dssQuery = new DataStoreQuery(dss, sessionToken);
+            DataStoreQuery dssQuery = new DataStoreQuery(endpoints.get("dss").toString(), endpoints.get("sessionToken").toString());
             List <DataSetFile> dataSetFiles= dssQuery.dataSetFile(query.get("property").toString(), query.get("propertyValue").toString());  
             SearchResult<DataSetFile> result = new SearchResult<DataSetFile>(dataSetFiles, dataSetFiles.size());
             String jsonResult = dssQuery.jsonResult(result); 
@@ -58,6 +58,14 @@ public class DataStoreQuery {
         System.exit(0);
     }
     
+    public static IDataStoreServerApi dss(String endpoint) {
+        SslCertificateHelper.trustAnyCertificate(endpoint);
+        IDataStoreServerApi dss = HttpInvokerUtils
+        		.createStreamSupportingServiceStub(IDataStoreServerApi.class, endpoint
+        				+ IDataStoreServerApi.SERVICE_URL, 500000);
+        return dss;
+    }
+
     
     public String jsonResult(SearchResult result){
         GenericObjectMapper mapper = new GenericObjectMapper();

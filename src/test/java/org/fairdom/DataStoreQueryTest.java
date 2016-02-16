@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
-import ch.ethz.sis.openbis.generic.dssapi.v3.IDataStoreServerApi;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 
 /**
@@ -17,22 +16,21 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
  */
 public class DataStoreQueryTest {
     
-    protected IDataStoreServerApi dss;
-    protected String sessionToken;
+    private static String endpoint;
+    private static String sessionToken;
 
     @Before
     public void setUp() throws AuthenticationException{
-        Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", 
-        		"https://openbis-api.fair-dom.org/datastore_server", 
+        Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis",        		 
         		"apiuser",
         		"apiuser");
-        dss = au.dss();
+        endpoint = "https://openbis-api.fair-dom.org/datastore_server";
         sessionToken = au.sessionToken();
     }
     
 	@Test
     public void getDataSetFileWithSeekDataFileID() throws Exception {
-		DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+		DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List <DataSetFile> files = query.dataSetFile(property, propertyValue);
@@ -45,7 +43,7 @@ public class DataStoreQueryTest {
 	
     @Test
     public void jsonResultforDataSetFile() throws Exception {
-    	DataStoreQuery query = new DataStoreQuery(dss, sessionToken);
+    	DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List <DataSetFile> files = query.dataSetFile(property, propertyValue);
