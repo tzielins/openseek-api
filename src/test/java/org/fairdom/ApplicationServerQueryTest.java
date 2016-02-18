@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -37,6 +38,50 @@ public class ApplicationServerQueryTest {
     }
 
     @Test
+    public void getAllExperiments() throws Exception { 
+    	
+    	List<Experiment> experiments = query.experimentsByAttribute("permId","");
+    	assertTrue(experiments.size()>0);    
+    	String json = query.jsonResult(experiments);    	
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getAllSamples() throws Exception {    	
+    	List<Sample> samples = query.samplesByAttribute("permId","");
+    	assertTrue(samples.size()>0);   
+    	String json = query.jsonResult(samples);
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getAllDatasets() throws Exception {    	
+    	List<DataSet> data = query.dataSetsByAttribute("permId","");
+    	assertTrue(data.size()>0);
+    	String json = query.jsonResult(data);
+    	assertTrue(isValidJSON(json));    	
+    }  
+    
+    @Test
+    public void getDatasetByAttribute() throws Exception {
+    	List<DataSet> data = query.dataSetsByAttribute("permId","20151217153943290-5");    	
+    	String json = query.jsonResult(data);
+    	assertTrue(isValidJSON(json));
+    	assertEquals(1, data.size());
+    }  
+    
+    @Test
+    public void getDatasetsByAttribute() throws Exception {  
+    	List<String> values = new ArrayList<String>();
+    	values.add("20151217153943290-5");
+    	values.add("20160210130359377-22");
+    	List<DataSet> data = query.dataSetsByAttribute("permId",values);    	
+    	String json = query.jsonResult(data);
+    	assertTrue(isValidJSON(json));
+    	assertEquals(2, data.size());
+    }  
+
+    @Test
     public void getExperimentWithSeekStudyID() throws Exception {        
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
@@ -45,33 +90,7 @@ public class ApplicationServerQueryTest {
         Experiment experiment = experiments.get(0);
         assertEquals(propertyValue, experiment.getProperties().get(property));
     }
-
-    @Test
-    public void getExperiments() throws Exception { 
-    	
-    	List<Experiment> experiments = query.experimentsByAttribute("permId","");
-    	assertTrue(experiments.size()>0);    
-    	String json = query.jsonResult(experiments);
-    	System.out.println(json);
-    	assertTrue(isValidJSON(json));
-    }
     
-    @Test
-    public void getSamples() throws Exception {    	
-    	List<Sample> samples = query.samplesByAttribute("permId","");
-    	assertTrue(samples.size()>0);   
-    	String json = query.jsonResult(samples);
-    	assertTrue(isValidJSON(json));
-    }
-    
-    @Test
-    public void getDatasets() throws Exception {    	
-    	List<DataSet> data = query.dataSetsByAttribute("permId","");
-    	assertTrue(data.size()>0);
-    	String json = query.jsonResult(data);
-    	assertTrue(isValidJSON(json));
-    }      
-
     @Test
     public void getExperimentWithSeekStudyIDNoResult() throws Exception {        
         String property = "SEEK_STUDY_ID";

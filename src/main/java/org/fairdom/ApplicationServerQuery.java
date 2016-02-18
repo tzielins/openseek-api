@@ -11,21 +11,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.AbstractEntitySearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetFetchOptions;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.id.DataSetPermId;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.id.IDataSetId;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.fetchoptions.ExperimentFetchOptions;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.id.ExperimentPermId;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.id.IExperimentId;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.id.ISampleId;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.id.SamplePermId;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
@@ -175,7 +168,7 @@ public class ApplicationServerQuery {
     	map.put("properties", experiment.getProperties());
     	map.put("modificationDate", experiment.getModificationDate());
     	map.put("registrationDate", experiment.getRegistrationDate());
-    	map.put("identifier",experiment.getIdentifier().getIdentifier());
+    	map.put("identifier",experiment.getIdentifier().getIdentifier()); // E.g. /API-SPACE/API-PROJECT/E2
     	if (experiment.getModifier() != null)
     		map.put("modifier",experiment.getModifier().getUserId());
     	else
@@ -309,21 +302,14 @@ public class ApplicationServerQuery {
         options.withTags();
         options.withType();
         
-        List<ExperimentPermId> permIds = buildExperimentPermIdArray(values);
+        ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
+        criterion.withOrOperator();
+		for (String value : values) {
+			criterion.withPermId().thatContains(value);
+    	}
+        
+		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 
-
-        //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
-        //the attribute paramater is currently redundant, as we can search by permId only
-        if (permIds.size()>0) {
-        	Map<IExperimentId, Experiment> mapExperiments = as.mapExperiments(sessionToken, permIds, options);
-        	List<Experiment> experiments =  new ArrayList<Experiment>(mapExperiments.values());        	
-        	return experiments;            
-        }
-        else {
-        	ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
-            updateCriterianForAttribute(criterion, attribute, values.get(0));
-            return as.searchExperiments(sessionToken, criterion, options).getObjects();
-        }
     }
     
     public List<Experiment> experimentsByAttribute(String attribute,String value) throws InvalidOptionException {
@@ -332,10 +318,7 @@ public class ApplicationServerQuery {
     	
     }
     
-    public List <DataSet> dataSetsByAttribute(String attribute, List<String> values) throws InvalidOptionException{    	
-        
-    	List<DataSetPermId> permIds = buildDataSetPermIdArray(values);
-
+    public List <DataSet> dataSetsByAttribute(String attribute, List<String> values) throws InvalidOptionException{  
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
         options.withSample();
@@ -345,50 +328,16 @@ public class ApplicationServerQuery {
         options.withTags();
         options.withType();
 
-        //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
-        //the attribute paramater is currently redundant, as we can search by permId only
-        if (permIds.size()>0) {
-        	Map<IDataSetId, DataSet> mapDataSets = as.mapDataSets(sessionToken, permIds, options);
-            return Arrays.asList(mapDataSets.values().toArray(new DataSet []{}));
-        }
-        else {
-        	DataSetSearchCriteria criterion = new DataSetSearchCriteria();
-            updateCriterianForAttribute(criterion, attribute, values.get(0));
-            return as.searchDataSets(sessionToken, criterion, options).getObjects();
-        }
+        DataSetSearchCriteria criterion = new DataSetSearchCriteria();
+        criterion.withOrOperator();
+		for (String value : values) {
+			criterion.withPermId().thatContains(value);
+    	}
+        	
+        return as.searchDataSets(sessionToken, criterion, options).getObjects();
         
     }
 
-	private List<DataSetPermId> buildDataSetPermIdArray(List<String> values) {
-		List<DataSetPermId> permIds = new ArrayList<DataSetPermId>();
-    	for (String value : values) {
-    		if (value.length()>0) {
-    			permIds.add(new DataSetPermId(value));
-    		}
-    	}
-		return permIds;
-	}
-	
-	private List<ExperimentPermId> buildExperimentPermIdArray(List<String> values) {
-		List<ExperimentPermId> permIds = new ArrayList<ExperimentPermId>();
-    	for (String value : values) {
-    		if (value.length()>0) {
-    			permIds.add(new ExperimentPermId(value));
-    		}
-    	}
-		return permIds;
-	}
-	
-	private List<SamplePermId> buildSamplePermIdArray(List<String> values) {
-		List<SamplePermId> permIds = new ArrayList<SamplePermId>();
-    	for (String value : values) {
-    		if (value.length()>0) {
-    			permIds.add(new SamplePermId(value));
-    		}
-    	}
-		return permIds;
-	}
-    
     public List <DataSet> dataSetsByAttribute(String attribute, String value) throws InvalidOptionException{
         List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
         return dataSetsByAttribute(attribute,values);
@@ -408,33 +357,17 @@ public class ApplicationServerQuery {
         options.withRegistrator();
         options.withTags();
         options.withType();
+              
+		SampleSearchCriteria criterion = new SampleSearchCriteria();
+		criterion.withOrOperator();
+		for (String value : values) {
+			criterion.withPermId().thatContains(value);
+    	}	
+		
+		return as.searchSamples(sessionToken, criterion, options).getObjects();
         
-        List<SamplePermId> permIds = buildSamplePermIdArray(values);
+    }         
 
-      //FIXME: this is very hacky, but a quick way to get around searching for all, or by a list of ids
-        //the attribute paramater is currently redundant, as we can search by permId only
-        if (permIds.size()>0) {
-        	Map<ISampleId, Sample> mapSamples = as.mapSamples(sessionToken, permIds, options);
-            return Arrays.asList(mapSamples.values().toArray(new Sample []{}));
-        }
-        else {
-        	SampleSearchCriteria criterion = new SampleSearchCriteria();
-            updateCriterianForAttribute(criterion, attribute, values.get(0));
-            return as.searchSamples(sessionToken, criterion, options).getObjects();
-        }
-
-        
-    }
-        
-    
-    private void updateCriterianForAttribute(AbstractEntitySearchCriteria<?> criterion,String key,String value) throws InvalidOptionException {
-    	if (key.equalsIgnoreCase("permid")) {
-    		criterion.withPermId().thatContains(value);
-    	}    	
-    	else {
-    		throw new InvalidOptionException("Invalid attribute name:"+key);
-    	}
-    }
     
     public List <Experiment> experimentsByProperty(String property, String propertyValue){
         ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
