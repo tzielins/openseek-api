@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
  * Argument structure with example value
  * -account:{"username":"test","password":"test"}
  * -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com","sessionToken":"somevalue"}
- * -query:{"entityType":"Experiment","property":"SEEK_STUDY_ID","propertyValue":"Study_1"}
+ * -query:{"entityType":"Experiment","queryType":"PROPERTY","property":"SEEK_STUDY_ID","propertyValue":"Study_1"}
  * -download:{"type":"file","permID":"ID100","source":"original/file","dest":"/home/test/file"}
  */
 public class OptionParser {

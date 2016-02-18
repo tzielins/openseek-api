@@ -34,11 +34,12 @@ public class OptionParserTest {
 	
 	@Test
 	public void testQuery() throws Exception {
-		String query = "{\"entityType\":\"Experiment\", \"property\":\"SEEK_STUDY_ID\", \"propertyValue\":\"Study_1\"}";
+		String query = "{\"entityType\":\"Experiment\", \"queryType\":\"PROPERTY\", \"property\":\"SEEK_STUDY_ID\", \"propertyValue\":\"Study_1\"}";
 		String[] args = new String[] { "-query", query};
 		OptionParser p = new OptionParser(args);	
 		JSONObject queryArgs = p.getQuery();
 		assertEquals("Experiment", queryArgs.get("entityType"));
+		assertEquals("PROPERTY", queryArgs.get("queryType"));
 		assertEquals("SEEK_STUDY_ID", queryArgs.get("property"));
 		assertEquals("Study_1", queryArgs.get("propertyValue"));
 	}

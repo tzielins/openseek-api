@@ -3,10 +3,16 @@ package org.fairdom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
@@ -18,7 +24,8 @@ public class ApplicationServerQueryTest {
 	
 	private static String endpoint;
     private static String sessionToken;
-
+    private static ApplicationServerQuery query;
+    
     @Before
     public void setUp() throws AuthenticationException{
 		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis",    			
@@ -26,36 +33,60 @@ public class ApplicationServerQueryTest {
     			"apiuser");        
         sessionToken = au.sessionToken();
         endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
+        query = new ApplicationServerQuery(endpoint, sessionToken);
     }
 
     @Test
-    public void getExperimentWithSeekStudyID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getExperimentWithSeekStudyID() throws Exception {        
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        SearchResult<Experiment> experiments = query.experiments(property, propertyValue);
-        assertEquals(1, experiments.getTotalCount());
-        Experiment experiment = experiments.getObjects().get(0);
+        List<Experiment> experiments = query.experimentsByProperty(property, propertyValue);
+        assertEquals(1, experiments.size());
+        Experiment experiment = experiments.get(0);
         assertEquals(propertyValue, experiment.getProperties().get(property));
     }
 
     @Test
-    public void getExperimentWithSeekStudyIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getExperiments() throws Exception { 
+    	
+    	List<Experiment> experiments = query.experimentsByAttribute("permId","");
+    	assertTrue(experiments.size()>0);    
+    	String json = query.jsonResult(experiments);
+    	System.out.println(json);
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getSamples() throws Exception {    	
+    	List<Sample> samples = query.samplesByAttribute("permId","");
+    	assertTrue(samples.size()>0);   
+    	String json = query.jsonResult(samples);
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getDatasets() throws Exception {    	
+    	List<DataSet> data = query.dataSetsByAttribute("permId","");
+    	assertTrue(data.size()>0);
+    	String json = query.jsonResult(data);
+    	assertTrue(isValidJSON(json));
+    }      
+
+    @Test
+    public void getExperimentWithSeekStudyIDNoResult() throws Exception {        
         String property = "SEEK_STUDY_ID";
         String propertyValue = "SomeID";
-        SearchResult<Experiment> experiments = query.experiments(property, propertyValue);
-        assertEquals(0, experiments.getTotalCount());
+        List<Experiment> experiments = query.experimentsByProperty(property, propertyValue);
+        assertEquals(0, experiments.size());
     }
 
     @Test
-    public void getSampleWithSeekAssayID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getSampleWithSeekAssayID() throws Exception {        
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "Assay_1";
-        SearchResult<Sample> samples = query.samples(property, propertyValue);
-        assertEquals(1, samples.getTotalCount());
-        Sample sample = samples.getObjects().get(0);
+        List<Sample> samples = query.samplesByProperty(property, propertyValue);        
+        assertEquals(1, samples.size());
+        Sample sample = samples.get(0);
 
         assertEquals(propertyValue, sample.getProperties().get(property));
         //SampleIdentifier identifier = new SampleIdentifier("/API_TEST/SAMPLE_1");
@@ -63,52 +94,64 @@ public class ApplicationServerQueryTest {
     }
 
     @Test
-    public void getSampleWithSeekAssayIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getSampleWithSeekAssayIDNoResult() throws Exception {        
         String property = "SEEK_ASSAY_ID";
         String propertyValue = "SomeID";
-        SearchResult<Sample> samples = query.samples(property, propertyValue);
-        assertEquals(0, samples.getTotalCount());
+        List<Sample> samples = query.samplesByProperty(property, propertyValue);      
+        assertEquals(0, samples.size());
     }
 
     @Test
-    public void getDataSetWithSeekDataFileID() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getDataSetWithSeekDataFileID() throws Exception {        
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
-        SearchResult<DataSet> dataSets = query.dataSets(property, propertyValue);
-        assertEquals(1, dataSets.getTotalCount());
-        DataSet dataSet = dataSets.getObjects().get(0);
+        List<DataSet> dataSets = query.dataSetsByProperty(property, propertyValue);
+        assertEquals(1, dataSets.size());
+        DataSet dataSet = dataSets.get(0);
 
         assertEquals(propertyValue, dataSet.getProperties().get(property));
     }
 
     @Test
-    public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void getDatasetWithSeekDataFileIDNoResult() throws Exception {        
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "SomeID";
-        SearchResult<Sample> samples = query.samples(property, propertyValue);
-        assertEquals(0, samples.getTotalCount());
+        List<DataSet> dataSets = query.dataSetsByProperty(property, propertyValue);
+        assertEquals(0, dataSets.size());
     }
     	
     @Test
-    public void jsonResultforExperiment() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void jsonResultforExperiment() throws Exception {        
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        SearchResult result = query.query(type, property, propertyValue);
+        List result = query.query(type, QueryType.PROPERTY, property, propertyValue);
         String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }
 
     @Test(expected = InvalidOptionException.class)
-    public void unrecognizedType() throws Exception {
-        ApplicationServerQuery query = new ApplicationServerQuery(endpoint, sessionToken);
+    public void unrecognizedType() throws Exception {        
         String type = "SomeType";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        query.query(type, property, propertyValue);
+        query.query(type, QueryType.PROPERTY, property, propertyValue);
     }
+    
+    public boolean isValidJSON(final String json) {
+  	   boolean valid = false;
+  	   try {
+  	      final JsonParser parser = new ObjectMapper().getJsonFactory()
+  	            .createJsonParser(json);
+  	      while (parser.nextToken() != null) {
+  	      }
+  	      valid = true;
+  	   } catch (JsonParseException jpe) {
+  	      jpe.printStackTrace();
+  	   } catch (IOException ioe) {
+  	      ioe.printStackTrace();
+  	   }
+
+  	   return valid;
+  }
 }
