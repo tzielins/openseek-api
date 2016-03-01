@@ -60,19 +60,20 @@ public class DataStoreDownload extends DataStoreStream{
             String source = download.get("source").toString();
             String dest = download.get("dest").toString();
             
+            String downloadInfo = "";
             if (downloadType.equals("file")){
             	dssDownload.downloadSingleFile(permID, source, dest);
-            	System.out.println("Download file " + permID + "#" + source + " into " + dest);
+            	downloadInfo = downloadInfo + "Download file " + permID + "#" + source + " into " + dest;            	
             }else if (downloadType.equals("folder")){
             	dssDownload.downloadFolder(permID, source, dest);
-            	System.out.println("Download folder " + permID + "#" + source + " into " + dest);
+            	downloadInfo = downloadInfo + "Download folder " + permID + "#" + source + " into " + dest;
             }else if (downloadType.equals("dataset")){
             	dssDownload.downloadDataSetFiles(permID, dest);
-            	System.out.println("Download dataset files of " + permID + " into " + dest);
+            	downloadInfo = downloadInfo + "Download dataset files of " + permID + " into " + dest;
             }else{
-            	 System.out.println("Invalid download type, nothing to download");
+            	downloadInfo = downloadInfo + "Invalid download type, nothing to download";
             }
-            
+            System.out.println("{\"download_info\":" + "\""+ downloadInfo + "\"" + "}");
             
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
