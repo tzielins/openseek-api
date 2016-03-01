@@ -40,7 +40,7 @@ public class Authentication {
         	JSONObject endpoints = options.getEndpoints();        	
             Authentication au = new Authentication(endpoints.get("as").toString(), account.get("username").toString(), account.get("password").toString());           
             String sessionToken = au.sessionToken();
-            System.out.println(sessionToken);
+            System.out.println("{\"token\":" + "\""+ sessionToken + "\"" + "}");
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
