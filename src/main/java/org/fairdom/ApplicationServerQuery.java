@@ -56,13 +56,13 @@ public class ApplicationServerQuery {
         	JSONObject query = options.getQuery();
         
         	ApplicationServerQuery asQuery = new ApplicationServerQuery(endpoints.get("as").toString(), endpoints.get("sessionToken").toString());
-        	List result;
-        	if (query.get("queryType")==QueryType.PROPERTY) {
+        	List result;        	
+        	if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
             	result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,query.get("property").toString(), query.get("propertyValue").toString());            	
             }
             else {
             	result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), query.get("attributeValue").toString());   
-            }            
+            }            	
             String jsonResult = asQuery.jsonResult(result);
             System.out.println(jsonResult);
         } catch (Exception ex) {
@@ -371,7 +371,7 @@ public class ApplicationServerQuery {
     
     public List <Experiment> experimentsByProperty(String property, String propertyValue){
         ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
-        criterion.withProperty(property).thatEquals(propertyValue);
+        criterion.withProperty(property).thatContains(propertyValue);
 
         ExperimentFetchOptions options = new ExperimentFetchOptions();        
         options.withProperties();
@@ -389,7 +389,7 @@ public class ApplicationServerQuery {
 
     public List <Sample> samplesByProperty(String property, String propertyValue){
         SampleSearchCriteria criterion = new SampleSearchCriteria();
-        criterion.withProperty(property).thatEquals(propertyValue);
+        criterion.withProperty(property).thatContains(propertyValue);
 
         SampleFetchOptions options = new SampleFetchOptions();
         options.withProperties();
@@ -406,7 +406,7 @@ public class ApplicationServerQuery {
 
     public List <DataSet> dataSetsByProperty(String property, String propertyValue){
         DataSetSearchCriteria criterion = new DataSetSearchCriteria();
-        criterion.withProperty(property).thatEquals(propertyValue);
+        criterion.withProperty(property).thatContains(propertyValue);
 
         DataSetFetchOptions options = new DataSetFetchOptions();
         options.withProperties();
