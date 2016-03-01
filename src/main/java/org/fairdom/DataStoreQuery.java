@@ -1,7 +1,11 @@
 package org.fairdom;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -36,13 +40,18 @@ public class DataStoreQuery extends DataStoreStream{
 
         try {        	
         	JSONObject endpoints = options.getEndpoints();
-        	JSONObject query = options.getQuery();
-            
+        	JSONObject query = options.getQuery();           
             DataStoreQuery dssQuery = new DataStoreQuery(endpoints.get("dss").toString(), endpoints.get("sessionToken").toString());
-            List <DataSetFile> dataSetFiles= dssQuery.dataSetFile(query.get("property").toString(), query.get("propertyValue").toString());  
-            SearchResult<DataSetFile> result = new SearchResult<DataSetFile>(dataSetFiles, dataSetFiles.size());
-            String jsonResult = dssQuery.jsonResult(result); 
+        	List result;        	
+        	if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
+            	result = dssQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,query.get("property").toString(), query.get("propertyValue").toString());            	
+            }
+            else {
+            	result = dssQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), query.get("attributeValue").toString());   
+            }            	
+            String jsonResult = dssQuery.jsonResult(result);
             System.out.println(jsonResult);
+            
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
@@ -50,6 +59,60 @@ public class DataStoreQuery extends DataStoreStream{
         }
         System.exit(0);
     }  
+	
+	public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+        List result = null;
+        if (queryType==QueryType.PROPERTY) {
+        	if (type.equals("DataSetFile")){
+                result = datasetFilesByProperty(key, value);            
+            }else{
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }
+        else if (queryType==QueryType.ATTRIBUTE) {
+        	if (type.equals("DataSetFile")) {
+                result = datasetFilesByAttribute(key, value);
+            }else {
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }
+        
+        return result;
+    }
+    
+    public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+        List result = null;
+        if (queryType==QueryType.ATTRIBUTE) {
+        	if (type.equals("DataSetFile")) {
+                result = datasetFilesByAttribute(key, values);
+            }else {
+                throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }
+        
+        return result;
+    }
+
+    public String jsonResult(List result){
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	for (Object item : result) {    		
+    		if (item instanceof DataSetFile) {
+    			if (!map.containsKey("datasetfiles")) {
+    				map.put("datasetfiles", new ArrayList<Object>());
+    			}
+    			((List)map.get("datasetfiles")).add(jsonMap((DataSetFile)item));    			
+    		}    		
+    	}
+        GenericObjectMapper mapper = new GenericObjectMapper();        
+        StringWriter sw = new StringWriter();
+        try {
+            mapper.writeValue(sw, map);
+        }catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return sw.toString();
+    }  
+    
 
     public String jsonResult(SearchResult result){
         GenericObjectMapper mapper = new GenericObjectMapper();
@@ -62,12 +125,42 @@ public class DataStoreQuery extends DataStoreStream{
         return sw.toString();
     }
     
-   public List <DataSetFile> dataSetFile(String property, String propertyValue){
+   public List <DataSetFile> datasetFilesByProperty(String property, String propertyValue){
     	 DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
-    	 criteria.withDataSet().withProperty(property).thatEquals(propertyValue);
+    	 criteria.withDataSet().withProperty(property).thatContains(propertyValue);     	 
 
          List<DataSetFile> searchFiles = dss.searchFiles(sessionToken, criteria);
          return searchFiles;
     }
 
+   public List<DataSetFile> datasetFilesByAttribute(String attribute, List<String> values) throws InvalidOptionException{  
+       
+     //FIXME: ability to search by OR operator, through set of PermID         
+  	 //criteria.withOperator(SearchOperator.OR);       
+     //for now loop through the permids  
+	   List<DataSetFile> result = new ArrayList<DataSetFile>();
+	   for (String value : values) {
+		   DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria(); 
+			criteria.withDataSet().withPermId().thatContains(value);
+			result.addAll(dss.searchFiles(sessionToken, criteria));
+			
+   	   }       	
+       return result;
+       
+   }
+
+   public List<DataSetFile> datasetFilesByAttribute(String attribute, String value) throws InvalidOptionException{
+       List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
+       return datasetFilesByAttribute(attribute,values);
+   }
+         
+   private Map<String,Object> jsonMap(DataSetFile datasetFile) {
+   	Map<String,Object> map = new HashMap<String, Object>();
+   	map.put("dataset", datasetFile.getDataSetPermId().getPermId());
+   	map.put("filePermId", datasetFile.getPermId());
+   	map.put("path", datasetFile.getPath());
+   	map.put("isDirectory", datasetFile.isDirectory());
+   	map.put("fileLength", datasetFile.getFileLength());
+   	return map;
+   }
 }

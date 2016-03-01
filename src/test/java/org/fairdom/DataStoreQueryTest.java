@@ -1,8 +1,11 @@
 package org.fairdom;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -33,7 +36,7 @@ public class DataStoreQueryTest {
 		DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
-        List <DataSetFile> files = query.dataSetFile(property, propertyValue);
+        List <DataSetFile> files = query.datasetFilesByProperty(property, propertyValue);
         DataSetFile file = files.get(files.size() - 1);
         String perID = "20151217153943290-5#original/api-test";   
         long fileLength = 25;        
@@ -46,10 +49,19 @@ public class DataStoreQueryTest {
     	DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
-        List <DataSetFile> files = query.dataSetFile(property, propertyValue);
+        List <DataSetFile> files = query.datasetFilesByProperty(property, propertyValue);
         SearchResult<DataSetFile> result = new SearchResult<DataSetFile>(files, files.size());
         String jsonResult = query.jsonResult(result);
         assertTrue(jsonResult.matches("(.*)20151217153943290-5(.*)"));
-    }
+    }   
+   
+    
+    @Test
+    public void getDataSetFileWithPermID() throws Exception {
+		DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
+        List <String> values = new ArrayList<String> (Arrays.asList(new String[]{"20151217153943290-5","20160210130359377-22"}));
+        List <DataSetFile> files = query.datasetFilesByAttribute("PermID", values);        
+        assertFalse(files.isEmpty());
+    }   
    
 }
