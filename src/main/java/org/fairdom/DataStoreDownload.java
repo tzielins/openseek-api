@@ -55,7 +55,7 @@ public class DataStoreDownload extends DataStoreStream{
                         
             DataStoreDownload dssDownload = new DataStoreDownload(endpoints.get("dss").toString(), endpoints.get("sessionToken").toString());
             
-            String downloadType = download.get("type").toString();
+            String downloadType = download.get("downloadType").toString();
             String permID = download.get("permID").toString();
             String source = download.get("source").toString();
             String dest = download.get("dest").toString();
