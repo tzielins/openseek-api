@@ -47,7 +47,8 @@ public class DataStoreQuery extends DataStoreStream{
             	result = dssQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,query.get("property").toString(), query.get("propertyValue").toString());            	
             }
             else {
-            	result = dssQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), query.get("attributeValue").toString());   
+            	List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString()); 
+            	result = dssQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), attributeValues);   
             }            	
             String jsonResult = dssQuery.jsonResult(result);
             System.out.println(jsonResult);

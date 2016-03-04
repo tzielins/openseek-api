@@ -61,7 +61,8 @@ public class ApplicationServerQuery {
             	result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,query.get("property").toString(), query.get("propertyValue").toString());            	
             }
             else {
-            	result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), query.get("attributeValue").toString());   
+            	List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());            	
+            	result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,query.get("attribute").toString(), attributeValues);   
             }            	
             String jsonResult = asQuery.jsonResult(result);
             System.out.println(jsonResult);
