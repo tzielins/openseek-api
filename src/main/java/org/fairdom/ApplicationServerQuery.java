@@ -328,7 +328,7 @@ public class ApplicationServerQuery {
         options.withRegistrator();
         options.withTags();
         options.withType();
-
+        
         DataSetSearchCriteria criterion = new DataSetSearchCriteria();
         criterion.withOrOperator();
 		for (String value : values) {
@@ -420,6 +420,55 @@ public class ApplicationServerQuery {
 
         List <DataSet> dataSets = as.searchDataSets(sessionToken, criterion, options).getObjects();
         return dataSets;
+    }
+    
+    public List <Experiment> experimentsByAnyField(String searchTerm){
+    	ExperimentFetchOptions options = new ExperimentFetchOptions();
+        options.withProperties();
+        options.withSamples();
+        options.withDataSets();
+        options.withProject();
+        options.withModifier();
+        options.withRegistrator();
+        options.withTags();
+        options.withType();
+        
+        ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
+        criterion.withAnyField().thatContains(searchTerm);
+        List <Experiment> experiments = as.searchExperiments(sessionToken, criterion, options).getObjects();
+        return experiments;
+    }
+    
+    public List <Sample> samplesByAnyField(String searchTerm){
+    	SampleFetchOptions options = new SampleFetchOptions();
+        options.withProperties();
+        options.withExperiment();
+        options.withDataSets();
+        options.withModifier();
+        options.withRegistrator();
+        options.withTags();
+        options.withType();
+              
+		SampleSearchCriteria criterion = new SampleSearchCriteria();
+        criterion.withAnyField().thatContains(searchTerm);
+        List <Sample> samples = as.searchSamples(sessionToken, criterion, options).getObjects();
+        return samples;
+    }
+    
+    public List <DataSet> datasetsByAnyField(String searchTerm){
+    	DataSetFetchOptions options = new DataSetFetchOptions();
+        options.withProperties();
+        options.withSample();
+        options.withExperiment();
+        options.withModifier();
+        options.withRegistrator();
+        options.withTags();
+        options.withType();
+        
+        DataSetSearchCriteria criterion = new DataSetSearchCriteria();
+        criterion.withAnyField().thatContains(searchTerm);
+        List <DataSet> datasets = as.searchDataSets(sessionToken, criterion, options).getObjects();
+        return datasets;
     }
     
 }

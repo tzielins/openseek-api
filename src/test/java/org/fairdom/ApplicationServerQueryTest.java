@@ -157,6 +157,145 @@ public class ApplicationServerQueryTest {
         query.query(type, QueryType.PROPERTY, property, propertyValue);
     }
     
+    @Test
+    public void expirementsByAnyField() throws Exception {
+    	//project
+    	String searchTerm = "API-PROJECT";
+    	List<Experiment> experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+//    	dont work with /, treat like OR from openbis
+//    	searchTerm = "/API-SPACE/API-PROJECT/E2";
+//    	experiments = query.experimentsByAnyField(searchTerm);
+//    	assertTrue(experiments.size() > 0);
+    	
+    	//code
+    	searchTerm = "E2";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//permID
+    	searchTerm = "20151216143716562-2";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//type
+    	searchTerm = "TEST_TYPE";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+
+    	//property
+    	searchTerm = "Study_1";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//tag
+    	searchTerm = "test_tag";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//prefix
+    	searchTerm = "test_";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//suffix
+    	searchTerm = "tag";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    	
+    	//middle
+    	searchTerm = "st_ta";
+    	experiments = query.experimentsByAnyField(searchTerm);
+    	assertTrue(experiments.size() > 0);
+    }
+    
+    @Test
+    public void samplesByAnyField() throws Exception {    	
+    	//code
+    	String searchTerm = "S1";
+    	List<Sample> samples = query.samplesByAnyField(searchTerm);
+    	assertTrue(samples.size() > 0);
+    	
+    	//permID
+    	searchTerm = "20151216143743603-3";
+    	samples = query.samplesByAnyField(searchTerm);
+    	assertTrue(samples.size() > 0);
+    	
+    	//type
+    	searchTerm = "TEST_SAMPLE_TYPE";
+    	samples = query.samplesByAnyField(searchTerm);
+    	assertTrue(samples.size() > 0);
+    	
+    	//project -dont work
+//    	searchTerm = "API-PROJECT";
+//    	samples = query.samplesByAnyField(searchTerm);
+//    	assertTrue(samples.size() > 0);
+    	
+    	//experiment -dont work
+//    	searchTerm = "E2";
+//    	samples = query.samplesByAnyField(searchTerm);
+//    	assertTrue(samples.size() > 0);
+    	
+    	//SEEK_ASSAY_ID property
+    	searchTerm = "Assay_1";
+    	samples = query.samplesByAnyField(searchTerm);
+    	assertTrue(samples.size() > 0);
+    }
+    
+    @Test
+    public void datasetsByAnyField() throws Exception {
+    	//permID
+    	String searchTerm = "20160215111736723-31";
+    	List<DataSet> datasets = query.datasetsByAnyField(searchTerm);
+    	assertTrue(datasets.size() > 0);
+    	
+    	//type
+    	searchTerm = "TEST_DATASET_TYPE";
+    	datasets = query.datasetsByAnyField(searchTerm);
+    	assertTrue(datasets.size() > 0);
+    	
+    	//Source type - dont work
+//    	searchTerm = "MEASUREMENT";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//project - dont work
+//    	searchTerm = "API-PROJECT";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//experiment - dont work
+//    	searchTerm = "E2";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//datastore - dont work
+//    	searchTerm = "DSS1";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//user - dont work
+//    	searchTerm = "apiuser";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//registration date - dont work
+//    	searchTerm = "2016-02-15";
+//    	datasets = query.datasetsByAnyField(searchTerm);
+//    	assertTrue(datasets.size() > 0);
+    	
+    	//file type
+    	searchTerm = "PROPRIETARY";
+    	datasets = query.datasetsByAnyField(searchTerm);
+    	assertTrue(datasets.size() > 0);
+
+    	//SEEK_DATAFILE_ID property
+    	searchTerm = "DataFile_9";
+    	datasets = query.datasetsByAnyField(searchTerm);
+    	assertTrue(datasets.size() > 0);
+    }
+    
     public boolean isValidJSON(final String json) {
   	   boolean valid = false;
   	   try {
