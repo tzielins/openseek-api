@@ -145,6 +145,28 @@ public class DataStoreDownloadTest {
         assertEquals("537k", MemorySizeFormatter.format(attr.size()));
 
     }
+	
+	@Test
+    public void downloadFileWithSpaceInName() throws Exception {
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
+        String permId = "20160322172551664-35";
+        String source = "original/Genes List Nature Paper Test.docx";
+        String basePath = new File("").getAbsolutePath();
+        String destination = basePath + "/src/test/java/resources/Genes List Nature Paper Test.docx";
+        
+        File file = new File(destination); 
+        if (file.exists()){
+        	file.delete();
+        }     
+        assertFalse(file.exists());
+        
+        download.downloadSingleFile(permId, source, destination);
+        
+        assertTrue(file.exists());        
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        assertEquals("27.4k", MemorySizeFormatter.format(attr.size()));
+
+    }
 
 /*	
  * Comment this test out, to avoid time for downloading a big file
