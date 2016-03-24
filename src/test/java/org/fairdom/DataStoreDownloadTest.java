@@ -20,7 +20,6 @@ import org.junit.Test;
 import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
 
 /**
- *
  * Created by quyennguyen on 13/02/15.
  */
 public class DataStoreDownloadTest {
