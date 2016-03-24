@@ -5,6 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ *
  * Created by quyennguyen on 19/02/15.
  * Parse Java command line arguments
  * Argument structure with example value
@@ -50,7 +51,8 @@ public class OptionParser {
 		
     public JSONObject stringToJson(String str) throws ParseException {    	
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(str);
+		String escapeStr = str.replace("%", "\"").replace("+", " ");	
+		Object obj = parser.parse(escapeStr);
 		JSONObject jsonObj = (JSONObject) obj;
 		return jsonObj;         
     }
@@ -90,6 +92,22 @@ public class OptionParser {
 	public JSONObject getDownload() {
 		return download;
 	}
+
+	public List<String> constructAttributeValues(String attributeValues) {
+		String[] values = attributeValues.split(",");
+		List<String> sanitizedValues = new ArrayList<String>();
+		for (String value : values) {
+			value = value.trim();
+			if (value.length()>0) {
+				sanitizedValues.add(value);
+			}
+		}
+		if (attributeValues.isEmpty()) {
+			sanitizedValues.add("");
+		}
+		return sanitizedValues;
+	}	
+	
 
     private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
         if (value.trim().isEmpty()){
