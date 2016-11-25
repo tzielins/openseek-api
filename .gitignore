@@ -8,3 +8,5 @@ gradle-app.setting
 .project
 .classpath
 src/test/java/resources/**
+bin/
+.settings/
