@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
+import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.fetchoptions.DataSetFileFetchOptions;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
 import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
 
@@ -129,8 +130,9 @@ public class DataStoreQuery extends DataStoreStream{
    public List <DataSetFile> datasetFilesByProperty(String property, String propertyValue){
     	 DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
     	 criteria.withDataSet().withProperty(property).thatContains(propertyValue);     	 
-
-         List<DataSetFile> searchFiles = dss.searchFiles(sessionToken, criteria);
+         
+  	     SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
+         List<DataSetFile> searchFiles = result.getObjects();
          return searchFiles;
     }
 
@@ -143,7 +145,9 @@ public class DataStoreQuery extends DataStoreStream{
 	   for (String value : values) {
 		   DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria(); 
 			criteria.withDataSet().withPermId().thatContains(value);
-			result.addAll(dss.searchFiles(sessionToken, criteria));
+			
+			SearchResult<DataSetFile> files_result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
+			result.addAll(files_result.getObjects());
 			
    	   }       	
        return result;
