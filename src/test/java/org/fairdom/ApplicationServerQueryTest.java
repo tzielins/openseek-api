@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 
 /**
  * Created by quyennguyen on 13/02/15.
@@ -35,6 +36,14 @@ public class ApplicationServerQueryTest {
         sessionToken = au.sessionToken();
         endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
         query = new ApplicationServerQuery(endpoint, sessionToken);
+    }
+    
+    @Test
+    public void getAllSpaces() throws Exception {
+    	List<Space> spaces = query.spaces();
+    	assertTrue(spaces.size()>0);
+    	String json = query.jsonResult(spaces);    	
+    	assertTrue(isValidJSON(json));
     }
 
     @Test

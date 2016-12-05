@@ -20,6 +20,9 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSear
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOptions;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
@@ -150,6 +153,12 @@ public class ApplicationServerQuery {
     			}
     			((List)map.get("samples")).add(jsonMap((Sample)item));    			
     		}
+    		if (item instanceof Space) {
+    			if (!map.containsKey("spaces")) {
+    				map.put("spaces", new ArrayList<Object>());
+    			}
+    			((List)map.get("spaces")).add(jsonMap((Space)item));    			
+    		}
     	}
         GenericObjectMapper mapper = new GenericObjectMapper();        
         StringWriter sw = new StringWriter();
@@ -159,7 +168,30 @@ public class ApplicationServerQuery {
             System.err.println(ex.getMessage());
         }
         return sw.toString();
-    }  
+    }
+    
+    public List<Space> spaces() throws InvalidOptionException {
+    	SpaceFetchOptions options = new SpaceFetchOptions();
+    	options.withProjects();               
+        
+        SpaceSearchCriteria criterion = new SpaceSearchCriteria();
+        criterion.withOrOperator();
+		
+			criterion.withPermId().thatContains("");
+    	
+    	return as.searchSpaces(sessionToken, criterion, options).getObjects();
+    }
+    
+    private Map<String,Object> jsonMap(Space space) {
+    	Map<String,Object> map = new HashMap<String, Object>();
+    	map.put("permId", space.getPermId().getPermId());
+    	map.put("code", space.getCode());
+    	map.put("description", space.getDescription());
+    	
+    	map.put("modificationDate", space.getModificationDate());
+    	map.put("registrationDate", space.getRegistrationDate());
+    	return map;    	
+    }
     
     private Map<String,Object> jsonMap(Experiment experiment) {
     	Map<String,Object> map = new HashMap<String, Object>();
@@ -301,7 +333,7 @@ public class ApplicationServerQuery {
         options.withModifier();
         options.withRegistrator();
         options.withTags();
-        options.withType();
+        options.withType();        
         
         ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
         criterion.withOrOperator();
