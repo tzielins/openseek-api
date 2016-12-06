@@ -40,7 +40,7 @@ public class ApplicationServerQueryTest {
     
     @Test
     public void getAllSpaces() throws Exception {
-    	List<Space> spaces = query.spaces();
+    	List<Space> spaces = query.spacesByAttribute("permId","");
     	assertTrue(spaces.size()>0);
     	String json = query.jsonResult(spaces);    	
     	assertTrue(isValidJSON(json));

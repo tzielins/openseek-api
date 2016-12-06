@@ -95,7 +95,7 @@ public class ApplicationServerQuery {
             }else if (type.equals("Sample")){
                 result = samplesByProperty(key, value);
             }else if (type.equals("DataSet")){
-                result = dataSetsByProperty(key, value);
+                result = dataSetsByProperty(key, value);                
             }else{
                 throw new InvalidOptionException("Unrecognised type: " + type);
             }
@@ -170,17 +170,7 @@ public class ApplicationServerQuery {
         return sw.toString();
     }
     
-    public List<Space> spaces() throws InvalidOptionException {
-    	SpaceFetchOptions options = new SpaceFetchOptions();
-    	options.withProjects();               
-        
-        SpaceSearchCriteria criterion = new SpaceSearchCriteria();
-        criterion.withOrOperator();
-		
-			criterion.withPermId().thatContains("");
-    	
-    	return as.searchSpaces(sessionToken, criterion, options).getObjects();
-    }
+    
     
     private Map<String,Object> jsonMap(Space space) {
     	Map<String,Object> map = new HashMap<String, Object>();
@@ -349,6 +339,25 @@ public class ApplicationServerQuery {
     	List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
         return experimentsByAttribute(attribute,values);
     	
+    }       
+    
+    public List<Space> spacesByAttribute(String attribute, String value) throws InvalidOptionException {
+    	List<String> values = new ArrayList<String>(Arrays.asList(new String[]{value}));
+        return spacesByAttribute(attribute,values);
+    }
+    
+    public List<Space> spacesByAttribute(String attribute, List<String> values) throws InvalidOptionException {
+    	SpaceFetchOptions options = new SpaceFetchOptions();
+    	options.withProjects();               
+        
+        SpaceSearchCriteria criterion = new SpaceSearchCriteria();
+        criterion.withOrOperator();
+		
+        for (String value : values) {
+			criterion.withPermId().thatContains(value);			
+    	}
+    	
+    	return as.searchSpaces(sessionToken, criterion, options).getObjects();
     }
     
     public List <DataSet> dataSetsByAttribute(String attribute, List<String> values) throws InvalidOptionException{  
@@ -397,8 +406,7 @@ public class ApplicationServerQuery {
 			criterion.withPermId().thatContains(value);
     	}	
 		
-		return as.searchSamples(sessionToken, criterion, options).getObjects();
-        
+		return as.searchSamples(sessionToken, criterion, options).getObjects();        
     }         
 
     
@@ -416,8 +424,7 @@ public class ApplicationServerQuery {
         options.withTags();
         options.withType();
 
-        List <Experiment> experiments = as.searchExperiments(sessionToken, criterion, options).getObjects();
-        return experiments;
+        return as.searchExperiments(sessionToken, criterion, options).getObjects();        
     }
 
     public List <Sample> samplesByProperty(String property, String propertyValue){
@@ -433,8 +440,7 @@ public class ApplicationServerQuery {
         options.withTags();
         options.withType();
 
-        List <Sample> samples = as.searchSamples(sessionToken, criterion, options).getObjects();
-        return samples;
+        return as.searchSamples(sessionToken, criterion, options).getObjects();        
     }        
 
     public List <DataSet> dataSetsByProperty(String property, String propertyValue){
@@ -450,8 +456,7 @@ public class ApplicationServerQuery {
         options.withTags();
         options.withType();
 
-        List <DataSet> dataSets = as.searchDataSets(sessionToken, criterion, options).getObjects();
-        return dataSets;
+        return as.searchDataSets(sessionToken, criterion, options).getObjects();        
     }
     
     public List <Experiment> experimentsByAnyField(String searchTerm){
@@ -467,8 +472,7 @@ public class ApplicationServerQuery {
         
         ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
         criterion.withAnyField().thatContains(searchTerm);
-        List <Experiment> experiments = as.searchExperiments(sessionToken, criterion, options).getObjects();
-        return experiments;
+        return as.searchExperiments(sessionToken, criterion, options).getObjects();        
     }
     
     public List <Sample> samplesByAnyField(String searchTerm){
@@ -483,8 +487,7 @@ public class ApplicationServerQuery {
               
 		SampleSearchCriteria criterion = new SampleSearchCriteria();
         criterion.withAnyField().thatContains(searchTerm);
-        List <Sample> samples = as.searchSamples(sessionToken, criterion, options).getObjects();
-        return samples;
+        return as.searchSamples(sessionToken, criterion, options).getObjects();        
     }
     
     public List <DataSet> datasetsByAnyField(String searchTerm){
@@ -499,8 +502,7 @@ public class ApplicationServerQuery {
         
         DataSetSearchCriteria criterion = new DataSetSearchCriteria();
         criterion.withAnyField().thatContains(searchTerm);
-        List <DataSet> datasets = as.searchDataSets(sessionToken, criterion, options).getObjects();
-        return datasets;
+        return as.searchDataSets(sessionToken, criterion, options).getObjects();        
     }
     
 }
