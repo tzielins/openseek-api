@@ -3,6 +3,8 @@ apply plugin: 'application'
 mainClassName = 'org.fairdom.QueryMain'
 apply plugin: 'jacoco' // test reporter
 apply plugin: 'com.github.kt3k.coveralls' //coveralls plugin
+sourceCompatibility=1.7
+targetCompatibility=1.7
 
 
 repositories {

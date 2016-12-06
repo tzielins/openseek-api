@@ -10,3 +10,4 @@ gradle-app.setting
 src/test/java/resources/**
 bin/
 .settings/
+*~
