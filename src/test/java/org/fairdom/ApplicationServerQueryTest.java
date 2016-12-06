@@ -39,6 +39,17 @@ public class ApplicationServerQueryTest {
     }
     
     @Test
+    public void queryBySpace() throws Exception {
+    	List result = query.query("Space",QueryType.ATTRIBUTE,"permID","");
+    	assertTrue(result.size()>0);
+    	
+    	List<String> values = new ArrayList<String>();
+    	values.add("");
+    	result = query.query("Space",QueryType.ATTRIBUTE,"permID",values);
+    	assertTrue(result.size()>0);
+    }
+    
+    @Test
     public void getAllSpaces() throws Exception {
     	List<Space> spaces = query.spacesByAttribute("permId","");
     	assertTrue(spaces.size()>0);

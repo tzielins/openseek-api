@@ -25,7 +25,7 @@ task copyJarFiles(type: Copy){
 }
 
 task archiveJar(type: Jar, dependsOn: copyJarFiles) {
-    File libDir = file("$buildDir/libs/lib")
+    File libDir = file("$buildDir/libs/lib")    
     FileCollection collection = files{ libDir.listFiles() }
     def classPath = []
     collection.each {File file ->

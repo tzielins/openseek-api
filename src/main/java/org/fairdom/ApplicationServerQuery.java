@@ -107,7 +107,9 @@ public class ApplicationServerQuery {
                 result = samplesByAttribute(key, value);
             }else if (type.equals("DataSet")) {
                 result = dataSetsByAttribute(key, value);
-            }else {
+            }else if (type.equals("Space")) {
+            	result = spacesByAttribute(key, value);
+            } else {
                 throw new InvalidOptionException("Unrecognised type: " + type);
             }
         }
@@ -124,6 +126,8 @@ public class ApplicationServerQuery {
                 result = samplesByAttribute(key, values);
             }else if (type.equals("DataSet")) {
                 result = dataSetsByAttribute(key, values);
+            }else if (type.equals("Space")) {
+            	result = spacesByAttribute(key, values);
             }else {
                 throw new InvalidOptionException("Unrecognised type: " + type);
             }
