@@ -1,17 +1,19 @@
 package org.fairdom;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.json.simple.JSONObject;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.tag.Tag;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
-import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
 
 /**
  * 
@@ -57,17 +59,12 @@ public class JSONCreator {
 				((List) map.get("datasetfiles")).add(jsonMap((DataSetFile) item));
 			}
 		}
-		GenericObjectMapper mapper = new GenericObjectMapper();
-		StringWriter sw = new StringWriter();
-		try {
-			mapper.writeValue(sw, map);
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-		json = sw.toString();
+		
+		json = JSONObject.toJSONString(map);
 	}
 
 	public String getJSON() {
+		System.out.println(json);
 		return json;
 	}
 
@@ -86,8 +83,8 @@ public class JSONCreator {
 		map.put("permId", dataset.getPermId().getPermId());
 		map.put("code", dataset.getCode());
 		map.put("properties", dataset.getProperties());
-		map.put("modificationDate", dataset.getModificationDate());
-		map.put("registrationDate", dataset.getRegistrationDate());
+		map.put("modificationDate", dataset.getModificationDate().toString());
+		map.put("registrationDate", dataset.getRegistrationDate().toString());
 		if (dataset.getModifier() != null)
 			map.put("modifier", dataset.getModifier().getUserId());
 		else
@@ -95,7 +92,7 @@ public class JSONCreator {
 
 		map.put("registerator", dataset.getRegistrator().getUserId());
 		map.put("experiment", dataset.getExperiment().getPermId().getPermId());
-		map.put("tags", dataset.getTags());
+		map.put("tags", tagList(dataset.getTags()));
 
 		Map<String, String> dsType = new HashMap<String, String>();
 		if (dataset.getType() != null) {
@@ -120,14 +117,22 @@ public class JSONCreator {
 		return map;
 	}
 
+	private List<String> tagList(Set<Tag> tags) {
+		List<String> tagStr = new ArrayList<String>();
+		for (Tag tag : tags) {
+			tagStr.add(tag.getCode());
+		}
+		return tagStr;
+	}
+
 	private Map<String, Object> jsonMap(Experiment experiment) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("permId", experiment.getPermId().getPermId());
 		map.put("code", experiment.getCode());
 		map.put("project", experiment.getProject().getPermId().getPermId());
 		map.put("properties", experiment.getProperties());
-		map.put("modificationDate", experiment.getModificationDate());
-		map.put("registrationDate", experiment.getRegistrationDate());
+		map.put("modificationDate", experiment.getModificationDate().toString());
+		map.put("registrationDate", experiment.getRegistrationDate().toString());
 		map.put("identifier", experiment.getIdentifier().getIdentifier()); // E.g.
 																			// /API-SPACE/API-PROJECT/E2
 		if (experiment.getModifier() != null)
@@ -135,7 +140,7 @@ public class JSONCreator {
 		else
 			map.put("modifier", null);
 
-		map.put("tags", experiment.getTags());
+		map.put("tags", tagList(experiment.getTags()));
 		map.put("registerator", experiment.getRegistrator().getUserId());
 		Map<String, String> expType = new HashMap<String, String>();
 		if (experiment.getType() != null) {
@@ -170,8 +175,8 @@ public class JSONCreator {
 		map.put("code", sample.getCode());
 		map.put("properties", sample.getProperties());
 		map.put("identifier", sample.getIdentifier().getIdentifier());
-		map.put("modificationDate", sample.getModificationDate());
-		map.put("registrationDate", sample.getRegistrationDate());
+		map.put("modificationDate", sample.getModificationDate().toString());
+		map.put("registrationDate", sample.getRegistrationDate().toString());
 		if (sample.getModifier() != null)
 			map.put("modifier", sample.getModifier().getUserId());
 		else
@@ -198,7 +203,7 @@ public class JSONCreator {
 		if (sample.getExperiment() != null) {
 			map.put("experiment", sample.getExperiment().getPermId().getPermId());
 		}
-		map.put("tags", sample.getTags());
+		map.put("tags", tagList(sample.getTags()));
 		List<String> datasetIds = new ArrayList<String>();
 		for (DataSet dataset : sample.getDataSets()) {
 			datasetIds.add(dataset.getPermId().getPermId());
@@ -211,10 +216,10 @@ public class JSONCreator {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("permId", space.getPermId().getPermId());
 		map.put("code", space.getCode());
-		map.put("description", space.getDescription());
+		map.put("description", space.getDescription());		
 
-		map.put("modificationDate", space.getModificationDate());
-		map.put("registrationDate", space.getRegistrationDate());
+		map.put("modificationDate", space.getModificationDate().toString());
+		map.put("registrationDate", space.getRegistrationDate().toString());
 		return map;
 	}
 
