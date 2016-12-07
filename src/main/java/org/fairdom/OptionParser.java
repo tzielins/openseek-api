@@ -21,6 +21,7 @@ public class OptionParser {
 	private JSONObject download = null;
 	private JSONObject endpoints = null;
 	private JSONObject query = null;
+	private Action action=null;
 
 	public OptionParser(String[] args) throws InvalidOptionException, ParseException {
 		for (int i = 0; i < args.length; i++) {
@@ -45,6 +46,7 @@ public class OptionParser {
 				throw new InvalidOptionException("Unrecognised option: " + args[i]);
 			}
 		}
+		determineAction();
 	}
 
 	public List<String> constructAttributeValues(String attributeValues) {
@@ -85,6 +87,10 @@ public class OptionParser {
 		JSONObject jsonObj = (JSONObject) obj;
 		return jsonObj;
 	}
+	
+	public Action getAction() {
+		return action;
+	}
 
 	private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
 		if (value.trim().isEmpty()) {
@@ -110,5 +116,25 @@ public class OptionParser {
 	private void setQuery(String query) throws ParseException {
 		JSONObject q = stringToJson(query);
 		this.query = q;
+	}
+	
+	private void determineAction() throws InvalidOptionException {
+		if (getAccount()!=null && getEndpoints()!=null) {
+			action = Action.LOGIN;
+		}
+		else if (getDownload()!=null) {
+			action = Action.DOWNLOAD;
+		}
+		else if (getEndpoints()!=null && getQuery()!=null) {
+			if (getEndpoints().get("dss")!=null) {
+				action=Action.DS_QUERY;
+			}
+			else if (getEndpoints().get("as")!=null) {
+				action=Action.AS_QUERY;
+			}
+		}
+		if (action==null) {
+			throw new InvalidOptionException("Unable to determine the action from the available options passed, options appear to be incomplete");
+		}
 	}
 }

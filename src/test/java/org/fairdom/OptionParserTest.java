@@ -14,7 +14,8 @@ public class OptionParserTest {
 	@Test
 	public void testAccount() throws Exception {
 		String account = "{\"username\":\"test\", \"password\":\"test\"}";
-		String[] args = new String[] { "-account", account};
+		String endpoints = "{\"as\":\"http://as.example.com\"}";
+		String[] args = new String[] { "-account", account, "-endpoints", endpoints};
 		OptionParser p = new OptionParser(args);	
 		JSONObject accountArgs = p.getAccount();
 		assertEquals("test", accountArgs.get("username"));
@@ -24,7 +25,8 @@ public class OptionParserTest {
 	@Test
 	public void testEndpoints() throws Exception {
 		String endpoints = "{\"as\":\"http://as.example.com\", \"dss\":\"http://dss.example.com\", \"sessionToken\":\"somevalue\"}";
-		String[] args = new String[] { "-endpoints", endpoints};
+		String query = "{\"entityType\":\"Experiment\", \"queryType\":\"PROPERTY\", \"property\":\"SEEK_STUDY_ID\", \"propertyValue\":\"Study_1\"}";
+		String[] args = new String[] { "-endpoints", endpoints, "-query",query};
 		OptionParser p = new OptionParser(args);
 		JSONObject endpointsArgs = p.getEndpoints();
 		assertEquals("http://as.example.com", endpointsArgs.get("as"));
@@ -34,8 +36,9 @@ public class OptionParserTest {
 	
 	@Test
 	public void testQuery() throws Exception {
+		String endpoints = "{\"as\":\"http://as.example.com\", \"dss\":\"http://dss.example.com\", \"sessionToken\":\"somevalue\"}";
 		String query = "{\"entityType\":\"Experiment\", \"queryType\":\"PROPERTY\", \"property\":\"SEEK_STUDY_ID\", \"propertyValue\":\"Study_1\"}";
-		String[] args = new String[] { "-query", query};
+		String[] args = new String[] { "-endpoints",endpoints,"-query", query};
 		OptionParser p = new OptionParser(args);	
 		JSONObject queryArgs = p.getQuery();
 		assertEquals("Experiment", queryArgs.get("entityType"));
@@ -87,6 +90,29 @@ public class OptionParserTest {
 	public void testInvalidJsonString() throws Exception {
 		String[] args = new String[] { "-account", "{'username':'test'}" };
 		new OptionParser(args);
+	}
+	
+	@Test
+	public void testDeterimineAction() throws Exception {
+		String account = "{\"username\":\"test\", \"password\":\"test\"}";
+		String as_endpoints = "{\"as\":\"http://as.example.com\"}";
+		String ds_endpoints = "{\"dss\":\"http://dss.example.com\"}";
+		String query = "{\"entityType\":\"Experiment\", \"property\":\"SEEK_STUDY_ID\", \"propertyValue\":\"Study_1\"}";
+		String download = "{\"type\":\"file\", \"permID\":\"ID100\", \"source\":\"original/testfile\", \"dest\":\"/home/test/testfile\"}";
+		
+		OptionParser p = new OptionParser(new String[] {"-account",account,"-endpoints",as_endpoints});
+		assertEquals(Action.LOGIN,p.getAction());
+		
+		p = new OptionParser(new String[] {"-endpoints",as_endpoints,"-query",query});
+		assertEquals(Action.AS_QUERY,p.getAction());
+		
+		p = new OptionParser(new String[] {"-endpoints",ds_endpoints,"-query",query});
+		assertEquals(Action.DS_QUERY,p.getAction());
+		
+		p = new OptionParser(new String[] {"-endpoints",ds_endpoints,"-download",download});
+		assertEquals(Action.DOWNLOAD,p.getAction());
+		
+		
 	}
 	
 	
