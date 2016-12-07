@@ -16,9 +16,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.tag.Tag;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 
 /**
- * 
- * @author Stuart Owen
- *
+ * @author Stuart Owen 
  */
 
 public class JSONCreator {
@@ -26,45 +24,44 @@ public class JSONCreator {
 	private String json;
 
 	public JSONCreator(List<?> result) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
 		for (Object item : result) {
 			if (item instanceof Experiment) {
 				if (!map.containsKey("experiments")) {
-					map.put("experiments", new ArrayList<Object>());
+					map.put("experiments", new ArrayList<Map<String, Object>>());
 				}
-				((List) map.get("experiments")).add(jsonMap((Experiment) item));
+				map.get("experiments").add(jsonMap((Experiment) item));
 			}
 			if (item instanceof DataSet) {
 				if (!map.containsKey("datasets")) {
-					map.put("datasets", new ArrayList<Object>());
+					map.put("datasets", new ArrayList<Map<String, Object>>());
 				}
-				((List) map.get("datasets")).add(jsonMap((DataSet) item));
+				map.get("datasets").add(jsonMap((DataSet) item));
 			}
 			if (item instanceof Sample) {
 				if (!map.containsKey("samples")) {
-					map.put("samples", new ArrayList<Object>());
+					map.put("samples", new ArrayList<Map<String, Object>>());
 				}
-				((List) map.get("samples")).add(jsonMap((Sample) item));
+				map.get("samples").add(jsonMap((Sample) item));
 			}
 			if (item instanceof Space) {
 				if (!map.containsKey("spaces")) {
-					map.put("spaces", new ArrayList<Object>());
+					map.put("spaces", new ArrayList<Map<String, Object>>());
 				}
-				((List) map.get("spaces")).add(jsonMap((Space) item));
+				map.get("spaces").add(jsonMap((Space) item));
 			}
 			if (item instanceof DataSetFile) {
 				if (!map.containsKey("datasetfiles")) {
-					map.put("datasetfiles", new ArrayList<Object>());
+					map.put("datasetfiles", new ArrayList<Map<String, Object>>());
 				}
-				((List) map.get("datasetfiles")).add(jsonMap((DataSetFile) item));
+				map.get("datasetfiles").add(jsonMap((DataSetFile) item));
 			}
 		}
 		
 		json = JSONObject.toJSONString(map);
 	}
 
-	public String getJSON() {
-		System.out.println(json);
+	public String getJSON() {		
 		return json;
 	}
 
