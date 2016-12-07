@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
@@ -168,11 +169,11 @@ public class DataStoreDownloadTest {
 
     }
 
-/*	
- * Comment this test out, to avoid time for downloading a big file
+
     @Test
+    @Ignore("very large file")
     public void downloadSingleLargeFile() throws Exception {
-		DataStoreDownload download = new DataStoreDownload(dss, sessionToken);
+		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
         String permId = "20160212120108123-26";
         String source = "original/SEEK-v0.23.0.ova";
         String basePath = new File("").getAbsolutePath();
@@ -192,7 +193,7 @@ public class DataStoreDownloadTest {
         assertEquals("2.3gb", MemorySizeFormatter.format(attr.size()));
 
     }
-	*/
+
 	
 	@Test
     public void downloadFolder() throws Exception {

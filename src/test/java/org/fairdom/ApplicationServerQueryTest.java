@@ -20,7 +20,8 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 
 /**
- * Created by quyennguyen on 13/02/15.
+ * @author Quyen Nugyen
+ * @author Stuart Owen
  */
 public class ApplicationServerQueryTest {
 	
@@ -50,11 +51,63 @@ public class ApplicationServerQueryTest {
     }
     
     @Test
+    public void getSpacesByPermIDs() throws Exception {
+    	List<String> permids = new ArrayList<String>();
+    	permids.add("API-SPACE");
+    	permids.add("DEFAULT");
+    	List<Space> spaces = query.spacesByAttribute("permId",permids);
+    	assertEquals(2,spaces.size());
+    	String json = query.jsonResult(spaces);     	
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
+    public void getSpacesByPermID() throws Exception {
+    	List<String> permids = new ArrayList<String>();
+    	permids.add("API-SPACE");    	
+    	List<Space> spaces = query.spacesByAttribute("permId",permids);
+    	assertEquals(1,spaces.size());
+    	String json = query.jsonResult(spaces);     	
+    	assertTrue(isValidJSON(json));
+    	
+    	spaces = query.spacesByAttribute("permId","API-SPACE");
+    	assertEquals(1,spaces.size());
+    	json = query.jsonResult(spaces);     	
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test
     public void getAllSpaces() throws Exception {
     	List<Space> spaces = query.spacesByAttribute("permId","");
     	assertTrue(spaces.size()>0);
-    	String json = query.jsonResult(spaces);    	
+    	String json = query.jsonResult(spaces);     	
     	assertTrue(isValidJSON(json));
+    }
+    
+    @Test 
+    public void getExperimentsByPermID() throws Exception {
+    	List<String> permids = new ArrayList<String>();    	
+    	permids.add("20151216143716562-2");
+    	List<Experiment> experiments = query.experimentsByAttribute("permId",permids);
+    	assertEquals(1, experiments.size());
+    	String json = query.jsonResult(experiments);    	
+    	assertTrue(isValidJSON(json));
+    	
+    	experiments = query.experimentsByAttribute("permId","20151216143716562-2");
+    	assertEquals(1, experiments.size());
+    	json = query.jsonResult(experiments);    	
+    	assertTrue(isValidJSON(json));
+    }
+    
+    @Test 
+    public void getExperimentsByPermIDs() throws Exception {
+    	List<String> permids = new ArrayList<String>();
+    	permids.add("20151216112932823-1");
+    	permids.add("20151216143716562-2");    	
+    	List<Experiment> experiments = query.experimentsByAttribute("permId",permids);
+    	assertEquals(2, experiments.size());
+    	String json = query.jsonResult(experiments);    	
+    	assertTrue(isValidJSON(json));    	
     }
 
     @Test
@@ -183,11 +236,6 @@ public class ApplicationServerQueryTest {
     	String searchTerm = "API-PROJECT";
     	List<Experiment> experiments = query.experimentsByAnyField(searchTerm);
     	assertTrue(experiments.size() > 0);
-    	
-//    	dont work with /, treat like OR from openbis
-//    	searchTerm = "/API-SPACE/API-PROJECT/E2";
-//    	experiments = query.experimentsByAnyField(searchTerm);
-//    	assertTrue(experiments.size() > 0);
     	
     	//code
     	searchTerm = "E2";
