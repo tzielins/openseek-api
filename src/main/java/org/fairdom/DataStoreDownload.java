@@ -34,8 +34,7 @@ public class DataStoreDownload extends DataStoreStream{
 	
   
     public DataStoreDownload(String startEndpoint, String startSessionToken) {
-		super(startEndpoint, startSessionToken);
-		// TODO Auto-generated constructor stub
+		super(startEndpoint, startSessionToken);		
 	}
 
 	public static void main(String[] args) {
