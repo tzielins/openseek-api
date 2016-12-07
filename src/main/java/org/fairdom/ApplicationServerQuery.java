@@ -276,8 +276,6 @@ public class ApplicationServerQuery {
 		return options;
 	}
 
-	
-
 	private SampleFetchOptions sampleFetchOptions() {
 		SampleFetchOptions options = new SampleFetchOptions();
 		options.withProperties();
@@ -293,7 +291,7 @@ public class ApplicationServerQuery {
 	private void updateCriterianForAttribute(AbstractEntitySearchCriteria<?> criteria, String key, List<String> values)
 			throws InvalidOptionException {
 		if (key.equalsIgnoreCase("permid")) {
-			for (String value : values) {								
+			for (String value : values) {
 				criteria.withPermId().thatContains(value);
 			}
 		} else {

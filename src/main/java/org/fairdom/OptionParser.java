@@ -9,8 +9,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  *
- * Created by quyennguyen on 19/02/15.
- * Parse Java command line arguments
+ * Created by quyennguyen on 19/02/15. Parse Java command line arguments
  * Argument structure with example value
  * -account:{"username":"test","password":"test"}
  * -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com","sessionToken":"somevalue"}
@@ -19,81 +18,33 @@ import org.json.simple.parser.ParseException;
  */
 public class OptionParser {
 	private JSONObject account = null;
+	private JSONObject download = null;
 	private JSONObject endpoints = null;
 	private JSONObject query = null;
-	private JSONObject download = null;	
-	
+
 	public OptionParser(String[] args) throws InvalidOptionException, ParseException {
-      for (int i = 0; i < args.length; i++) {
-          String arg = args[i];
-          if (arg.equals("-account")) {
-              i++;
-              handleEmptyOptionValue(arg, args[i]);
-              setAccount(args[i]);
-          }
-          else if (arg.equals("-endpoints")) {
-              i++;
-              handleEmptyOptionValue(arg, args[i]);
-              setEndpoints(args[i]);
-          }
-          else if (arg.equals("-query")) {
-              i++;
-              handleEmptyOptionValue(arg, args[i]);
-              setQuery(args[i]);
-          }
-          else if (arg.equals("-download")) {
-              i++;
-              handleEmptyOptionValue(arg, args[i]);
-              setDownload(args[i]);
-          }
-          else {
-              throw new InvalidOptionException("Unrecognised option: " + args[i]);
-          }
-      }
-	}
-		
-    public JSONObject stringToJson(String str) throws ParseException {    	
-		JSONParser parser = new JSONParser();
-		String escapeStr = str.replace("%", "\"").replace("+", " ");	
-		Object obj = parser.parse(escapeStr);
-		JSONObject jsonObj = (JSONObject) obj;
-		return jsonObj;         
-    }
-    
-    private void setAccount(String account) throws ParseException {
-    	JSONObject acc = stringToJson(account);
-		this.account = acc;
-	}
-
-	public JSONObject getAccount() {
-		return account;
-	}
-	
-	private void setEndpoints(String endpoints) throws ParseException {
-    	JSONObject ep = stringToJson(endpoints);
-		this.endpoints = ep;
-	}
-
-	public JSONObject getEndpoints() {
-		return endpoints;
-	}
-	
-	private void setQuery(String query) throws ParseException {
-    	JSONObject q = stringToJson(query);
-		this.query = q;
-	}
-
-	public JSONObject getQuery() {
-		return query;
-	}
-	
-	private void setDownload(String download) throws ParseException {
-    	JSONObject dl = stringToJson(download);
-		this.download = dl;
-	}
-
-	public JSONObject getDownload() {
-		return download;
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+			if (arg.equals("-account")) {
+				i++;
+				handleEmptyOptionValue(arg, args[i]);
+				setAccount(args[i]);
+			} else if (arg.equals("-endpoints")) {
+				i++;
+				handleEmptyOptionValue(arg, args[i]);
+				setEndpoints(args[i]);
+			} else if (arg.equals("-query")) {
+				i++;
+				handleEmptyOptionValue(arg, args[i]);
+				setQuery(args[i]);
+			} else if (arg.equals("-download")) {
+				i++;
+				handleEmptyOptionValue(arg, args[i]);
+				setDownload(args[i]);
+			} else {
+				throw new InvalidOptionException("Unrecognised option: " + args[i]);
+			}
+		}
 	}
 
 	public List<String> constructAttributeValues(String attributeValues) {
@@ -101,7 +52,7 @@ public class OptionParser {
 		List<String> sanitizedValues = new ArrayList<String>();
 		for (String value : values) {
 			value = value.trim();
-			if (value.length()>0) {
+			if (value.length() > 0) {
 				sanitizedValues.add(value);
 			}
 		}
@@ -109,12 +60,55 @@ public class OptionParser {
 			sanitizedValues.add("");
 		}
 		return sanitizedValues;
-	}	
-	
+	}
 
-    private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
-        if (value.trim().isEmpty()){
-            throw new InvalidOptionException("Empty value for: " + option);
-        }
-    }
+	public JSONObject getAccount() {
+		return account;
+	}
+
+	public JSONObject getDownload() {
+		return download;
+	}
+
+	public JSONObject getEndpoints() {
+		return endpoints;
+	}
+
+	public JSONObject getQuery() {
+		return query;
+	}
+
+	public JSONObject stringToJson(String str) throws ParseException {
+		JSONParser parser = new JSONParser();
+		String escapeStr = str.replace("%", "\"").replace("+", " ");
+		Object obj = parser.parse(escapeStr);
+		JSONObject jsonObj = (JSONObject) obj;
+		return jsonObj;
+	}
+
+	private void handleEmptyOptionValue(String option, String value) throws InvalidOptionException {
+		if (value.trim().isEmpty()) {
+			throw new InvalidOptionException("Empty value for: " + option);
+		}
+	}
+
+	private void setAccount(String account) throws ParseException {
+		JSONObject acc = stringToJson(account);
+		this.account = acc;
+	}
+
+	private void setDownload(String download) throws ParseException {
+		JSONObject dl = stringToJson(download);
+		this.download = dl;
+	}
+
+	private void setEndpoints(String endpoints) throws ParseException {
+		JSONObject ep = stringToJson(endpoints);
+		this.endpoints = ep;
+	}
+
+	private void setQuery(String query) throws ParseException {
+		JSONObject q = stringToJson(query);
+		this.query = q;
+	}
 }

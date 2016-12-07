@@ -6,7 +6,7 @@ package org.fairdom;
 @SuppressWarnings("serial")
 public class InvalidOptionException extends Exception {
 
-    public InvalidOptionException(String message) {
-        super(message);
-    }
+	public InvalidOptionException(String message) {
+		super(message);
+	}
 }

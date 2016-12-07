@@ -30,140 +30,136 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileS
 /**
  * Created by quyennguyen on 13/02/15.
  */
-public class DataStoreDownload extends DataStoreStream{    
-	
-  
-    public DataStoreDownload(String startEndpoint, String startSessionToken) {
-		super(startEndpoint, startSessionToken);		
-	}
+public class DataStoreDownload extends DataStoreStream {
 
 	public static void main(String[] args) {
-    	OptionParser options = null;
-        try {
-            options = new OptionParser(args);
-        } catch (InvalidOptionException e) {
-            System.err.println("Invalid option: " + e.getMessage());
-            System.exit(-1);
+		OptionParser options = null;
+		try {
+			options = new OptionParser(args);
+		} catch (InvalidOptionException e) {
+			System.err.println("Invalid option: " + e.getMessage());
+			System.exit(-1);
 		} catch (ParseException pe) {
 			System.out.println("position: " + pe.getPosition());
 			System.out.println(pe);
 			System.exit(-1);
 		}
 
-        try {        	
-        	JSONObject endpoints = options.getEndpoints();
-        	JSONObject download = options.getDownload();
-                        
-            DataStoreDownload dssDownload = new DataStoreDownload(endpoints.get("dss").toString(), endpoints.get("sessionToken").toString());
-            
-            String downloadType = download.get("downloadType").toString();
-            String permID = download.get("permID").toString();
-            String source = download.get("source").toString();
-            String dest = download.get("dest").toString();
-            
-            String downloadInfo = "";
-            if (downloadType.equals("file")){
-            	dssDownload.downloadSingleFile(permID, source, dest);
-            	downloadInfo = downloadInfo + "Download file " + permID + "#" + source + " into " + dest;            	
-            }else if (downloadType.equals("folder")){
-            	dssDownload.downloadFolder(permID, source, dest);
-            	downloadInfo = downloadInfo + "Download folder " + permID + "#" + source + " into " + dest;
-            }else if (downloadType.equals("dataset")){
-            	dssDownload.downloadDataSetFiles(permID, dest);
-            	downloadInfo = downloadInfo + "Download dataset files of " + permID + " into " + dest;
-            }else{
-            	downloadInfo = downloadInfo + "Invalid download type, nothing to download";
-            }
-            System.out.println("{\"download_info\":" + "\""+ downloadInfo + "\"" + "}");
-            
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(-1);
-        }
-        System.exit(0);
-    } 
-      
-   public void downloadSingleFile(String permId, String sourceRelative, String destination)throws IOException{
-	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
-	   options.setRecursive(false);
-	   IDataSetFileId fileToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelative);
+		try {
+			JSONObject endpoints = options.getEndpoints();
+			JSONObject download = options.getDownload();
 
-	   InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(fileToDownload), options);
-	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-	   DataSetFileDownload file = null;
-	   file = reader.read();
-	   InputStream inputStream = file.getInputStream();
-	   	   
-	   File outputFile = new File(destination);
-	   OutputStream fileOutputStream = new FileOutputStream(outputFile);
-       
-	   IOUtils.copyLarge(inputStream, fileOutputStream);
-	   fileOutputStream.close();	   
-   }
-   
-   public void downloadFolder(String permId, String sourceRelativeFolder, String destinationFolder)throws IOException{
-	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
-	   options.setRecursive(true);
-	   IDataSetFileId filesToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelativeFolder);
+			DataStoreDownload dssDownload = new DataStoreDownload(endpoints.get("dss").toString(),
+					endpoints.get("sessionToken").toString());
 
-	   InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(filesToDownload), options);
-	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-	   DataSetFileDownload file = null;
-	   
-	   while ((file = reader.read()) != null)	   
-	   {
-		   InputStream inputStream = file.getInputStream();
-		   DataSetFile dataSetFile = file.getDataSetFile();
-		   if (dataSetFile.isDirectory()){
-			   Path dir = Paths.get(destinationFolder + dataSetFile.getPath());			   
-			   Files.createDirectories(dir);
-		   }else{
-			   File outputFile = new File(destinationFolder + dataSetFile.getPath());
-			   OutputStream fileOutputStream = new FileOutputStream(outputFile);
-		       
-			   IOUtils.copyLarge(inputStream, fileOutputStream);
-			   fileOutputStream.close();
-		   }	   
-	   }
-   }
+			String downloadType = download.get("downloadType").toString();
+			String permID = download.get("permID").toString();
+			String source = download.get("source").toString();
+			String dest = download.get("dest").toString();
 
-   
-   public void downloadDataSetFiles(String permId, String destinationFolder)throws IOException{
-	   DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
-	   options.setRecursive(true);
-	   
-	   DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
-	   criteria.withDataSet().withCode().thatEquals(permId);
-	   
-	   SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
-       List<DataSetFile> files = result.getObjects();
-	   
-	   List<IDataSetFileId> filesToDownload = new LinkedList<IDataSetFileId>();
-	   for (DataSetFile file : files)
-		   filesToDownload.add(file.getPermId());	   
-	   
+			String downloadInfo = "";
+			if (downloadType.equals("file")) {
+				dssDownload.downloadSingleFile(permID, source, dest);
+				downloadInfo = downloadInfo + "Download file " + permID + "#" + source + " into " + dest;
+			} else if (downloadType.equals("folder")) {
+				dssDownload.downloadFolder(permID, source, dest);
+				downloadInfo = downloadInfo + "Download folder " + permID + "#" + source + " into " + dest;
+			} else if (downloadType.equals("dataset")) {
+				dssDownload.downloadDataSetFiles(permID, dest);
+				downloadInfo = downloadInfo + "Download dataset files of " + permID + " into " + dest;
+			} else {
+				downloadInfo = downloadInfo + "Invalid download type, nothing to download";
+			}
+			System.out.println("{\"download_info\":" + "\"" + downloadInfo + "\"" + "}");
 
-	   InputStream stream = dss.downloadFiles(sessionToken, filesToDownload, options);
-	   DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-	   DataSetFileDownload file = null;
-	   
-	   while ((file = reader.read()) != null)	   
-	   {
-		   InputStream inputStream = file.getInputStream();
-		   DataSetFile dataSetFile = file.getDataSetFile();
-		   if (dataSetFile.isDirectory()){
-			   Path dir = Paths.get(destinationFolder + dataSetFile.getPath());			   
-			   Files.createDirectories(dir);
-		   }else{
-			   File outputFile = new File(destinationFolder + dataSetFile.getPath());
-			   OutputStream fileOutputStream = new FileOutputStream(outputFile);
-		       
-			   IOUtils.copyLarge(inputStream, fileOutputStream);
-			   fileOutputStream.close();
-		   }	   
-	   }
-   }
+		} catch (Exception ex) {
+			System.err.println(ex.getMessage());
+			ex.printStackTrace();
+			System.exit(-1);
+		}
+		System.exit(0);
+	}
 
+	public DataStoreDownload(String startEndpoint, String startSessionToken) {
+		super(startEndpoint, startSessionToken);
+	}
+
+	public void downloadDataSetFiles(String permId, String destinationFolder) throws IOException {
+		DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
+		options.setRecursive(true);
+
+		DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
+		criteria.withDataSet().withCode().thatEquals(permId);
+
+		SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
+		List<DataSetFile> files = result.getObjects();
+
+		List<IDataSetFileId> filesToDownload = new LinkedList<IDataSetFileId>();
+		for (DataSetFile file : files)
+			filesToDownload.add(file.getPermId());
+
+		InputStream stream = dss.downloadFiles(sessionToken, filesToDownload, options);
+		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
+		DataSetFileDownload file = null;
+
+		while ((file = reader.read()) != null) {
+			InputStream inputStream = file.getInputStream();
+			DataSetFile dataSetFile = file.getDataSetFile();
+			if (dataSetFile.isDirectory()) {
+				Path dir = Paths.get(destinationFolder + dataSetFile.getPath());
+				Files.createDirectories(dir);
+			} else {
+				File outputFile = new File(destinationFolder + dataSetFile.getPath());
+				OutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+				IOUtils.copyLarge(inputStream, fileOutputStream);
+				fileOutputStream.close();
+			}
+		}
+	}
+
+	public void downloadFolder(String permId, String sourceRelativeFolder, String destinationFolder)
+			throws IOException {
+		DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
+		options.setRecursive(true);
+		IDataSetFileId filesToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelativeFolder);
+
+		InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(filesToDownload), options);
+		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
+		DataSetFileDownload file = null;
+
+		while ((file = reader.read()) != null) {
+			InputStream inputStream = file.getInputStream();
+			DataSetFile dataSetFile = file.getDataSetFile();
+			if (dataSetFile.isDirectory()) {
+				Path dir = Paths.get(destinationFolder + dataSetFile.getPath());
+				Files.createDirectories(dir);
+			} else {
+				File outputFile = new File(destinationFolder + dataSetFile.getPath());
+				OutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+				IOUtils.copyLarge(inputStream, fileOutputStream);
+				fileOutputStream.close();
+			}
+		}
+	}
+
+	public void downloadSingleFile(String permId, String sourceRelative, String destination) throws IOException {
+		DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
+		options.setRecursive(false);
+		IDataSetFileId fileToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelative);
+
+		InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(fileToDownload), options);
+		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
+		DataSetFileDownload file = null;
+		file = reader.read();
+		InputStream inputStream = file.getInputStream();
+
+		File outputFile = new File(destination);
+		OutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+		IOUtils.copyLarge(inputStream, fileOutputStream);
+		fileOutputStream.close();
+	}
 
 }

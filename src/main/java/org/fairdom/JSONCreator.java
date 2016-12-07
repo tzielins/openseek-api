@@ -16,7 +16,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.tag.Tag;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 
 /**
- * @author Stuart Owen 
+ * @author Stuart Owen
  */
 
 public class JSONCreator {
@@ -57,22 +57,12 @@ public class JSONCreator {
 				map.get("datasetfiles").add(jsonMap((DataSetFile) item));
 			}
 		}
-		
+
 		json = JSONObject.toJSONString(map);
 	}
 
-	public String getJSON() {		
+	public String getJSON() {
 		return json;
-	}
-
-	private Map<String, Object> jsonMap(DataSetFile datasetFile) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("dataset", datasetFile.getDataSetPermId().getPermId());
-		map.put("filePermId", datasetFile.getPermId());
-		map.put("path", datasetFile.getPath());
-		map.put("isDirectory", datasetFile.isDirectory());
-		map.put("fileLength", datasetFile.getFileLength());
-		return map;
 	}
 
 	private Map<String, Object> jsonMap(DataSet dataset) {
@@ -114,12 +104,14 @@ public class JSONCreator {
 		return map;
 	}
 
-	private List<String> tagList(Set<Tag> tags) {
-		List<String> tagStr = new ArrayList<String>();
-		for (Tag tag : tags) {
-			tagStr.add(tag.getCode());
-		}
-		return tagStr;
+	private Map<String, Object> jsonMap(DataSetFile datasetFile) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("dataset", datasetFile.getDataSetPermId().getPermId());
+		map.put("filePermId", datasetFile.getPermId());
+		map.put("path", datasetFile.getPath());
+		map.put("isDirectory", datasetFile.isDirectory());
+		map.put("fileLength", datasetFile.getFileLength());
+		return map;
 	}
 
 	private Map<String, Object> jsonMap(Experiment experiment) {
@@ -213,11 +205,19 @@ public class JSONCreator {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("permId", space.getPermId().getPermId());
 		map.put("code", space.getCode());
-		map.put("description", space.getDescription());		
+		map.put("description", space.getDescription());
 
 		map.put("modificationDate", space.getModificationDate().toString());
 		map.put("registrationDate", space.getRegistrationDate().toString());
 		return map;
+	}
+
+	private List<String> tagList(Set<Tag> tags) {
+		List<String> tagStr = new ArrayList<String>();
+		for (Tag tag : tags) {
+			tagStr.add(tag.getCode());
+		}
+		return tagStr;
 	}
 
 }

@@ -19,10 +19,6 @@ import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
  */
 public class DataStoreQuery extends DataStoreStream {
 
-	public DataStoreQuery(String startEndpoint, String startSessionToken) {
-		super(startEndpoint, startSessionToken);
-	}
-
 	public static void main(String[] args) {
 		OptionParser options = null;
 		try {
@@ -61,56 +57,8 @@ public class DataStoreQuery extends DataStoreStream {
 		System.exit(0);
 	}
 
-	public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
-		List result = null;
-		if (queryType == QueryType.PROPERTY) {
-			if (type.equals("DataSetFile")) {
-				result = datasetFilesByProperty(key, value);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		} else if (queryType == QueryType.ATTRIBUTE) {
-			if (type.equals("DataSetFile")) {
-				result = datasetFilesByAttribute(key, value);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		}
-
-		return result;
-	}
-
-	public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
-		List result = null;
-		if (queryType == QueryType.ATTRIBUTE) {
-			if (type.equals("DataSetFile")) {
-				result = datasetFilesByAttribute(key, values);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		}
-
-		return result;
-	}
-
-	public String jsonResult(SearchResult result) {
-		GenericObjectMapper mapper = new GenericObjectMapper();
-		StringWriter sw = new StringWriter();
-		try {
-			mapper.writeValue(sw, result);
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-		return sw.toString();
-	}
-
-	public List<DataSetFile> datasetFilesByProperty(String property, String propertyValue) {
-		DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
-		criteria.withDataSet().withProperty(property).thatContains(propertyValue);
-
-		SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
-		List<DataSetFile> searchFiles = result.getObjects();
-		return searchFiles;
+	public DataStoreQuery(String startEndpoint, String startSessionToken) {
+		super(startEndpoint, startSessionToken);
 	}
 
 	public List<DataSetFile> datasetFilesByAttribute(String attribute, List<String> values)
@@ -136,6 +84,58 @@ public class DataStoreQuery extends DataStoreStream {
 	public List<DataSetFile> datasetFilesByAttribute(String attribute, String value) throws InvalidOptionException {
 		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
 		return datasetFilesByAttribute(attribute, values);
+	}
+
+	public List<DataSetFile> datasetFilesByProperty(String property, String propertyValue) {
+		DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
+		criteria.withDataSet().withProperty(property).thatContains(propertyValue);
+
+		SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
+		List<DataSetFile> searchFiles = result.getObjects();
+		return searchFiles;
+	}
+
+	public String jsonResult(SearchResult result) {
+		GenericObjectMapper mapper = new GenericObjectMapper();
+		StringWriter sw = new StringWriter();
+		try {
+			mapper.writeValue(sw, result);
+		} catch (Exception ex) {
+			System.err.println(ex.getMessage());
+		}
+		return sw.toString();
+	}
+
+	public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+		List result = null;
+		if (queryType == QueryType.ATTRIBUTE) {
+			if (type.equals("DataSetFile")) {
+				result = datasetFilesByAttribute(key, values);
+			} else {
+				throw new InvalidOptionException("Unrecognised type: " + type);
+			}
+		}
+
+		return result;
+	}
+
+	public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+		List result = null;
+		if (queryType == QueryType.PROPERTY) {
+			if (type.equals("DataSetFile")) {
+				result = datasetFilesByProperty(key, value);
+			} else {
+				throw new InvalidOptionException("Unrecognised type: " + type);
+			}
+		} else if (queryType == QueryType.ATTRIBUTE) {
+			if (type.equals("DataSetFile")) {
+				result = datasetFilesByAttribute(key, value);
+			} else {
+				throw new InvalidOptionException("Unrecognised type: " + type);
+			}
+		}
+
+		return result;
 	}
 
 }
