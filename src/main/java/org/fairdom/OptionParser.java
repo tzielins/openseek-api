@@ -8,8 +8,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ * @author Quyen Nugyen
+ * @author Stuart Owen
  *
- * Created by quyennguyen on 19/02/15. Parse Java command line arguments
+ * 
  * Argument structure with example value
  * -account:{"username":"test","password":"test"}
  * -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com","sessionToken":"somevalue"}
@@ -83,9 +85,7 @@ public class OptionParser {
 	public JSONObject stringToJson(String str) throws ParseException {
 		JSONParser parser = new JSONParser();
 		String escapeStr = str.replace("%", "\"").replace("+", " ");
-		Object obj = parser.parse(escapeStr);
-		JSONObject jsonObj = (JSONObject) obj;
-		return jsonObj;
+		return (JSONObject)parser.parse(escapeStr);		
 	}
 	
 	public Action getAction() {

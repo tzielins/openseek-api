@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = 'org.fairdom.QueryMain'
+mainClassName = 'org.fairdom.OpenSeekEntry'
 apply plugin: 'jacoco' // test reporter
 apply plugin: 'com.github.kt3k.coveralls' //coveralls plugin
 sourceCompatibility=1.7
@@ -37,7 +37,7 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
     def classPathJoined = classPath.join(' ')
     baseName = 'openseek-api'
     version =  '0.5.1'
-    manifest.attributes('Main-Class': 'org.fairdom.QueryMain',
+    manifest.attributes('Main-Class': 'org.fairdom.OpenSeekEntry',
                         'Class-Path': "$classPathJoined")
     with jar
 }

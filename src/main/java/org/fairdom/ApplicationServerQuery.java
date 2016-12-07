@@ -41,44 +41,6 @@ public class ApplicationServerQuery {
 		return as;
 	}
 
-	public static void main(String[] args) {
-		OptionParser options = null;
-		try {
-			options = new OptionParser(args);
-		} catch (InvalidOptionException e) {
-			System.err.println("Invalid option: " + e.getMessage());
-			System.exit(-1);
-		} catch (ParseException pe) {
-			System.out.println("position: " + pe.getPosition());
-			System.out.println(pe);
-			System.exit(-1);
-		}
-
-		try {
-			JSONObject endpoints = options.getEndpoints();
-			JSONObject query = options.getQuery();
-
-			ApplicationServerQuery asQuery = new ApplicationServerQuery(endpoints.get("as").toString(),
-					endpoints.get("sessionToken").toString());
-			List result;
-			if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
-				result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
-						query.get("property").toString(), query.get("propertyValue").toString());
-			} else {
-				List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
-				result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
-						query.get("attribute").toString(), attributeValues);
-			}
-			String jsonResult = new JSONCreator(result).getJSON();
-			System.out.println(jsonResult);
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-			ex.printStackTrace();
-			System.exit(-1);
-		}
-		System.exit(0);
-	}
-
 	public ApplicationServerQuery(String startEndpoint, String startSessionToken) {
 		endpoint = startEndpoint;
 		sessionToken = startSessionToken;

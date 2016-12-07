@@ -21,7 +21,8 @@ import org.junit.Test;
 import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
 
 /**
- * Created by quyennguyen on 13/02/15.
+ * @author Quyen Nugyen
+ * @author Stuart Owen
  */
 public class DataStoreDownloadTest {
     

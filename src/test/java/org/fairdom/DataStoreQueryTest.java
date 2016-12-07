@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.fairdom.testhelpers.JSONValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,6 +44,8 @@ public class DataStoreQueryTest {
         long fileLength = 25;        
         assertEquals(perID, file.getPermId().toString());
         assertEquals(fileLength, file.getFileLength());
+        String json = new JSONCreator(files).getJSON();
+        assertTrue(JSONValidator.isValidJSON(json));
 	}        
 	
     @Test
@@ -51,9 +54,9 @@ public class DataStoreQueryTest {
         String property = "SEEK_DATAFILE_ID";
         String propertyValue = "DataFile_1";
         List <DataSetFile> files = query.datasetFilesByProperty(property, propertyValue);
-        SearchResult<DataSetFile> result = new SearchResult<DataSetFile>(files, files.size());
-        String jsonResult = query.jsonResult(result);
-        assertTrue(jsonResult.matches("(.*)20151217153943290-5(.*)"));
+        assertEquals(3,files.size());
+        String json = new JSONCreator(files).getJSON();
+        assertTrue(JSONValidator.isValidJSON(json));
     }   
    
     

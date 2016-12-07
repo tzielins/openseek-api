@@ -107,7 +107,7 @@ public class JSONCreator {
 	private Map<String, Object> jsonMap(DataSetFile datasetFile) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("dataset", datasetFile.getDataSetPermId().getPermId());
-		map.put("filePermId", datasetFile.getPermId());
+		map.put("filePermId", datasetFile.getPermId().toString());
 		map.put("path", datasetFile.getPath());
 		map.put("isDirectory", datasetFile.isDirectory());
 		map.put("fileLength", datasetFile.getFileLength());

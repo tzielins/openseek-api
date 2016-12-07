@@ -1,7 +1,8 @@
 package org.fairdom;
 
 /**
- * Created by quyennguyen on 19/02/15.
+ * @author Quyen Nugyen
+ * @author Stuart Owen
  */
 import static org.junit.Assert.assertEquals;
 
@@ -49,11 +50,11 @@ public class OptionParserTest {
 	
 	@Test
 	public void testDownload() throws Exception {
-		String download = "{\"type\":\"file\", \"permID\":\"ID100\", \"source\":\"original/testfile\", \"dest\":\"/home/test/testfile\"}";
+		String download = "{\"downloadType\":\"file\", \"permID\":\"ID100\", \"source\":\"original/testfile\", \"dest\":\"/home/test/testfile\"}";
 		String[] args = new String[] { "-download", download};
 		OptionParser p = new OptionParser(args);
 		JSONObject downloadArgs = p.getDownload();
-		assertEquals("file", downloadArgs.get("type"));
+		assertEquals("file", downloadArgs.get("downloadType"));
 		assertEquals("ID100", downloadArgs.get("permID"));
 		assertEquals("original/testfile", downloadArgs.get("source"));
 		assertEquals("/home/test/testfile", downloadArgs.get("dest"));

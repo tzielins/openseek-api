@@ -13,8 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.id.DataSetPermId;
@@ -31,54 +29,7 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileS
  * Created by quyennguyen on 13/02/15.
  */
 public class DataStoreDownload extends DataStoreStream {
-
-	public static void main(String[] args) {
-		OptionParser options = null;
-		try {
-			options = new OptionParser(args);
-		} catch (InvalidOptionException e) {
-			System.err.println("Invalid option: " + e.getMessage());
-			System.exit(-1);
-		} catch (ParseException pe) {
-			System.out.println("position: " + pe.getPosition());
-			System.out.println(pe);
-			System.exit(-1);
-		}
-
-		try {
-			JSONObject endpoints = options.getEndpoints();
-			JSONObject download = options.getDownload();
-
-			DataStoreDownload dssDownload = new DataStoreDownload(endpoints.get("dss").toString(),
-					endpoints.get("sessionToken").toString());
-
-			String downloadType = download.get("downloadType").toString();
-			String permID = download.get("permID").toString();
-			String source = download.get("source").toString();
-			String dest = download.get("dest").toString();
-
-			String downloadInfo = "";
-			if (downloadType.equals("file")) {
-				dssDownload.downloadSingleFile(permID, source, dest);
-				downloadInfo = downloadInfo + "Download file " + permID + "#" + source + " into " + dest;
-			} else if (downloadType.equals("folder")) {
-				dssDownload.downloadFolder(permID, source, dest);
-				downloadInfo = downloadInfo + "Download folder " + permID + "#" + source + " into " + dest;
-			} else if (downloadType.equals("dataset")) {
-				dssDownload.downloadDataSetFiles(permID, dest);
-				downloadInfo = downloadInfo + "Download dataset files of " + permID + " into " + dest;
-			} else {
-				downloadInfo = downloadInfo + "Invalid download type, nothing to download";
-			}
-			System.out.println("{\"download_info\":" + "\"" + downloadInfo + "\"" + "}");
-
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-			ex.printStackTrace();
-			System.exit(-1);
-		}
-		System.exit(0);
-	}
+	
 
 	public DataStoreDownload(String startEndpoint, String startSessionToken) {
 		super(startEndpoint, startSessionToken);

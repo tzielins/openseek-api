@@ -19,44 +19,6 @@ import ch.systemsx.cisd.openbis.generic.shared.api.v1.json.GenericObjectMapper;
  */
 public class DataStoreQuery extends DataStoreStream {
 
-	public static void main(String[] args) {
-		OptionParser options = null;
-		try {
-			options = new OptionParser(args);
-		} catch (InvalidOptionException e) {
-			System.err.println("Invalid option: " + e.getMessage());
-			System.exit(-1);
-		} catch (ParseException pe) {
-			System.out.println("position: " + pe.getPosition());
-			System.out.println(pe);
-			System.exit(-1);
-		}
-
-		try {
-			JSONObject endpoints = options.getEndpoints();
-			JSONObject query = options.getQuery();
-			DataStoreQuery dssQuery = new DataStoreQuery(endpoints.get("dss").toString(),
-					endpoints.get("sessionToken").toString());
-			List result;
-			if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
-				result = dssQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
-						query.get("property").toString(), query.get("propertyValue").toString());
-			} else {
-				List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
-				result = dssQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
-						query.get("attribute").toString(), attributeValues);
-			}
-			String jsonResult = new JSONCreator(result).getJSON();
-			System.out.println(jsonResult);
-
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-			ex.printStackTrace();
-			System.exit(-1);
-		}
-		System.exit(0);
-	}
-
 	public DataStoreQuery(String startEndpoint, String startSessionToken) {
 		super(startEndpoint, startSessionToken);
 	}
@@ -95,17 +57,7 @@ public class DataStoreQuery extends DataStoreStream {
 		return searchFiles;
 	}
 
-	public String jsonResult(SearchResult result) {
-		GenericObjectMapper mapper = new GenericObjectMapper();
-		StringWriter sw = new StringWriter();
-		try {
-			mapper.writeValue(sw, result);
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-		return sw.toString();
-	}
-
+	
 	public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
 		List result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
