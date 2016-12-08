@@ -10,9 +10,8 @@ import java.io.File;
 import java.io.PrintStream;
 
 import org.apache.poi.util.TempFile;
-import org.fairdom.testhelpers.JSONValidator;
+import org.fairdom.testhelpers.JSONHelper;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
@@ -41,8 +40,7 @@ public class OpenSeekEntryTest {
 	}
 	
 	private static String token=null;
-	
-	private String account;
+		
 	private String as_endpoint="https://openbis-api.fair-dom.org/openbis/openbis";
 	private String dss_endpoint="https://openbis-api.fair-dom.org/datastore_server";
 	private PrintStream oldStream;
@@ -89,10 +87,8 @@ public class OpenSeekEntryTest {
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("download_info"));
 		assertTrue(tempFile.exists());
-		tempFile.delete();
-		
-	}
-	
+		tempFile.delete();		
+	}	
 
 	private JSONObject doExecute(String[] args) throws ParseException {
 		OpenSeekEntryWrapper wrapper = new OpenSeekEntryWrapper(args);
@@ -101,7 +97,7 @@ public class OpenSeekEntryTest {
 		putSysOutBack();
 		assertEquals(0,wrapper.exitCode);
 		String json = outputStream.toString();
-		JSONObject jsonObj=processJSON(json);
+		JSONObject jsonObj=JSONHelper.processJSON(json);
 		return jsonObj;
 	}
 
@@ -115,10 +111,7 @@ public class OpenSeekEntryTest {
         return OpenSeekEntryTest.token;
 	}
 	
-	private JSONObject processJSON(String json) throws ParseException {
-		assertTrue(JSONValidator.isValidJSON(json));
-		return (JSONObject)(new JSONParser().parse(json));		
-	}
+	
 	
 	private void putSysOutBack() {
 		System.setOut(oldStream);

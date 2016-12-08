@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.project.Project;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.tag.Tag;
@@ -205,7 +206,28 @@ public class JSONCreator {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("permId", space.getPermId().getPermId());
 		map.put("code", space.getCode());
-		map.put("description", space.getDescription());
+		map.put("description", space.getDescription());	
+		List<String> projectIds = new ArrayList<String>();
+		List<String> experimentIds = new ArrayList<String>();
+		List<String> datasetIds = new ArrayList<String>();
+		for (Project project : space.getProjects()) {
+			projectIds.add(project.getPermId().getPermId());
+			for (Experiment experiment : project.getExperiments()) {				
+				String id = experiment.getPermId().getPermId();
+				if (!experimentIds.contains(id)){
+					experimentIds.add(id);
+				}
+				for (DataSet dataset : experiment.getDataSets()) {
+					String dataId=dataset.getPermId().getPermId();
+					if (!datasetIds.contains(dataId)) {
+						datasetIds.add(dataId);
+					}
+				}
+			}
+		}
+		map.put("projects", projectIds);
+		map.put("experiments", experimentIds);
+		map.put("datasets", datasetIds);
 
 		map.put("modificationDate", space.getModificationDate().toString());
 		map.put("registrationDate", space.getRegistrationDate().toString());

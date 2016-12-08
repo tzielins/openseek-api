@@ -1,19 +1,17 @@
 package org.fairdom;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fairdom.testhelpers.JSONValidator;
+import org.fairdom.testhelpers.JSONHelper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
@@ -59,7 +57,7 @@ public class ApplicationServerQueryTest {
     	List<Space> spaces = query.spacesByAttribute("permId",permids);
     	assertEquals(2,spaces.size());
     	String json = new JSONCreator(spaces).getJSON();     	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     }
     
     @Test
@@ -69,12 +67,25 @@ public class ApplicationServerQueryTest {
     	List<Space> spaces = query.spacesByAttribute("permId",permids);
     	assertEquals(1,spaces.size());
     	String json = new JSONCreator(spaces).getJSON();     	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     	
     	spaces = query.spacesByAttribute("permId","API-SPACE");
     	assertEquals(1,spaces.size());
-    	json = new JSONCreator(spaces).getJSON();     	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	json = new JSONCreator(spaces).getJSON();
+    	System.out.println(json);
+    	JSONObject jsonObj = JSONHelper.processJSON(json);
+    	assertNotNull(jsonObj.get("spaces"));   
+    	JSONObject space=(JSONObject)((JSONArray)jsonObj.get("spaces")).get(0);
+    	JSONArray experiments = (JSONArray)space.get("experiments");
+    	JSONArray datasets = (JSONArray)space.get("datasets");
+    	JSONArray projects = (JSONArray)space.get("projects");
+    	assertEquals(1,experiments.size());
+    	assertEquals("20151216143716562-2",(String)experiments.get(0));
+    	
+    	assertEquals(1,projects.size());
+    	assertEquals("20151216135152196-1",(String)projects.get(0));
+    	assertEquals(8,datasets.size());
+    	assertTrue(datasets.contains("20160210130359377-22"));
     }
     
     @Test
@@ -82,7 +93,7 @@ public class ApplicationServerQueryTest {
     	List<Space> spaces = query.spacesByAttribute("permId","");
     	assertTrue(spaces.size()>0);
     	String json = new JSONCreator(spaces).getJSON();     	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     }
     
     @Test 
@@ -92,12 +103,12 @@ public class ApplicationServerQueryTest {
     	List<Experiment> experiments = query.experimentsByAttribute("permId",permids);
     	assertEquals(1, experiments.size());
     	String json = new JSONCreator(experiments).getJSON();    	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     	
     	experiments = query.experimentsByAttribute("permId","20151216143716562-2");
     	assertEquals(1, experiments.size());
     	json = new JSONCreator(experiments).getJSON();    	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     }
     
     @Test 
@@ -108,7 +119,7 @@ public class ApplicationServerQueryTest {
     	List<Experiment> experiments = query.experimentsByAttribute("permId",permids);
     	assertEquals(2, experiments.size());
     	String json = new JSONCreator(experiments).getJSON();	
-    	assertTrue(JSONValidator.isValidJSON(json));    	
+    	assertTrue(JSONHelper.isValidJSON(json));    	
     }
 
     @Test
@@ -117,7 +128,7 @@ public class ApplicationServerQueryTest {
     	List<Experiment> experiments = query.experimentsByAttribute("permId","");
     	assertTrue(experiments.size()>0);    
     	String json = new JSONCreator(experiments).getJSON();  	
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     }
     
     @Test
@@ -125,7 +136,7 @@ public class ApplicationServerQueryTest {
     	List<Sample> samples = query.samplesByAttribute("permId","");
     	assertTrue(samples.size()>0);   
     	String json = new JSONCreator(samples).getJSON();
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     }
     
     @Test
@@ -133,14 +144,14 @@ public class ApplicationServerQueryTest {
     	List<DataSet> data = query.dataSetsByAttribute("permId","");
     	assertTrue(data.size()>0);
     	String json = new JSONCreator(data).getJSON();
-    	assertTrue(JSONValidator.isValidJSON(json));    	
+    	assertTrue(JSONHelper.isValidJSON(json));    	
     }  
     
     @Test
     public void getDatasetByAttribute() throws Exception {
     	List<DataSet> data = query.dataSetsByAttribute("permId","20151217153943290-5");    	
     	String json = new JSONCreator(data).getJSON();
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     	assertEquals(1, data.size());
     }  
     
@@ -151,7 +162,7 @@ public class ApplicationServerQueryTest {
     	values.add("20160210130359377-22");
     	List<DataSet> data = query.dataSetsByAttribute("permId",values);    	
     	String json = new JSONCreator(data).getJSON();
-    	assertTrue(JSONValidator.isValidJSON(json));
+    	assertTrue(JSONHelper.isValidJSON(json));
     	assertEquals(2, data.size());
     }  
 

@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.fairdom.testhelpers.JSONValidator;
+import org.fairdom.testhelpers.JSONHelper;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.DataSetFile;
 
 /**
@@ -45,7 +44,7 @@ public class DataStoreQueryTest {
         assertEquals(perID, file.getPermId().toString());
         assertEquals(fileLength, file.getFileLength());
         String json = new JSONCreator(files).getJSON();
-        assertTrue(JSONValidator.isValidJSON(json));
+        assertTrue(JSONHelper.isValidJSON(json));
 	}        
 	
     @Test
@@ -56,7 +55,7 @@ public class DataStoreQueryTest {
         List <DataSetFile> files = query.datasetFilesByProperty(property, propertyValue);
         assertEquals(3,files.size());
         String json = new JSONCreator(files).getJSON();
-        assertTrue(JSONValidator.isValidJSON(json));
+        assertTrue(JSONHelper.isValidJSON(json));
     }   
    
     

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.AbstractEntitySearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
@@ -94,7 +91,7 @@ public class ApplicationServerQuery {
 
 		ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
 		criterion.withOrOperator();
-		updateCriterianForAttribute(criterion, attribute, values);
+		updateCriterianForAttribute(criterion, attribute, values);		
 
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 
@@ -175,6 +172,7 @@ public class ApplicationServerQuery {
 		SampleFetchOptions options = sampleFetchOptions();
 
 		SampleSearchCriteria criterion = new SampleSearchCriteria();
+		
 		criterion.withOrOperator();
 		updateCriterianForAttribute(criterion, attribute, values);
 
@@ -188,16 +186,19 @@ public class ApplicationServerQuery {
 
 	public List<Sample> samplesByProperty(String property, String propertyValue) {
 		SampleSearchCriteria criterion = new SampleSearchCriteria();
-		criterion.withProperty(property).thatContains(propertyValue);
+		criterion.withProperty(property).thatContains(propertyValue);		
 
 		SampleFetchOptions options = sampleFetchOptions();
+		
 
 		return as.searchSamples(sessionToken, criterion, options).getObjects();
 	}
 
 	public List<Space> spacesByAttribute(String attribute, List<String> values) throws InvalidOptionException {
 		SpaceFetchOptions options = new SpaceFetchOptions();
-		options.withProjects();
+		options.withProjects().withExperiments().withDataSets();
+		options.withSamples();
+					
 
 		SpaceSearchCriteria criterion = new SpaceSearchCriteria();
 		criterion.withOrOperator();
@@ -221,7 +222,7 @@ public class ApplicationServerQuery {
 		options.withModifier();
 		options.withRegistrator();
 		options.withTags();
-		options.withType();
+		options.withType();		
 		return options;
 	}
 
@@ -254,7 +255,7 @@ public class ApplicationServerQuery {
 			throws InvalidOptionException {
 		if (key.equalsIgnoreCase("permid")) {
 			for (String value : values) {
-				criteria.withPermId().thatContains(value);
+				criteria.withPermId().thatContains(value);				
 			}
 		} else {
 			throw new InvalidOptionException("Invalid attribute name:" + key);
