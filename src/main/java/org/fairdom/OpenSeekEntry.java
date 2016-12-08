@@ -70,7 +70,7 @@ public class OpenSeekEntry {
 
 		ApplicationServerQuery asQuery = new ApplicationServerQuery(endpoints.get("as").toString(),
 				endpoints.get("sessionToken").toString());
-		List result;
+		List<? extends Object> result;
 		if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
 			result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
 					query.get("property").toString(), query.get("propertyValue").toString());
@@ -87,7 +87,7 @@ public class OpenSeekEntry {
 		JSONObject query = options.getQuery();
 		DataStoreQuery dssQuery = new DataStoreQuery(endpoints.get("dss").toString(),
 				endpoints.get("sessionToken").toString());
-		List result;
+		List<? extends Object> result;
 		if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
 			result = dssQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
 					query.get("property").toString(), query.get("propertyValue").toString());

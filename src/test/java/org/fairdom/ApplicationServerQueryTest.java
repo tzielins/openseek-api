@@ -40,7 +40,7 @@ public class ApplicationServerQueryTest {
     
     @Test
     public void queryBySpace() throws Exception {
-    	List result = query.query("Space",QueryType.ATTRIBUTE,"permID","");
+    	List<? extends Object> result = query.query("Space",QueryType.ATTRIBUTE,"permID","");
     	assertTrue(result.size()>0);
     	
     	List<String> values = new ArrayList<String>();
@@ -229,7 +229,7 @@ public class ApplicationServerQueryTest {
         String type = "Experiment";
         String property = "SEEK_STUDY_ID";
         String propertyValue = "Study_1";
-        List result = query.query(type, QueryType.PROPERTY, property, propertyValue);
+        List<? extends Object> result = query.query(type, QueryType.PROPERTY, property, propertyValue);
         String jsonResult = new JSONCreator(result).getJSON();;
         assertTrue(jsonResult.matches("(.*)Study_1(.*)"));
     }

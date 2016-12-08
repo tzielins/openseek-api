@@ -112,8 +112,8 @@ public class ApplicationServerQuery {
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 	}
 
-	public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
-		List result = null;
+	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("Experiment")) {
 				result = experimentsByAttribute(key, values);
@@ -131,8 +131,8 @@ public class ApplicationServerQuery {
 		return result;
 	}
 
-	public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
-		List result = null;
+	public List<? extends Object> query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+		List<? extends Object> result = null;
 		if (queryType == QueryType.PROPERTY) {
 			if (type.equals("Experiment")) {
 				result = experimentsByProperty(key, value);

@@ -10,7 +10,8 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.fetchoptions.DataSe
 import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileSearchCriteria;
 
 /**
- * Created by quyennguyen on 13/02/15.
+ * @author Quyen Nugyen
+ * @author Stuart Owen
  */
 public class DataStoreQuery extends DataStoreStream {
 
@@ -53,8 +54,8 @@ public class DataStoreQuery extends DataStoreStream {
 	}
 
 	
-	public List query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
-		List result = null;
+	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("DataSetFile")) {
 				result = datasetFilesByAttribute(key, values);
@@ -66,8 +67,8 @@ public class DataStoreQuery extends DataStoreStream {
 		return result;
 	}
 
-	public List query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
-		List result = null;
+	public List<? extends Object> query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+		List<? extends Object> result = null;
 		if (queryType == QueryType.PROPERTY) {
 			if (type.equals("DataSetFile")) {
 				result = datasetFilesByProperty(key, value);
