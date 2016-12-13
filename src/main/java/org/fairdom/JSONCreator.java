@@ -77,10 +77,16 @@ public class JSONCreator {
 			map.put("modifier", dataset.getModifier().getUserId());
 		else
 			map.put("modifier", null);
-
-		map.put("registerator", dataset.getRegistrator().getUserId());
+		
+		if (dataset.getRegistrator()!=null) {
+			map.put("registerator", dataset.getRegistrator().getUserId());
+		} else {
+			map.put("registerator",null);
+		}				
+		
 		map.put("experiment", dataset.getExperiment().getPermId().getPermId());
 		map.put("tags", tagList(dataset.getTags()));
+		
 
 		Map<String, String> dsType = new HashMap<String, String>();
 		if (dataset.getType() != null) {
@@ -106,7 +112,7 @@ public class JSONCreator {
 	}
 
 	private Map<String, Object> jsonMap(DataSetFile datasetFile) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();		
 		map.put("dataset", datasetFile.getDataSetPermId().getPermId());
 		map.put("filePermId", datasetFile.getPermId().toString());
 		map.put("path", datasetFile.getPath());
@@ -129,9 +135,15 @@ public class JSONCreator {
 			map.put("modifier", experiment.getModifier().getUserId());
 		else
 			map.put("modifier", null);
+		
+		if (experiment.getRegistrator()!=null) {
+			map.put("registerator", experiment.getRegistrator().getUserId());
+		} else {
+			map.put("registerator",null);
+		}
 
 		map.put("tags", tagList(experiment.getTags()));
-		map.put("registerator", experiment.getRegistrator().getUserId());
+		
 		Map<String, String> expType = new HashMap<String, String>();
 		if (experiment.getType() != null) {
 			if (experiment.getType().getDescription() != null) {
@@ -172,7 +184,11 @@ public class JSONCreator {
 		else
 			map.put("modifier", null);
 
-		map.put("registerator", sample.getRegistrator().getUserId());
+		if (sample.getRegistrator()!=null) {
+			map.put("registerator", sample.getRegistrator().getUserId());
+		} else {
+			map.put("registerator",null);
+		}
 
 		Map<String, String> sampleType = new HashMap<String, String>();
 		if (sample.getType() != null) {

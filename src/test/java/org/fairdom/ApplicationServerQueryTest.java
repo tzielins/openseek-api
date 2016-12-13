@@ -71,8 +71,7 @@ public class ApplicationServerQueryTest {
     	
     	spaces = query.spacesByAttribute("permId","API-SPACE");
     	assertEquals(1,spaces.size());
-    	json = new JSONCreator(spaces).getJSON();
-    	System.out.println(json);
+    	json = new JSONCreator(spaces).getJSON();    	
     	JSONObject jsonObj = JSONHelper.processJSON(json);
     	assertNotNull(jsonObj.get("spaces"));   
     	JSONObject space=(JSONObject)((JSONArray)jsonObj.get("spaces")).get(0);

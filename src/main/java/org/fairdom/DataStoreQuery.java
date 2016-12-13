@@ -27,7 +27,7 @@ public class DataStoreQuery extends DataStoreStream {
 		// for now loop through the permids
 		List<DataSetFile> result = new ArrayList<DataSetFile>();
 		for (String value : values) {
-			DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
+			DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();			
 			criteria.withDataSet().withPermId().thatContains(value);
 
 			SearchResult<DataSetFile> files_result = dss.searchFiles(sessionToken, criteria,
