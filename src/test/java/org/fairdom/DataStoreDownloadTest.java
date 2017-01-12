@@ -205,14 +205,14 @@ public class DataStoreDownloadTest {
         String destinationFolder = basePath + "/src/test/java/resources/";
         
         
-        File file = new File(destinationFolder + sourceRelativeFolder); 
+        File file = new File(destinationFolder,sourceRelativeFolder); 
         if (file.exists()){
         	FileUtils.deleteDirectory(file);
         }    
       
         download.downloadFolder(permId, sourceRelativeFolder, destinationFolder);
                        
-        Path path = Paths.get(destinationFolder + sourceRelativeFolder);
+        Path path = Paths.get(destinationFolder,sourceRelativeFolder);
         DirectoryStream<Path> stream = Files.newDirectoryStream(path);        
         List<String> filesInFolder = new ArrayList<String>();
         for (Path outputFile: stream) {
@@ -230,17 +230,17 @@ public class DataStoreDownloadTest {
         String permId = "20151217153943290-5";        
         String sourceRelativeFolder = "original";
         String basePath = new File("").getAbsolutePath();
-        String destinationFolder = basePath + "/src/test/java/resources/";
+        String destinationFolder = basePath + "/src/test/java/resources";
         
         
-        File file = new File(destinationFolder + sourceRelativeFolder); 
+        File file = new File(destinationFolder,sourceRelativeFolder); 
         if (file.exists()){
         	FileUtils.deleteDirectory(file);
         }    
       
         download.downloadDataSetFiles(permId, destinationFolder);
                        
-        Path path = Paths.get(destinationFolder + sourceRelativeFolder);
+        Path path = Paths.get(destinationFolder,sourceRelativeFolder);
         DirectoryStream<Path> stream = Files.newDirectoryStream(path);        
         List<String> filesInFolder = new ArrayList<String>();
         for (Path outputFile: stream) {
