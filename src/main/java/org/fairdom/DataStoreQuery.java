@@ -19,16 +19,13 @@ public class DataStoreQuery extends DataStoreStream {
 		super(startEndpoint, startSessionToken);
 	}
 
-	public List<DataSetFile> datasetFilesByAttribute(String attribute, List<String> values)
+	public List<DataSetFile> datasetFilesByDataSetPermIds(List<String> dataSetPermIds)
 			throws InvalidOptionException {
-
-		// FIXME: ability to search by OR operator, through set of PermID
-		// criteria.withOperator(SearchOperator.OR);
-		// for now loop through the permids
+		
 		List<DataSetFile> result = new ArrayList<DataSetFile>();
-		for (String value : values) {
+		for (String dataSetPermId : dataSetPermIds) {
 			DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();			
-			criteria.withDataSet().withPermId().thatContains(value);
+			criteria.withDataSet().withPermId().thatContains(dataSetPermId);
 
 			SearchResult<DataSetFile> files_result = dss.searchFiles(sessionToken, criteria,
 					new DataSetFileFetchOptions());
@@ -39,9 +36,9 @@ public class DataStoreQuery extends DataStoreStream {
 
 	}
 
-	public List<DataSetFile> datasetFilesByAttribute(String attribute, String value) throws InvalidOptionException {
-		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
-		return datasetFilesByAttribute(attribute, values);
+	public List<DataSetFile> datasetFilesByDataSetPermId(String dataSetPermId) throws InvalidOptionException {
+		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { dataSetPermId }));
+		return datasetFilesByDataSetPermIds(values);
 	}
 
 	public List<DataSetFile> datasetFilesByProperty(String property, String propertyValue) {
@@ -58,7 +55,10 @@ public class DataStoreQuery extends DataStoreStream {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("DataSetFile")) {
-				result = datasetFilesByAttribute(key, values);
+				if (!key.equals("dataSetPermId")) {
+					throw new InvalidOptionException("Only dataSetPermId is currently supported");
+				}
+				result = datasetFilesByDataSetPermIds(values);
 			} else {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
@@ -77,7 +77,10 @@ public class DataStoreQuery extends DataStoreStream {
 			}
 		} else if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("DataSetFile")) {
-				result = datasetFilesByAttribute(key, value);
+				if (key!="dataSetPermId") {
+					throw new InvalidOptionException("Only dataSetPermId is currently supported");
+				}
+				result = datasetFilesByDataSetPermId(value);
 			} else {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}

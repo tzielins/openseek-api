@@ -60,11 +60,19 @@ public class DataStoreQueryTest {
    
     
     @Test
-    public void getDataSetFileWithPermID() throws Exception {
+    public void getDataSetFileWithDataSetPermID() throws Exception {
 		DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
         List <String> values = new ArrayList<String> (Arrays.asList(new String[]{"20151217153943290-5","20160210130359377-22"}));
-        List <DataSetFile> files = query.datasetFilesByAttribute("PermID", values);        
+        List <DataSetFile> files = query.datasetFilesByDataSetPermIds(values);        
         assertFalse(files.isEmpty());
     }   
+    
+    @Test
+    public void doQueryWithDataSetPermID() throws Exception {
+    	DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
+        List <String> values = new ArrayList<String> (Arrays.asList(new String[]{"20151217153943290-5","20160210130359377-22"}));
+        List<? extends Object> files=query.query("DataSetFile", QueryType.ATTRIBUTE, "dataSetPermId", values);
+        assertFalse(files.isEmpty());        
+    }
    
 }
