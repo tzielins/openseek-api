@@ -5,7 +5,8 @@ apply plugin: 'com.github.kt3k.coveralls' //coveralls plugin
 sourceCompatibility=1.7
 targetCompatibility=1.7
 
-mainClassName = 'org.fairdom.OpenSeekEntry'
+def mainClass='org.fairdom.OpenSeekEntry'
+def jarVersion='0.11'
 
 
 repositories {
@@ -22,31 +23,16 @@ dependencies {
             'com.googlecode.json-simple:json-simple:1.1'
 }
 
-task copyJarFiles(type: Copy){			
-		from configurations.compile
-    	into "$buildDir/libs/copiedLibs"	    
+jar {
+	version =  jarVersion
+	baseName = 'openseek-api'
+	manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
+      'Main-Class': mainClass)
+  	}
 }
 
-task archiveJar(type: Jar, dependsOn: copyJarFiles) {
-	
-		File libDir = file("$buildDir/libs/copiedLibs")    
-	    FileCollection collection = files{ libDir.listFiles() }
-	    if (collection.empty) {
-	    	throw new GradleException("list of libraries for classpath in manifest is empty") 
-	    }
-	    def classPath = []    
-	    collection.each {File file ->	    	
-	        classPath << 'lib/' + file.name        
-	    }
-	    def classPathJoined = classPath.join(' ')
-	    println('class path joined = '+classPathJoined)
-		version =  '0.11'
-		baseName = 'openseek-api'	          
-	    manifest.attributes('Main-Class': 'org.fairdom.OpenSeekEntry',
-	                        'Class-Path': "$classPathJoined")
-	    with jar
-	    
-}
 
 run {
     if ( project.hasProperty("appArgs") ) {
