@@ -62,6 +62,8 @@ public class DataStoreQuery extends DataStoreStream {
 			} else {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
+		}else {
+			throw new InvalidOptionException("It is only possible to query by ATTRIBUTE when using an array of values");
 		}
 
 		return result;
@@ -76,15 +78,12 @@ public class DataStoreQuery extends DataStoreStream {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
 		} else if (queryType == QueryType.ATTRIBUTE) {
-			if (type.equals("DataSetFile")) {
-				if (key!="dataSetPermId") {
-					throw new InvalidOptionException("Only dataSetPermId is currently supported");
-				}
-				result = datasetFilesByDataSetPermId(value);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		}
+			List<String> values = new ArrayList<String>();
+			values.add(value);
+			result=query(type,queryType,key,value);
+		} else {
+			throw new InvalidOptionException("Unrecognised query type");
+		}					
 
 		return result;
 	}

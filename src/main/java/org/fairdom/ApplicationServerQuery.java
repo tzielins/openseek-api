@@ -126,7 +126,10 @@ public class ApplicationServerQuery {
 			} else {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
+		} else {
+			throw new InvalidOptionException("It is only possible to query by ATTRIBUTE when using an array of values");
 		}
+			
 
 		return result;
 	}
@@ -144,18 +147,12 @@ public class ApplicationServerQuery {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
 		} else if (queryType == QueryType.ATTRIBUTE) {
-			if (type.equals("Experiment")) {
-				result = experimentsByAttribute(key, value);
-			} else if (type.equals("Sample")) {
-				result = samplesByAttribute(key, value);
-			} else if (type.equals("DataSet")) {
-				result = dataSetsByAttribute(key, value);
-			} else if (type.equals("Space")) {
-				result = spacesByAttribute(key, value);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		}
+			List<String> values = new ArrayList<String>();
+			values.add(value);
+			result=query(type,queryType,key,values);
+		} else {
+			throw new InvalidOptionException("Unrecognised query type");
+		}	
 
 		return result;
 	}
