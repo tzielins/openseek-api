@@ -22,30 +22,31 @@ dependencies {
             'com.googlecode.json-simple:json-simple:1.1'
 }
 
-task copyJarFiles(type: Copy){
-    from configurations.compile
-    into "$buildDir/libs/lib"
+task copyJarFiles(type: Copy){			
+		from 'libs'
+    	into "$buildDir/libs/copiedLibs"	    
 }
 
 task archiveJar(type: Jar, dependsOn: copyJarFiles) {
-    File libDir = file("$buildDir/libs/lib")    
-    FileCollection collection = files{ libDir.listFiles() }
-    def classPath = []
-    collection.each {File file ->
-        classPath << 'lib/' + file.name
-    }
-	version =  '0.10'
-	baseName = 'openseek-api'
-    def classPathJoined = classPath.join(' ')       
-    manifest.attributes('Main-Class': 'org.fairdom.OpenSeekEntry',
-                        'Class-Path': "$classPathJoined")
-    with jar
+	
+		File libDir = file("$buildDir/libs/copiedLibs")    
+	    FileCollection collection = files{ libDir.listFiles() }
+	    if (collection.empty) {
+	    	throw new GradleException("list of libraries for classpath in manifest is empty") 
+	    }
+	    def classPath = []    
+	    collection.each {File file ->
+	        classPath << 'lib/' + file.name        
+	    }
+	    def classPathJoined = classPath.join(' ')
+	    println('class path joined = '+classPathJoined)
+		version =  '0.10'
+		baseName = 'openseek-api'	          
+	    manifest.attributes('Main-Class': 'org.fairdom.OpenSeekEntry',
+	                        'Class-Path': "$classPathJoined")
+	    with jar
+	    
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
-}
-
 
 run {
     if ( project.hasProperty("appArgs") ) {
