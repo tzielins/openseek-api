@@ -34,7 +34,7 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
     collection.each {File file ->
         classPath << 'lib/' + file.name
     }
-	version =  '0.9'
+	version =  '0.10'
 	baseName = 'openseek-api'
     def classPathJoined = classPath.join(' ')       
     manifest.attributes('Main-Class': 'org.fairdom.OpenSeekEntry',
