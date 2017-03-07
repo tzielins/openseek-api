@@ -74,5 +74,12 @@ public class DataStoreQueryTest {
         List<? extends Object> files=query.query("DataSetFile", QueryType.ATTRIBUTE, "dataSetPermId", values);
         assertFalse(files.isEmpty());        
     }
+    
+    @Test(expected=InvalidOptionException.class)
+    public void doQueryWithPermIDFails() throws Exception {
+    	DataStoreQuery query = new DataStoreQuery(endpoint, sessionToken);
+        List <String> values = new ArrayList<String> (Arrays.asList(new String[]{"20151217153943290-5","20160210130359377-22"}));
+        query.query("DataSetFile", QueryType.ATTRIBUTE, "permId", values);                
+    }
    
 }

@@ -84,17 +84,7 @@ public class OpenSeekEntryTest {
 		String [] args = new String[]{"-endpoints",endpoints,"-query",query};
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("datasetfiles"));
-	}
-	
-	//should throw an error when trying to query using permId as this is not supported, should only take dataSetPermId
-	@Test(expected=InvalidOptionException.class)
-	public void doDSSQueryFailsByPermId() throws Exception {
-		String token = getToken();
-		String endpoints = "{\"dss\":\""+dss_endpoint+"\",\"sessionToken\":\""+token+"\"}";
-		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permId\", \"attributeValue\":\"20151217153943290-5\"}";
-		String [] args = new String[]{"-endpoints",endpoints,"-query",query};
-		doExecute(args);		
-	}
+	}	
 	 
 	@Test
 	public void doDSDownload() throws Exception {
