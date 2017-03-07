@@ -23,7 +23,7 @@ dependencies {
 }
 
 task copyJarFiles(type: Copy){			
-		from 'libs'
+		from configurations.compile
     	into "$buildDir/libs/copiedLibs"	    
 }
 
@@ -35,7 +35,7 @@ task archiveJar(type: Jar, dependsOn: copyJarFiles) {
 	    	throw new GradleException("list of libraries for classpath in manifest is empty") 
 	    }
 	    def classPath = []    
-	    collection.each {File file ->
+	    collection.each {File file ->	    	
 	        classPath << 'lib/' + file.name        
 	    }
 	    def classPathJoined = classPath.join(' ')
