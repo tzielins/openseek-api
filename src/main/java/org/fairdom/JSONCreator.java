@@ -77,16 +77,15 @@ public class JSONCreator {
 			map.put("modifier", dataset.getModifier().getUserId());
 		else
 			map.put("modifier", null);
-		
-		if (dataset.getRegistrator()!=null) {
+
+		if (dataset.getRegistrator() != null) {
 			map.put("registerator", dataset.getRegistrator().getUserId());
 		} else {
-			map.put("registerator",null);
-		}				
-		
+			map.put("registerator", null);
+		}
+
 		map.put("experiment", dataset.getExperiment().getPermId().getPermId());
 		map.put("tags", tagList(dataset.getTags()));
-		
 
 		Map<String, String> dsType = new HashMap<String, String>();
 		if (dataset.getType() != null) {
@@ -112,7 +111,7 @@ public class JSONCreator {
 	}
 
 	private Map<String, Object> jsonMap(DataSetFile datasetFile) {
-		Map<String, Object> map = new HashMap<String, Object>();		
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("dataset", datasetFile.getDataSetPermId().getPermId());
 		map.put("filePermId", datasetFile.getPermId().toString());
 		map.put("path", datasetFile.getPath());
@@ -135,15 +134,15 @@ public class JSONCreator {
 			map.put("modifier", experiment.getModifier().getUserId());
 		else
 			map.put("modifier", null);
-		
-		if (experiment.getRegistrator()!=null) {
+
+		if (experiment.getRegistrator() != null) {
 			map.put("registerator", experiment.getRegistrator().getUserId());
 		} else {
-			map.put("registerator",null);
+			map.put("registerator", null);
 		}
 
 		map.put("tags", tagList(experiment.getTags()));
-		
+
 		Map<String, String> expType = new HashMap<String, String>();
 		if (experiment.getType() != null) {
 			if (experiment.getType().getDescription() != null) {
@@ -184,10 +183,10 @@ public class JSONCreator {
 		else
 			map.put("modifier", null);
 
-		if (sample.getRegistrator()!=null) {
+		if (sample.getRegistrator() != null) {
 			map.put("registerator", sample.getRegistrator().getUserId());
 		} else {
-			map.put("registerator",null);
+			map.put("registerator", null);
 		}
 
 		Map<String, String> sampleType = new HashMap<String, String>();
@@ -222,19 +221,19 @@ public class JSONCreator {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("permId", space.getPermId().getPermId());
 		map.put("code", space.getCode());
-		map.put("description", space.getDescription());	
+		map.put("description", space.getDescription());
 		List<String> projectIds = new ArrayList<String>();
 		List<String> experimentIds = new ArrayList<String>();
 		List<String> datasetIds = new ArrayList<String>();
 		for (Project project : space.getProjects()) {
 			projectIds.add(project.getPermId().getPermId());
-			for (Experiment experiment : project.getExperiments()) {				
+			for (Experiment experiment : project.getExperiments()) {
 				String id = experiment.getPermId().getPermId();
-				if (!experimentIds.contains(id)){
+				if (!experimentIds.contains(id)) {
 					experimentIds.add(id);
 				}
 				for (DataSet dataset : experiment.getDataSets()) {
-					String dataId=dataset.getPermId().getPermId();
+					String dataId = dataset.getPermId().getPermId();
 					if (!datasetIds.contains(dataId)) {
 						datasetIds.add(dataId);
 					}

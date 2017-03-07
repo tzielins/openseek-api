@@ -8,7 +8,7 @@ import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
  * Created by quyennguyen on 09/02/15.
  */
 public class Authentication {
-	
+
 	private String asEndpoint;
 	private String password;
 

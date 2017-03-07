@@ -8,18 +8,18 @@ import org.json.simple.parser.ParseException;
 
 public class JSONHelper {
 	public static boolean isValidJSON(final String json) {
-	  	   boolean valid = false;
-	  	   try {
-	  	      new JSONParser().parse(json);
-	  	      valid=true;
-	  	   } catch (ParseException jpe) {
-	  	      jpe.printStackTrace();
-	  	   } 
-	  	   return valid;
-	  }
-	
+		boolean valid = false;
+		try {
+			new JSONParser().parse(json);
+			valid = true;
+		} catch (ParseException jpe) {
+			jpe.printStackTrace();
+		}
+		return valid;
+	}
+
 	public static JSONObject processJSON(String json) throws ParseException {
 		assertTrue(JSONHelper.isValidJSON(json));
-		return (JSONObject)(new JSONParser().parse(json));		
+		return (JSONObject) (new JSONParser().parse(json));
 	}
 }

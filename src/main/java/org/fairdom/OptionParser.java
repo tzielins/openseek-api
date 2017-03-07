@@ -12,18 +12,18 @@ import org.json.simple.parser.ParseException;
  * @author Stuart Owen
  *
  * 
- * Argument structure with example value
- * -account:{"username":"test","password":"test"}
- * -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com","sessionToken":"somevalue"}
- * -query:{"entityType":"Experiment","queryType":"PROPERTY","property":"SEEK_STUDY_ID","propertyValue":"Study_1"}
- * -download:{"type":"file","permID":"ID100","source":"original/file","dest":"/home/test/file"}
+ *         Argument structure with example value
+ *         -account:{"username":"test","password":"test"}
+ *         -endpoints:{"as":"http://as.example.com","dss":"http://dss.example.com","sessionToken":"somevalue"}
+ *         -query:{"entityType":"Experiment","queryType":"PROPERTY","property":"SEEK_STUDY_ID","propertyValue":"Study_1"}
+ *         -download:{"type":"file","permID":"ID100","source":"original/file","dest":"/home/test/file"}
  */
 public class OptionParser {
 	private JSONObject account = null;
 	private JSONObject download = null;
 	private JSONObject endpoints = null;
 	private JSONObject query = null;
-	private Action action=null;
+	private Action action = null;
 
 	public OptionParser(String[] args) throws InvalidOptionException, ParseException {
 		for (int i = 0; i < args.length; i++) {
@@ -85,9 +85,9 @@ public class OptionParser {
 	public JSONObject stringToJson(String str) throws ParseException {
 		JSONParser parser = new JSONParser();
 		String escapeStr = str.replace("%", "\"").replace("+", " ");
-		return (JSONObject)parser.parse(escapeStr);		
+		return (JSONObject) parser.parse(escapeStr);
 	}
-	
+
 	public Action getAction() {
 		return action;
 	}
@@ -117,24 +117,22 @@ public class OptionParser {
 		JSONObject q = stringToJson(query);
 		this.query = q;
 	}
-	
+
 	private void determineAction() throws InvalidOptionException {
-		if (getAccount()!=null && getEndpoints()!=null) {
+		if (getAccount() != null && getEndpoints() != null) {
 			action = Action.LOGIN;
-		}
-		else if (getDownload()!=null) {
+		} else if (getDownload() != null) {
 			action = Action.DOWNLOAD;
-		}
-		else if (getEndpoints()!=null && getQuery()!=null) {
-			if (getEndpoints().get("dss")!=null) {
-				action=Action.DS_QUERY;
-			}
-			else if (getEndpoints().get("as")!=null) {
-				action=Action.AS_QUERY;
+		} else if (getEndpoints() != null && getQuery() != null) {
+			if (getEndpoints().get("dss") != null) {
+				action = Action.DS_QUERY;
+			} else if (getEndpoints().get("as") != null) {
+				action = Action.AS_QUERY;
 			}
 		}
-		if (action==null) {
-			throw new InvalidOptionException("Unable to determine the action from the available options passed, options appear to be incomplete");
+		if (action == null) {
+			throw new InvalidOptionException(
+					"Unable to determine the action from the available options passed, options appear to be incomplete");
 		}
 	}
 }

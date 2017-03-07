@@ -91,7 +91,7 @@ public class ApplicationServerQuery {
 
 		ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
 		criterion.withOrOperator();
-		updateCriterianForAttribute(criterion, attribute, values);		
+		updateCriterianForAttribute(criterion, attribute, values);
 
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 
@@ -112,7 +112,8 @@ public class ApplicationServerQuery {
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 	}
 
-	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values)
+			throws InvalidOptionException {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("Experiment")) {
@@ -129,12 +130,12 @@ public class ApplicationServerQuery {
 		} else {
 			throw new InvalidOptionException("It is only possible to query by ATTRIBUTE when using an array of values");
 		}
-			
 
 		return result;
 	}
 
-	public List<? extends Object> query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+	public List<? extends Object> query(String type, QueryType queryType, String key, String value)
+			throws InvalidOptionException {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.PROPERTY) {
 			if (type.equals("Experiment")) {
@@ -149,10 +150,10 @@ public class ApplicationServerQuery {
 		} else if (queryType == QueryType.ATTRIBUTE) {
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			result=query(type,queryType,key,values);
+			result = query(type, queryType, key, values);
 		} else {
 			throw new InvalidOptionException("Unrecognised query type");
-		}	
+		}
 
 		return result;
 	}
@@ -169,7 +170,7 @@ public class ApplicationServerQuery {
 		SampleFetchOptions options = sampleFetchOptions();
 
 		SampleSearchCriteria criterion = new SampleSearchCriteria();
-		
+
 		criterion.withOrOperator();
 		updateCriterianForAttribute(criterion, attribute, values);
 
@@ -183,10 +184,9 @@ public class ApplicationServerQuery {
 
 	public List<Sample> samplesByProperty(String property, String propertyValue) {
 		SampleSearchCriteria criterion = new SampleSearchCriteria();
-		criterion.withProperty(property).thatContains(propertyValue);		
+		criterion.withProperty(property).thatContains(propertyValue);
 
 		SampleFetchOptions options = sampleFetchOptions();
-		
 
 		return as.searchSamples(sessionToken, criterion, options).getObjects();
 	}
@@ -195,7 +195,6 @@ public class ApplicationServerQuery {
 		SpaceFetchOptions options = new SpaceFetchOptions();
 		options.withProjects().withExperiments().withDataSets();
 		options.withSamples();
-					
 
 		SpaceSearchCriteria criterion = new SpaceSearchCriteria();
 		criterion.withOrOperator();
@@ -219,7 +218,7 @@ public class ApplicationServerQuery {
 		options.withModifier();
 		options.withRegistrator();
 		options.withTags();
-		options.withType();		
+		options.withType();
 		return options;
 	}
 
@@ -252,7 +251,7 @@ public class ApplicationServerQuery {
 			throws InvalidOptionException {
 		if (key.equalsIgnoreCase("permid")) {
 			for (String value : values) {
-				criteria.withPermId().thatContains(value);				
+				criteria.withPermId().thatContains(value);
 			}
 		} else {
 			throw new InvalidOptionException("Invalid attribute name:" + key);

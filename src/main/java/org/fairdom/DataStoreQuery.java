@@ -19,12 +19,11 @@ public class DataStoreQuery extends DataStoreStream {
 		super(startEndpoint, startSessionToken);
 	}
 
-	public List<DataSetFile> datasetFilesByDataSetPermIds(List<String> dataSetPermIds)
-			throws InvalidOptionException {
-		
+	public List<DataSetFile> datasetFilesByDataSetPermIds(List<String> dataSetPermIds) throws InvalidOptionException {
+
 		List<DataSetFile> result = new ArrayList<DataSetFile>();
 		for (String dataSetPermId : dataSetPermIds) {
-			DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();			
+			DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
 			criteria.withDataSet().withPermId().thatContains(dataSetPermId);
 
 			SearchResult<DataSetFile> files_result = dss.searchFiles(sessionToken, criteria,
@@ -50,8 +49,8 @@ public class DataStoreQuery extends DataStoreStream {
 		return searchFiles;
 	}
 
-	
-	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values) throws InvalidOptionException {
+	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values)
+			throws InvalidOptionException {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("DataSetFile")) {
@@ -62,14 +61,15 @@ public class DataStoreQuery extends DataStoreStream {
 			} else {
 				throw new InvalidOptionException("Unrecognised type: " + type);
 			}
-		}else {
+		} else {
 			throw new InvalidOptionException("It is only possible to query by ATTRIBUTE when using an array of values");
 		}
 
 		return result;
 	}
 
-	public List<? extends Object> query(String type, QueryType queryType, String key, String value) throws InvalidOptionException {
+	public List<? extends Object> query(String type, QueryType queryType, String key, String value)
+			throws InvalidOptionException {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.PROPERTY) {
 			if (type.equals("DataSetFile")) {
@@ -80,10 +80,10 @@ public class DataStoreQuery extends DataStoreStream {
 		} else if (queryType == QueryType.ATTRIBUTE) {
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			result=query(type,queryType,key,value);
+			result = query(type, queryType, key, value);
 		} else {
 			throw new InvalidOptionException("Unrecognised query type");
-		}					
+		}
 
 		return result;
 	}

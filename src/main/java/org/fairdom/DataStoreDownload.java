@@ -29,7 +29,6 @@ import ch.ethz.sis.openbis.generic.dssapi.v3.dto.datasetfile.search.DataSetFileS
  * Created by quyennguyen on 13/02/15.
  */
 public class DataStoreDownload extends DataStoreStream {
-	
 
 	public DataStoreDownload(String startEndpoint, String startSessionToken) {
 		super(startEndpoint, startSessionToken);
@@ -37,10 +36,10 @@ public class DataStoreDownload extends DataStoreStream {
 
 	public void downloadDataSetFiles(String permId, String destinationFolder) throws IOException {
 		DataSetFileDownloadOptions options = new DataSetFileDownloadOptions();
-		options.setRecursive(true);		
+		options.setRecursive(true);
 
 		DataSetFileSearchCriteria criteria = new DataSetFileSearchCriteria();
-		criteria.withDataSet().withCode().thatEquals(permId);					
+		criteria.withDataSet().withCode().thatEquals(permId);
 
 		SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
 		List<DataSetFile> files = result.getObjects();
@@ -57,10 +56,10 @@ public class DataStoreDownload extends DataStoreStream {
 			InputStream inputStream = file.getInputStream();
 			DataSetFile dataSetFile = file.getDataSetFile();
 			if (dataSetFile.isDirectory()) {
-				Path dir = Paths.get(destinationFolder,dataSetFile.getPath());
+				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
 				Files.createDirectories(dir);
 			} else {
-				File outputFile = new File(destinationFolder,dataSetFile.getPath());
+				File outputFile = new File(destinationFolder, dataSetFile.getPath());
 				OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
 				IOUtils.copyLarge(inputStream, fileOutputStream);
@@ -83,10 +82,10 @@ public class DataStoreDownload extends DataStoreStream {
 			InputStream inputStream = file.getInputStream();
 			DataSetFile dataSetFile = file.getDataSetFile();
 			if (dataSetFile.isDirectory()) {
-				Path dir = Paths.get(destinationFolder,dataSetFile.getPath());
+				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
 				Files.createDirectories(dir);
 			} else {
-				File outputFile = new File(destinationFolder,dataSetFile.getPath());
+				File outputFile = new File(destinationFolder, dataSetFile.getPath());
 				OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
 				IOUtils.copyLarge(inputStream, fileOutputStream);
