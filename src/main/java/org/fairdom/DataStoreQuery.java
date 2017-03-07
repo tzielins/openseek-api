@@ -54,7 +54,7 @@ public class DataStoreQuery extends DataStoreStream {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
 			if (type.equals("DataSetFile")) {
-				if (!key.equals("dataSetPermId")) {
+				if (!key.equalsIgnoreCase("DataSetPermID")) {
 					throw new InvalidOptionException("Only dataSetPermId is currently supported");
 				}
 				result = datasetFilesByDataSetPermIds(values);
