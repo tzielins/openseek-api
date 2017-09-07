@@ -1,8 +1,6 @@
 package org.fairdom;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +14,10 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Quyen Nugyen
@@ -81,7 +83,7 @@ public class ApplicationServerQueryTest {
 
 		assertEquals(1, projects.size());
 		assertEquals("20151216135152196-1", (String) projects.get(0));
-		assertEquals(8, datasets.size());
+		assertEquals(9, datasets.size());
 		assertTrue(datasets.contains("20160210130359377-22"));
 	}
 
@@ -162,6 +164,28 @@ public class ApplicationServerQueryTest {
 		assertTrue(JSONHelper.isValidJSON(json));
 		assertEquals(2, data.size());
 	}
+        
+        @Test
+        public void getsDataSetWithRichMetadata() throws Exception {
+            
+            String setId = "20170907185702684-36";
+            List<DataSet> sets = query.dataSetsByAttribute("permId", setId);
+            assertEquals(1,sets.size());
+            
+            DataSet set = sets.get(0);
+            assertEquals(setId,set.getPermId().getPermId());
+            
+            LocalDateTime reg = LocalDateTime.of(2017,9,7,17,57,3);
+           
+            assertEquals(reg.toLocalDate(),
+                    set.getRegistrationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            
+            Map<String,String> props = set.getProperties();
+            //System.out.println(properties);
+            assertEquals("TOMEK test set",props.getOrDefault("NAME", "missing"));
+            assertTrue(props.getOrDefault("DESCRIPTION", "").contains("enhanced"));
+            
+        }
 
 	@Test
 	public void getExperimentWithSeekStudyID() throws Exception {
