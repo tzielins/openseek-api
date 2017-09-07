@@ -9,17 +9,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.apache.poi.util.TempFile;
-import org.fairdom.testhelpers.JSONHelper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Stuart Owen
  */
 
 public class OpenSeekEntryTest {
+    
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
+    
 	class OpenSeekEntryWrapper extends OpenSeekEntry {
 		private int exitCode = -99;
 
@@ -88,8 +92,8 @@ public class OpenSeekEntryTest {
 
 	@Test
 	public void doDSDownload() throws Exception {
-		File tempFile = TempFile.createTempFile("openseek-api-test", "dss");
-		assertFalse(tempFile.exists());
+		File tempFile = testFolder.newFile(); //TempFile.createTempFile("openseek-api-test", "dss");
+		assertFalse(tempFile.length() > 0);
 		String token = getToken();
 		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
 		String download = "{\"downloadType\":\"file\", \"permID\":\"20160210130454955-23\", \"source\":\"original/autumn.jpg\", \"dest\":\""
@@ -97,8 +101,7 @@ public class OpenSeekEntryTest {
 		String[] args = new String[] { "-endpoints", endpoints, "-download", download };
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("download_info"));
-		assertTrue(tempFile.exists());
-		tempFile.delete();
+		assertTrue(tempFile.length() > 0);
 	}
 
 	private JSONObject doExecute(String[] args) throws ParseException {

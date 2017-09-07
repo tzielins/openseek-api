@@ -1,4 +1,4 @@
-package org.fairdom.testhelpers;
+package org.fairdom;
 
 import static org.junit.Assert.assertTrue;
 

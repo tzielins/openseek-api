@@ -11,3 +11,5 @@ src/test/java/resources/**
 bin/
 .settings/
 *~
+/nbproject/private/
+/dist/
