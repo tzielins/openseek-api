@@ -1,13 +1,11 @@
 package org.fairdom;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -51,6 +49,37 @@ public class OpenSeekEntryTest {
 	private PrintStream oldStream;
 
 	private ByteArrayOutputStream outputStream;
+        
+        @Test
+        public void dataSetEntityHasRichDetails() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20170907185702684-36\"}";
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                assertNotNull(res);
+                //System.out.println(res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("datasets"));
+                List<JSONObject> sets = (List<JSONObject>)jsonObj.get("datasets");
+                
+                assertEquals(1,sets.size());
+                JSONObject set = sets.get(0);
+                assertEquals("2017-09-07 17:57:03.040768",set.get("registrationDate"));
+                assertEquals("apiuser",set.get("registerator"));
+                
+                JSONObject prop = (JSONObject) set.get("properties");
+                assertNotNull(prop);
+                assertEquals("TOMEK test set",prop.getOrDefault("NAME", "missing"));
+                assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("rich metadata"));
+                
+        }
 
 	@Test
 	public void doAsQuery() throws Exception {

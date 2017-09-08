@@ -64,7 +64,7 @@ public class OpenSeekEntry {
 		exit(0);
 	}
 
-	private String doApplicationServerQuery(OptionParser options) throws InvalidOptionException {
+	protected String doApplicationServerQuery(OptionParser options) throws InvalidOptionException {
 		JSONObject endpoints = options.getEndpoints();
 		JSONObject query = options.getQuery();
 
