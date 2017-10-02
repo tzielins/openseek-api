@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
+import org.json.simple.JSONArray;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -80,6 +81,47 @@ public class OpenSeekEntryTest {
                 assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("rich metadata"));
                 
         }
+        
+        @Test
+        public void sampleEntityHasRichDetails() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+		String query = "{\"entityType\":\"Sample\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172111346-37\"}";
+		//String query = "{\"entityType\":\"Sample\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172639055-39\"}";
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                assertNotNull(res);
+                //System.out.println(res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("samples"));
+                List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
+                
+                assertEquals(1,samples.size());
+                JSONObject sam = samples.get(0);
+                assertEquals("2017-10-02 16:21:11.346421",sam.get("registrationDate"));
+                assertEquals("apiuser",sam.get("registerator"));
+                
+                JSONObject prop = (JSONObject) sam.get("properties");
+                assertNotNull(prop);
+                assertEquals("Tomek First",prop.getOrDefault("NAME", "missing"));
+                assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("assay"));
+                
+                JSONArray sets = (JSONArray)sam.get("datasets");
+                assertNotNull(sets);
+                assertTrue(sets.contains("20171002172401546-38"));
+            
+
+                
+                
+        }
+        
 
 	@Test
 	public void doAsQuery() throws Exception {

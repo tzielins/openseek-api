@@ -186,6 +186,28 @@ public class ApplicationServerQueryTest {
             assertTrue(props.getOrDefault("DESCRIPTION", "").contains("enhanced"));
             
         }
+        
+        @Test
+        public void getsSamplesWithRichMetadata() throws Exception {
+            
+            String perId = "20171002172111346-37";
+            List<Sample> res = query.samplesByAttribute("permId", perId);
+            assertEquals(1,res.size());
+            
+            Sample sam = res.get(0);
+            assertEquals(perId,sam.getPermId().getPermId());
+            
+            LocalDateTime reg = LocalDateTime.of(2017,10,2,16,21,11);
+           
+            assertEquals(reg.toLocalDate(),
+                    sam.getRegistrationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            
+            Map<String,String> props = sam.getProperties();
+            //System.out.println(properties);
+            assertEquals("Tomek First",props.getOrDefault("NAME", "missing"));
+            assertTrue(props.getOrDefault("DESCRIPTION", "").contains("assay"));
+            
+        }        
 
 	@Test
 	public void getExperimentWithSeekStudyID() throws Exception {

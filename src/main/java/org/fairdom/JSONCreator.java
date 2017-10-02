@@ -84,7 +84,13 @@ public class JSONCreator {
 			map.put("registerator", null);
 		}
 
-		map.put("experiment", dataset.getExperiment().getPermId().getPermId());
+                if (dataset.getExperiment() != null) {
+                    map.put("experiment", dataset.getExperiment().getPermId().getPermId());
+                };
+                if (dataset.getSample() != null) {
+                    map.put("sample",dataset.getSample().getPermId().getPermId());
+                }
+                
 		map.put("tags", tagList(dataset.getTags()));
 
 		Map<String, String> dsType = new HashMap<String, String>();
