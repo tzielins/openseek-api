@@ -96,7 +96,7 @@ public class OpenSeekEntryTest {
                 OpenSeekEntry client = new OpenSeekEntry(args);
                 String res = client.doApplicationServerQuery(options);
                 assertNotNull(res);
-                //System.out.println(res);
+                System.out.println(res);
                 
                 JSONObject jsonObj = JSONHelper.processJSON(res);
                 

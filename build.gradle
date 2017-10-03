@@ -2,11 +2,11 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'jacoco' // test reporter
 apply plugin: 'com.github.kt3k.coveralls' //coveralls plugin
-sourceCompatibility=1.7
-targetCompatibility=1.7
+sourceCompatibility=1.8
+targetCompatibility=1.8
 
 def mainClass='org.fairdom.OpenSeekEntry'
-def jarVersion='0.11'
+def jarVersion='0.12'
 
 
 repositories {
