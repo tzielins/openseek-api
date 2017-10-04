@@ -224,13 +224,14 @@ public class JSONCreator {
 	}
 
 	private Map<String, Object> jsonMap(Space space) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("permId", space.getPermId().getPermId());
 		map.put("code", space.getCode());
 		map.put("description", space.getDescription());
-		List<String> projectIds = new ArrayList<String>();
-		List<String> experimentIds = new ArrayList<String>();
-		List<String> datasetIds = new ArrayList<String>();
+		List<String> projectIds = new ArrayList<>();
+		List<String> experimentIds = new ArrayList<>();
+		List<String> datasetIds = new ArrayList<>();
+                List<String> sampleIds = new ArrayList<>();
 		for (Project project : space.getProjects()) {
 			projectIds.add(project.getPermId().getPermId());
 			for (Experiment experiment : project.getExperiments()) {
@@ -246,6 +247,17 @@ public class JSONCreator {
 				}
 			}
 		}
+                for (Sample sample : space.getSamples()) {
+                    if (!sampleIds.contains(sample.getPermId().getPermId())) {
+                        sampleIds.add(sample.getPermId().getPermId());
+                    }
+                    for (DataSet dataset: sample.getDataSets()) {
+                        String dataId = dataset.getPermId().getPermId();
+                        if (!datasetIds.contains(dataId)) {
+                                datasetIds.add(dataId);
+                        }                        
+                    }
+                }
 		map.put("projects", projectIds);
 		map.put("experiments", experimentIds);
 		map.put("datasets", datasetIds);

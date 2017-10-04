@@ -82,7 +82,7 @@ public class OpenSeekEntry {
 		return new JSONCreator(result).getJSON();
 	}
 
-	private String doDataStoreQuery(OptionParser options) throws InvalidOptionException {
+	protected String doDataStoreQuery(OptionParser options) throws InvalidOptionException {
 		JSONObject endpoints = options.getEndpoints();
 		JSONObject query = options.getQuery();
 		DataStoreQuery dssQuery = new DataStoreQuery(endpoints.get("dss").toString(),

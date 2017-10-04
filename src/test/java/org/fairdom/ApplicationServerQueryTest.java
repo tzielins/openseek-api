@@ -83,9 +83,33 @@ public class ApplicationServerQueryTest {
 
 		assertEquals(1, projects.size());
 		assertEquals("20151216135152196-1", (String) projects.get(0));
-		assertEquals(9, datasets.size());
+		assertEquals(11, datasets.size());
 		assertTrue(datasets.contains("20160210130359377-22"));
 	}
+        
+	@Test
+	public void getSpacesByPermIDGetsAllDataSetsExperimentAndSamplesOnes() throws Exception {
+
+		List<Space> spaces = query.spacesByAttribute("permId", "API-SPACE");
+		assertEquals(1, spaces.size());
+                
+		String json = new JSONCreator(spaces).getJSON();
+		JSONObject jsonObj = JSONHelper.processJSON(json);
+		assertNotNull(jsonObj.get("spaces"));
+		JSONObject space = (JSONObject) ((JSONArray) jsonObj.get("spaces")).get(0);
+		JSONArray experiments = (JSONArray) space.get("experiments");
+		JSONArray datasets = (JSONArray) space.get("datasets");
+		JSONArray projects = (JSONArray) space.get("projects");
+		assertEquals(1, experiments.size());
+		assertEquals("20151216143716562-2", (String) experiments.get(0));
+
+		assertEquals(1, projects.size());
+		assertEquals("20151216135152196-1", (String) projects.get(0));
+		assertEquals(11, datasets.size());
+		assertTrue(datasets.contains("20160210130359377-22"));
+		assertTrue(datasets.contains("20170907185702684-36"));
+		assertTrue(datasets.contains("20171002190934144-40"));
+	}        
 
 	@Test
 	public void getAllSpaces() throws Exception {

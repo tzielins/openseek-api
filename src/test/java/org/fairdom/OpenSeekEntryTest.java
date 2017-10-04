@@ -56,6 +56,8 @@ public class OpenSeekEntryTest {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
 		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20170907185702684-36\"}";
+		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172401546-38\"}";
+		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002190934144-40\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
 
                 OptionParser options = new OptionParser(args);
@@ -63,6 +65,7 @@ public class OpenSeekEntryTest {
                 OpenSeekEntry client = new OpenSeekEntry(args);
                 String res = client.doApplicationServerQuery(options);
                 assertNotNull(res);
+                
                 //System.out.println(res);
                 
                 JSONObject jsonObj = JSONHelper.processJSON(res);
@@ -96,7 +99,7 @@ public class OpenSeekEntryTest {
                 OpenSeekEntry client = new OpenSeekEntry(args);
                 String res = client.doApplicationServerQuery(options);
                 assertNotNull(res);
-                System.out.println(res);
+                //System.out.println(res);
                 
                 JSONObject jsonObj = JSONHelper.processJSON(res);
                 
@@ -121,6 +124,28 @@ public class OpenSeekEntryTest {
                 
                 
         }
+        
+        @Test
+        public void fetchingFilesJSON() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\"20171002190934144-40\"}";
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+            
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doDataStoreQuery(options);
+                assertNotNull(res);
+                
+                //System.out.println(res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("datasetfiles"));
+        }
+        
         
 
 	@Test

@@ -194,7 +194,7 @@ public class ApplicationServerQuery {
 	public List<Space> spacesByAttribute(String attribute, List<String> values) throws InvalidOptionException {
 		SpaceFetchOptions options = new SpaceFetchOptions();
 		options.withProjects().withExperiments().withDataSets();
-		options.withSamples();
+		options.withSamples().withDataSets();
 
 		SpaceSearchCriteria criterion = new SpaceSearchCriteria();
 		criterion.withOrOperator();
