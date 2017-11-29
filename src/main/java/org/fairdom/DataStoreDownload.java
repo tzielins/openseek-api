@@ -84,7 +84,12 @@ public class DataStoreDownload extends DataStoreStream {
 			if (dataSetFile.isDirectory()) {
 				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
 				Files.createDirectories(dir);
+                                System.out.println("Making dir: "+dataSetFile.getPath());
 			} else {
+                                System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
+                                if (dataSetFile.getFileLength() == 0) {
+                                    continue;
+                                }
 				File outputFile = new File(destinationFolder, dataSetFile.getPath());
 				OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
