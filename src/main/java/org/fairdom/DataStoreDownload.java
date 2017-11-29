@@ -44,11 +44,14 @@ public class DataStoreDownload extends DataStoreStream {
 		SearchResult<DataSetFile> result = dss.searchFiles(sessionToken, criteria, new DataSetFileFetchOptions());
 		List<DataSetFile> files = result.getObjects();
 
-		List<IDataSetFileId> filesToDownload = new LinkedList<IDataSetFileId>();
+		List<IDataSetFileId> filesToDownload = new LinkedList<>();
 		for (DataSetFile file : files)
 			filesToDownload.add(file.getPermId());
 
 		InputStream stream = dss.downloadFiles(sessionToken, filesToDownload, options);
+                
+                downloadFromDSSStream(stream,destinationFolder);
+                /*
 		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
 		DataSetFileDownload file = null;
 
@@ -65,8 +68,45 @@ public class DataStoreDownload extends DataStoreStream {
 				IOUtils.copyLarge(inputStream, fileOutputStream);
 				fileOutputStream.close();
 			}
-		}
+		}*/
 	}
+        
+        protected void downloadFromDSSStream(InputStream dssStream, String destinationFolder) throws IOException {
+            DataSetFileDownloadReader reader = new DataSetFileDownloadReader(dssStream);
+            
+            try {
+		DataSetFileDownload file;
+
+		while ((file = reader.read()) != null) {
+			InputStream inputStream = file.getInputStream();
+			DataSetFile dataSetFile = file.getDataSetFile();
+			if (dataSetFile.isDirectory()) {
+				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
+                                System.out.println("Making dir: "+dataSetFile.getPath());
+                                if (!Files.isDirectory(dir)) {
+                                    Files.createDirectories(dir);
+                                }
+			} else {
+                                System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
+                                if (dataSetFile.getFileLength() == 0) {
+                                    System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
+                                    continue;
+                                }
+                                Path destPath = Paths.get(destinationFolder, dataSetFile.getPath());
+                                Path destDir = destPath.getParent();
+                                if (!Files.isDirectory(destDir)) {
+                                    Files.createDirectories(destDir);
+                                }
+                                try (OutputStream fileOutputStream = Files.newOutputStream(destPath)) {
+                                    IOUtils.copyLarge(inputStream, fileOutputStream);
+                                }
+			}
+		}
+            } finally {
+                reader.close();
+            }
+            
+        }
 
 	public void downloadFolder(String permId, String sourceRelativeFolder, String destinationFolder)
 			throws IOException {
@@ -75,6 +115,10 @@ public class DataStoreDownload extends DataStoreStream {
 		IDataSetFileId filesToDownload = new DataSetFilePermId(new DataSetPermId(permId), sourceRelativeFolder);
 
 		InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(filesToDownload), options);
+                
+                downloadFromDSSStream(stream,destinationFolder);
+                
+                /*
 		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
 		DataSetFileDownload file = null;
 
@@ -83,20 +127,29 @@ public class DataStoreDownload extends DataStoreStream {
 			DataSetFile dataSetFile = file.getDataSetFile();
 			if (dataSetFile.isDirectory()) {
 				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
-				Files.createDirectories(dir);
                                 System.out.println("Making dir: "+dataSetFile.getPath());
+                                if (!Files.isDirectory(dir)) {
+                                    Files.createDirectories(dir);
+                                }
 			} else {
                                 System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
                                 if (dataSetFile.getFileLength() == 0) {
+                                    System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
                                     continue;
                                 }
-				File outputFile = new File(destinationFolder, dataSetFile.getPath());
-				OutputStream fileOutputStream = new FileOutputStream(outputFile);
-
-				IOUtils.copyLarge(inputStream, fileOutputStream);
-				fileOutputStream.close();
+                                Path destPath = Paths.get(destinationFolder, dataSetFile.getPath());
+                                Path destDir = destPath.getParent();
+                                if (!Files.isDirectory(destDir)) {
+                                    Files.createDirectories(destDir);
+                                }
+				//File outputFile = new File(destinationFolder, dataSetFile.getPath());
+				//OutputStream fileOutputStream = new FileOutputStream(outputFile);
+                                try (OutputStream fileOutputStream = Files.newOutputStream(destPath)) {
+                                    IOUtils.copyLarge(inputStream, fileOutputStream);
+                                }
+				//fileOutputStream.close();
 			}
-		}
+		}*/
 	}
 
 	public void downloadSingleFile(String permId, String sourceRelative, String destination) throws IOException {
@@ -106,15 +159,19 @@ public class DataStoreDownload extends DataStoreStream {
 
 		InputStream stream = dss.downloadFiles(sessionToken, Arrays.asList(fileToDownload), options);
 		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-		DataSetFileDownload file = null;
-		file = reader.read();
-		InputStream inputStream = file.getInputStream();
+                try {
+                    DataSetFileDownload file = reader.read();
+                    
+                    InputStream inputStream = file.getInputStream();
 
-		File outputFile = new File(destination);
-		OutputStream fileOutputStream = new FileOutputStream(outputFile);
+                    File outputFile = new File(destination);
+                    try (OutputStream fileOutputStream = new FileOutputStream(outputFile)) {
 
-		IOUtils.copyLarge(inputStream, fileOutputStream);
-		fileOutputStream.close();
+                        IOUtils.copyLarge(inputStream, fileOutputStream);
+                    }
+                } finally {
+                    reader.close();
+                }
 	}
 
 }
