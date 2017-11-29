@@ -58,6 +58,7 @@ public class OpenSeekEntryTest {
 		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20170907185702684-36\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172401546-38\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002190934144-40\"}";
+		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171004182824553-41\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
 
                 OptionParser options = new OptionParser(args);
