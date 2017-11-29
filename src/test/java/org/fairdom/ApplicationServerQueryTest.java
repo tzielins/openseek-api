@@ -83,7 +83,7 @@ public class ApplicationServerQueryTest {
 
 		assertEquals(1, projects.size());
 		assertEquals("20151216135152196-1", (String) projects.get(0));
-		assertEquals(11, datasets.size());
+		assertEquals(12, datasets.size());
 		assertTrue(datasets.contains("20160210130359377-22"));
 	}
         
@@ -105,7 +105,7 @@ public class ApplicationServerQueryTest {
 
 		assertEquals(1, projects.size());
 		assertEquals("20151216135152196-1", (String) projects.get(0));
-		assertEquals(11, datasets.size());
+		assertEquals(12, datasets.size());
 		assertTrue(datasets.contains("20160210130359377-22"));
 		assertTrue(datasets.contains("20170907185702684-36"));
 		assertTrue(datasets.contains("20171002190934144-40"));
