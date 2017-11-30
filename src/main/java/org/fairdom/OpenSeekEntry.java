@@ -1,7 +1,14 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -19,9 +26,11 @@ public class OpenSeekEntry {
 	}
 
 	private String[] args;
+        ObjectMapper mapper;
 
 	public OpenSeekEntry(String args[]) {
 		this.args = args;
+                this.mapper = new ObjectMapper();
 	}
 
 	public void execute() {
@@ -64,13 +73,36 @@ public class OpenSeekEntry {
 		exit(0);
 	}
 
-	protected String doApplicationServerQuery(OptionParser options) throws InvalidOptionException {
+	protected String doApplicationServerQuery(OptionParser options) throws InvalidOptionException, AuthenticationException, JsonProcessingException {
 		JSONObject endpoints = options.getEndpoints();
 		JSONObject query = options.getQuery();
 
 		ApplicationServerQuery asQuery = new ApplicationServerQuery(endpoints.get("as").toString(),
 				endpoints.get("sessionToken").toString());
 		List<? extends Object> result;
+                
+                QueryType queryType = QueryType.valueOf(query.get("queryType").toString());
+                
+                switch(queryType) {
+                    case PROPERTY: result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
+					query.get("property").toString(), query.get("propertyValue").toString());
+                                        break;
+                    case ATTRIBUTE: 
+                                    List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
+                                    result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
+					query.get("attribute").toString(), attributeValues);
+                                    break;
+                    case SEMANTIC:
+                                    if (query.get("entityType").equals("SampleType")) {
+                                        List<SampleType> types = asQuery.sampleTypesBySemantic(query);
+                                        return mapToJsonString("sampletypes",types);
+                                    } else {
+                                        throw new InvalidOptionException("Semantic query for unsupported type: "+query.get("entityType"));
+                                    }
+                    default: throw new InvalidOptionException("Unrecognized query type: "+queryType);
+                        
+                }
+                /*
 		if (query.get("queryType").toString().equals(QueryType.PROPERTY.toString())) {
 			result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
 					query.get("property").toString(), query.get("propertyValue").toString());
@@ -78,7 +110,7 @@ public class OpenSeekEntry {
 			List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
 			result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
 					query.get("attribute").toString(), attributeValues);
-		}
+		}*/
 		return new JSONCreator(result).getJSON();
 	}
 
@@ -173,5 +205,14 @@ public class OpenSeekEntry {
 	protected void exit(int code) {
 		System.exit(code);
 	}
+
+    protected String mapToJsonString(String listName, List<?> objects) throws JsonProcessingException {
+        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");        
+        ObjectWriter writer = mapper.writer(df);
+        Map<String,List<?>> map = new HashMap<>();
+        map.put(listName,objects);
+        return writer.writeValueAsString(map);
+    }
 
 }

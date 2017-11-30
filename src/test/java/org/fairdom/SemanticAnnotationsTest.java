@@ -14,7 +14,10 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.semanticannotation.SemanticAnnot
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.semanticannotation.fetchoptions.SemanticAnnotationFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.semanticannotation.search.SemanticAnnotationSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -61,6 +64,7 @@ public class SemanticAnnotationsTest {
          
         for (SemanticAnnotation annotation : result.getObjects())
         {
+            
             System.out.println(annotation.getPermId()+"\t,"+annotation.getEntityType()
             +"\t,"+annotation.getPropertyType()
             +"\t,"+annotation.getPredicateOntologyId()+"\t"+annotation.getPredicateAccessionId()
@@ -72,14 +76,15 @@ public class SemanticAnnotationsTest {
     
     
     @Test
-    public void listsTypesWithSemanticAnnotations() {
+    public void listsTypesWithSemanticAnnotations() throws JsonProcessingException {
         
         String assayDescId = "assay";
-        String isAId = "is_a";
-        //String isAId = "pa_id";
+        //String isAId = "is_a";
+        String isAId = "pa_id";
         
         SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
-        fetchOptions.withPropertyAssignments().withPropertyType();
+        fetchOptions.withSemanticAnnotations();
+        fetchOptions.withPropertyAssignments().withSemanticAnnotations();
          
         SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
         
@@ -89,13 +94,30 @@ public class SemanticAnnotationsTest {
         semCriteria.withPredicateAccessionId().thatEquals(isAId);
         
         SearchResult<SampleType> result = v3.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
-         
+
+        result.getObjects().forEach( o -> {
+            System.out.println(o.getCode());
+           
+            o.getPropertyAssignments().forEach( p -> p.setFetchOptions(null));
+            o.getSemanticAnnotations().forEach(s -> s.setFetchOptions(null));
+            o.setFetchOptions(null);
+                });
+        
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        mapper.setDateFormat(df);
+        
+        String json = mapper.writeValueAsString(result.getObjects());
+        System.out.println(json);
+        
         for (SampleType sampleType : result.getObjects())
         {
             System.out.println(sampleType.getCode()+", pID:"+sampleType.getPermId());  
         }
         assertFalse(result.getTotalCount() == 0);
         assertEquals("UNKNOWN",result.getObjects().get(0).getCode());
+        
+
     }
     
     

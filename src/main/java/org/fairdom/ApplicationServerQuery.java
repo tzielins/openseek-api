@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.AbstractEntitySearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetSearchCriteria;
@@ -13,13 +14,18 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.fetchoptions.ExperimentFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleTypeFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleTypeSearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.semanticannotation.search.SemanticAnnotationSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
+import org.json.simple.JSONObject;
 
 /**
  * @author Quyen Nguyen
@@ -29,13 +35,15 @@ public class ApplicationServerQuery {
 	private static IApplicationServerApi as;
 	private static String endpoint;
 	private static String sessionToken;
+        
+        static final int TIMEOUT = 500000;
 
 	public static IApplicationServerApi as(String endpoint) {
-		SslCertificateHelper.trustAnyCertificate(endpoint);
-		IApplicationServerApi as = HttpInvokerUtils.createServiceStub(IApplicationServerApi.class,
-				endpoint + IApplicationServerApi.SERVICE_URL, 500000);
-
-		return as;
+            SslCertificateHelper.trustAnyCertificate(endpoint);
+            
+            return HttpInvokerUtils.createServiceStub(IApplicationServerApi.class,
+				endpoint + IApplicationServerApi.SERVICE_URL, TIMEOUT);        
+                
 	}
 
 	public ApplicationServerQuery(String startEndpoint, String startSessionToken) {
@@ -209,6 +217,42 @@ public class ApplicationServerQuery {
 		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
 		return spacesByAttribute(attribute, values);
 	}
+        
+        public List<SampleType> sampleTypesBySemantic(JSONObject query) throws AuthenticationException {
+            
+            SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
+            fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            
+            SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
+                
+            SemanticAnnotationSearchCriteria semCriteria = searchCriteria.withSemanticAnnotations();
+        
+            
+            if (query.containsKey("predicateOntologyId"))
+                semCriteria.withPredicateOntologyId().thatEquals(query.get("predicateOntologyId").toString());
+
+            if (query.containsKey("predicateOntologyVersion"))
+                semCriteria.withPredicateOntologyVersion().thatEquals(query.get("predicateOntologyVersion").toString());
+            
+            if (query.containsKey("predicateAccessionId"))
+                semCriteria.withPredicateAccessionId().thatEquals(query.get("predicateAccessionId").toString());
+
+            if (query.containsKey("descriptorOntologyId"))
+                semCriteria.withDescriptorOntologyId().thatEquals(query.get("descriptorOntologyId").toString());
+
+            if (query.containsKey("descriptorOntologyVersion"))
+                semCriteria.withDescriptorOntologyVersion().thatEquals(query.get("descriptorOntologyVersion").toString());
+            
+            if (query.containsKey("descriptorAccessionId"))
+                semCriteria.withDescriptorAccessionId().thatEquals(query.get("descriptorAccessionId").toString());
+
+            
+            
+            SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();
+            
+        }        
 
 	private DataSetFetchOptions dataSetFetchOptions() {
 		DataSetFetchOptions options = new DataSetFetchOptions();
@@ -257,5 +301,7 @@ public class ApplicationServerQuery {
 			throw new InvalidOptionException("Invalid attribute name:" + key);
 		}
 	}
+
+
 
 }
