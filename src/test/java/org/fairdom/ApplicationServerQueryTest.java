@@ -13,10 +13,12 @@ import org.junit.Test;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,18 +27,27 @@ import java.util.Map;
  */
 public class ApplicationServerQueryTest {
 
-	private static String endpoint;
-	private static String sessionToken;
-	private static ApplicationServerQuery query;
+	private String endpoint;
+	private String sessionToken;
+	private ApplicationServerQuery query;
 
 	@Before
 	public void setUp() throws AuthenticationException {
-		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
-				"apiuser");
-		sessionToken = au.sessionToken();
-		endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
-		query = new ApplicationServerQuery(endpoint, sessionToken);
+            //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            //SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
+            
+            Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
+			"apiuser");
+            sessionToken = au.sessionToken();
+            endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
+            query = new ApplicationServerQuery(endpoint, sessionToken);
 	}
+        
+        protected ApplicationServerQuery localQuery() throws AuthenticationException {
+                String localAs = "https://127.0.0.1:8443/openbis/openbis";
+                Authentication au = new Authentication(localAs, "seek", "seek");
+                return new ApplicationServerQuery(localAs, au.sessionToken());
+        }
 
 	@Test
 	public void queryBySpace() throws Exception {
@@ -231,6 +242,79 @@ public class ApplicationServerQueryTest {
             assertEquals("Tomek First",props.getOrDefault("NAME", "missing"));
             assertTrue(props.getOrDefault("DESCRIPTION", "").contains("assay"));
             
+        }      
+        
+        @Test
+        public void sampleTypesBySemanticSearchesUsingAllFields() throws AuthenticationException {
+            
+            Map<String,String> qMap = new HashMap<>();
+            qMap.put("entityType", "SampleType");
+            qMap.put("queryType",QueryType.SEMANTIC.name());
+            qMap.put("predicateOntologyId","po_id_t");
+            qMap.put("predicateOntologyVersion","po_version_t");            
+            qMap.put("predicateAccessionId","po_acc_t");
+            qMap.put("descriptorOntologyId","do_id_t");            
+            qMap.put("descriptorOntologyVersion","do_version_t");
+            qMap.put("descriptorAccessionId","do_acc_t");            
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            query = localQuery();
+            
+            List<SampleType> res = query.sampleTypesBySemantic(crit);
+            assertNotNull(res);
+            assertFalse(res.isEmpty());
+            assertEquals("TZ_ASSAY",res.get(0).getCode());
+            
+            String[] fields = {"predicateOntologyId","predicateOntologyVersion","predicateAccessionId",
+                                "descriptorOntologyId","descriptorOntologyVersion","descriptorAccessionId"};
+            
+            for (String field : fields) {
+                HashMap wMap = new HashMap(qMap);
+                wMap.put(field,"1");
+                
+                crit = new JSONObject(wMap);
+                res = query.sampleTypesBySemantic(crit);
+                assertNotNull(res);
+                assertTrue(res.isEmpty());                
+            }
+        }
+        
+        @Test
+        public void sampleTypesBySemanticSearchesUsingOnlySetFields() throws AuthenticationException {
+            
+            Map<String,String> qMap = new HashMap<>();
+            qMap.put("entityType", "SampleType");
+            qMap.put("queryType",QueryType.SEMANTIC.name());
+            qMap.put("predicateOntologyId","po_id_t");
+            qMap.put("predicateOntologyVersion","po_version_t");            
+            qMap.put("predicateAccessionId","po_acc_t");
+            qMap.put("descriptorOntologyId","do_id_t");            
+            qMap.put("descriptorOntologyVersion","do_version_t");
+            qMap.put("descriptorAccessionId","do_acc_t");            
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            query = localQuery();
+            
+            List<SampleType> res = query.sampleTypesBySemantic(crit);
+            assertNotNull(res);
+            assertFalse(res.isEmpty());
+            assertEquals("TZ_ASSAY",res.get(0).getCode());
+            
+            String[] fields = {"predicateOntologyId","predicateOntologyVersion","predicateAccessionId",
+                                "descriptorOntologyId","descriptorOntologyVersion","descriptorAccessionId"};
+            
+            for (String field : fields) {
+                HashMap wMap = new HashMap(qMap);
+                wMap.put(field,null);
+                
+                crit = new JSONObject(wMap);
+                res = query.sampleTypesBySemantic(crit);
+                assertNotNull(res);
+                assertFalse(res.isEmpty());
+                assertEquals("TZ_ASSAY",res.get(0).getCode());              
+            }
         }        
 
 	@Test

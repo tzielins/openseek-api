@@ -24,7 +24,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
-import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
+import java.util.Map;
 import org.json.simple.JSONObject;
 
 /**
@@ -39,7 +39,9 @@ public class ApplicationServerQuery {
         static final int TIMEOUT = 500000;
 
 	public static IApplicationServerApi as(String endpoint) {
-            SslCertificateHelper.trustAnyCertificate(endpoint);
+            //SslCertificateHelper.trustAnyCertificate(endpoint);
+            SslCertificateHelper.addTrustedUrl(endpoint);
+
             
             return HttpInvokerUtils.createServiceStub(IApplicationServerApi.class,
 				endpoint + IApplicationServerApi.SERVICE_URL, TIMEOUT);        
@@ -218,6 +220,10 @@ public class ApplicationServerQuery {
 		return spacesByAttribute(attribute, values);
 	}
         
+        protected <K> boolean notNullAtKey(Map<K,?> map,K key) {
+            return map.containsKey(key) && ( map.get(key) != null);
+        }
+        
         public List<SampleType> sampleTypesBySemantic(JSONObject query) throws AuthenticationException {
             
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
@@ -229,26 +235,24 @@ public class ApplicationServerQuery {
             SemanticAnnotationSearchCriteria semCriteria = searchCriteria.withSemanticAnnotations();
         
             
-            if (query.containsKey("predicateOntologyId"))
+            if (notNullAtKey(query,"predicateOntologyId"))
                 semCriteria.withPredicateOntologyId().thatEquals(query.get("predicateOntologyId").toString());
 
-            if (query.containsKey("predicateOntologyVersion"))
+            if (notNullAtKey(query,"predicateOntologyVersion"))
                 semCriteria.withPredicateOntologyVersion().thatEquals(query.get("predicateOntologyVersion").toString());
             
-            if (query.containsKey("predicateAccessionId"))
+            if (notNullAtKey(query,"predicateAccessionId"))
                 semCriteria.withPredicateAccessionId().thatEquals(query.get("predicateAccessionId").toString());
 
-            if (query.containsKey("descriptorOntologyId"))
+            if (notNullAtKey(query,"descriptorOntologyId"))
                 semCriteria.withDescriptorOntologyId().thatEquals(query.get("descriptorOntologyId").toString());
 
-            if (query.containsKey("descriptorOntologyVersion"))
+            if (notNullAtKey(query,"descriptorOntologyVersion"))
                 semCriteria.withDescriptorOntologyVersion().thatEquals(query.get("descriptorOntologyVersion").toString());
             
-            if (query.containsKey("descriptorAccessionId"))
+            if (notNullAtKey(query,"descriptorAccessionId"))
                 semCriteria.withDescriptorAccessionId().thatEquals(query.get("descriptorAccessionId").toString());
 
-            
-            
             SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();
             

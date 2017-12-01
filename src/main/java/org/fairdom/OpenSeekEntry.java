@@ -26,7 +26,7 @@ public class OpenSeekEntry {
 	}
 
 	private String[] args;
-        ObjectMapper mapper;
+        final ObjectMapper mapper;
 
 	public OpenSeekEntry(String args[]) {
 		this.args = args;
@@ -208,7 +208,9 @@ public class OpenSeekEntry {
 
     protected String mapToJsonString(String listName, List<?> objects) throws JsonProcessingException {
         
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+        //necessary to make writer as df is not thread safe so cannot be set globabaly
+        
         ObjectWriter writer = mapper.writer(df);
         Map<String,List<?>> map = new HashMap<>();
         map.put(listName,objects);

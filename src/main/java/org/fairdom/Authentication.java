@@ -2,7 +2,6 @@ package org.fairdom;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
-import ch.systemsx.cisd.common.ssl.SslCertificateHelper;
 
 /**
  * Created by quyennguyen on 09/02/15.
@@ -22,7 +21,8 @@ public class Authentication {
 
 	public IApplicationServerApi as() {
 		String AS_URL = asEndpoint;
-		SslCertificateHelper.trustAnyCertificate(AS_URL);
+		//SslCertificateHelper.trustAnyCertificate(AS_URL);                
+                SslCertificateHelper.addTrustedUrl(AS_URL);
 		IApplicationServerApi as = HttpInvokerUtils.createServiceStub(IApplicationServerApi.class,
 				AS_URL + IApplicationServerApi.SERVICE_URL, 500000);
 
