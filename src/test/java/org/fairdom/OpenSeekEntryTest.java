@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,15 @@ public class OpenSeekEntryTest {
 	private PrintStream oldStream;
 
 	private ByteArrayOutputStream outputStream;
+        
+        String localEndpoint() throws AuthenticationException {
+            String localAs = "https://127.0.0.1:8443/openbis/openbis";
+            Authentication au = new Authentication(localAs, "seek", "seek");
+
+            String token = au.sessionToken();
+            String endpoint = "{\"as\":\"" + localAs + "\",\"sessionToken\":\"" + token + "\"}";            
+            return endpoint;
+        }
         
         @Test
         @Ignore
@@ -128,15 +138,47 @@ public class OpenSeekEntryTest {
                 assertTrue(sets.contains("20171002172401546-38"));
             
         }
+
+        @Test
+        public void samplesByType() throws Exception {
+            
+		String endpoints = localEndpoint();
+                
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "Sample");
+                qMap.put("queryType",QueryType.TYPE.name());
+                qMap.put("typeCode","TZ_ASSAY");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("samples"));
+                List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
+                
+                assertEquals(2,samples.size());
+                
+                samples.forEach( s -> {
+                    assertEquals("TZ_ASSAY", ((JSONObject) s.get("sample_type")).get("code"));
+                });
+                
+        }
         
         @Test
         public void sampleTypesCanBeSearchedBySemanticAnnotations() throws Exception {
             
-                String localAs = "https://127.0.0.1:8443/openbis/openbis";
-                Authentication au = new Authentication(localAs, "seek", "seek");
-
-		String token = au.sessionToken();
-		String endpoints = "{\"as\":\"" + localAs + "\",\"sessionToken\":\"" + token + "\"}";
+		String endpoints = localEndpoint();
                 
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "SampleType");
@@ -146,7 +188,7 @@ public class OpenSeekEntryTest {
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
-                System.out.println("Query:\n"+query);
+                //System.out.println("Query:\n"+query);
                 
                 
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
@@ -156,7 +198,7 @@ public class OpenSeekEntryTest {
                 OpenSeekEntry client = new OpenSeekEntry(args);
                 String res = client.doApplicationServerQuery(options);
                 assertNotNull(res);
-                System.out.println("Res:\n"+res);
+                //System.out.println("Res:\n"+res);
                 
                 JSONObject jsonObj = JSONHelper.processJSON(res);
                 
@@ -165,16 +207,53 @@ public class OpenSeekEntryTest {
                 
                 assertEquals(2,sampletypes.size());
                 JSONObject sam = sampletypes.get(0);
+                assertEquals("UNKNOWN",((JSONObject)sam.get("permId")).get("permId"));
+                assertEquals("UNKNOWN",sam.get("code"));
+                assertEquals("2017-11-20 17:34:28.861",sam.get("modificationDate"));
+
+                sam = sampletypes.get(1);
                 assertEquals("TZ_ASSAY",((JSONObject)sam.get("permId")).get("permId"));
                 assertEquals("TZ_ASSAY",sam.get("code"));
                 assertEquals("2017-11-21 15:33:36.531",sam.get("modificationDate"));
 
-                sam = sampletypes.get(1);
-                assertEquals("UNKNOWN",((JSONObject)sam.get("permId")).get("permId"));
-                assertEquals("UNKNOWN",sam.get("code"));
-                assertEquals("2017-11-20 17:34:28.861",sam.get("modificationDate"));
                 
             
+        }
+        
+        @Test
+        public void allEntities() throws Exception {
+            
+		String endpoints = localEndpoint();
+                ObjectMapper mapper = new ObjectMapper();
+
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("queryType",QueryType.ALL.name());
+                
+                List<String> types = Arrays.asList("Sample","DataSet","Experiment","Space");
+                for (String type : types) {
+                    qMap.put("entityType", type);
+
+                    String query = mapper.writeValueAsString(qMap);
+                    //System.out.println("Query:\n"+query);
+                
+                    String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                    OptionParser options = new OptionParser(args);
+                
+                    OpenSeekEntry client = new OpenSeekEntry(args);
+                    String res = client.doApplicationServerQuery(options);
+                    
+                    assertNotNull(res);
+                    //System.out.println("Res:\n"+res);
+                
+                    JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                    String key = type.toLowerCase()+"s";
+                    assertNotNull(jsonObj.get(key));
+                    List<JSONObject> ent = (List<JSONObject>)jsonObj.get(key);
+                    assertFalse(ent.isEmpty());
+                
+                }                
         }
         
         

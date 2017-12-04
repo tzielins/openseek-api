@@ -17,9 +17,11 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.Ignore;
 
 /**
  * @author Quyen Nugyen
@@ -34,7 +36,7 @@ public class ApplicationServerQueryTest {
 	@Before
 	public void setUp() throws AuthenticationException {
             //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
-            //SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
+            SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
             
             Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
 			"apiuser");
@@ -50,6 +52,7 @@ public class ApplicationServerQueryTest {
         }
 
 	@Test
+        @Ignore
 	public void queryBySpace() throws Exception {
 		List<? extends Object> result = query.query("Space", QueryType.ATTRIBUTE, "permID", "");
 		assertTrue(result.size() > 0);
@@ -61,6 +64,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getSpacesByPermIDs() throws Exception {
 		List<String> permids = new ArrayList<String>();
 		permids.add("API-SPACE");
@@ -72,6 +76,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getSpacesByPermID() throws Exception {
 		List<String> permids = new ArrayList<String>();
 		permids.add("API-SPACE");
@@ -99,6 +104,7 @@ public class ApplicationServerQueryTest {
 	}
         
 	@Test
+        @Ignore
 	public void getSpacesByPermIDGetsAllDataSetsExperimentAndSamplesOnes() throws Exception {
 
 		List<Space> spaces = query.spacesByAttribute("permId", "API-SPACE");
@@ -123,14 +129,31 @@ public class ApplicationServerQueryTest {
 	}        
 
 	@Test
+        @Ignore
 	public void getAllSpaces() throws Exception {
 		List<Space> spaces = query.spacesByAttribute("permId", "");
 		assertTrue(spaces.size() > 0);
 		String json = new JSONCreator(spaces).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 	}
+        
+	@Test
+	public void allSpacesGivesAll() throws Exception {
+            query = localQuery();
+            List<Space> spaces = query.allSpaces();
+            //spaces.forEach( s -> System.out.println(s.getCode()));
+            assertEquals(7,spaces.size());
+	}    
+        
+        @Test 
+        public void allEntitiesWorks() throws InvalidOptionException {
+            List<String> types = Arrays.asList("Sample","DataSet","Experiment","Space");
+            for (String type : types)
+                assertFalse(query.allEntities(type).isEmpty());
+        }
 
 	@Test
+        @Ignore
 	public void getExperimentsByPermID() throws Exception {
 		List<String> permids = new ArrayList<String>();
 		permids.add("20151216143716562-2");
@@ -146,6 +169,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getExperimentsByPermIDs() throws Exception {
 		List<String> permids = new ArrayList<String>();
 		permids.add("20151216112932823-1");
@@ -157,6 +181,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getAllExperiments() throws Exception {
 
 		List<Experiment> experiments = query.experimentsByAttribute("permId", "");
@@ -164,6 +189,14 @@ public class ApplicationServerQueryTest {
 		String json = new JSONCreator(experiments).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 	}
+        
+	@Test
+	public void allExperimentsGetsAll() throws Exception {
+            query = localQuery();
+
+            List<Experiment> experiments = query.allExperiments();
+            assertEquals(23,experiments.size());
+	}        
 
 	@Test
 	public void getAllSamples() throws Exception {
@@ -172,6 +205,13 @@ public class ApplicationServerQueryTest {
 		String json = new JSONCreator(samples).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 	}
+        
+        @Test
+	public void allSamplesGivesAll() throws Exception {
+                query = localQuery();
+		List<Sample> samples = query.allSamples();
+                assertEquals(8,samples.size());
+	}        
 
 	@Test
 	public void getAllDatasets() throws Exception {
@@ -180,8 +220,16 @@ public class ApplicationServerQueryTest {
 		String json = new JSONCreator(data).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 	}
+        
+        @Test
+        public void allDatasetsGivesAll() throws Exception {
+            query = localQuery();
+            List<DataSet> data = query.allDatasets();
+            assertEquals(10,data.size());
+        }
 
 	@Test
+        @Ignore
 	public void getDatasetByAttribute() throws Exception {
 		List<DataSet> data = query.dataSetsByAttribute("permId", "20151217153943290-5");
 		String json = new JSONCreator(data).getJSON();
@@ -190,6 +238,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getDatasetsByAttribute() throws Exception {
 		List<String> values = new ArrayList<String>();
 		values.add("20151217153943290-5");
@@ -242,7 +291,63 @@ public class ApplicationServerQueryTest {
             assertEquals("Tomek First",props.getOrDefault("NAME", "missing"));
             assertTrue(props.getOrDefault("DESCRIPTION", "").contains("assay"));
             
-        }      
+        }   
+        
+        @Test
+        public void samplesByTypeCodeWorks() throws AuthenticationException, InvalidOptionException {
+            query = localQuery();
+            
+            Map<String,String> qMap = new HashMap<>();
+            qMap.put("entityType", "Sample");
+            qMap.put("queryType",QueryType.TYPE.name());
+            qMap.put("typeCode","TZ_ASSAY");
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            
+            List<Sample> res = query.samplesByType(crit);
+            assertNotNull(res);
+            assertEquals(2, res.size());
+            
+            res.forEach( s -> {
+                assertEquals("TZ_ASSAY", s.getType().getCode());
+            });            
+            
+            qMap.put("typeCode","TZ_ASSAY_NOT_DEFINED");           
+            crit = new JSONObject(qMap);
+            res = query.samplesByType(crit);
+            
+            assertTrue(res.isEmpty());
+        }
+        
+        @Test
+        public void samplesByMultipleTypeCodesWorks() throws AuthenticationException, InvalidOptionException {
+            
+            query = localQuery();
+            
+            Map<String,Object> qMap = new HashMap<>();
+            qMap.put("entityType", "Sample");
+            qMap.put("queryType",QueryType.TYPE.name());
+            qMap.put("typeCode",Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP"));
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            
+            List<Sample> res = query.samplesByType(crit);
+            assertNotNull(res);
+            assertEquals(4, res.size());
+            
+            List<String> exp = Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP");
+            res.forEach( s -> {
+                assertTrue(exp.contains(s.getType().getCode()));
+            });            
+            
+            qMap.put("typeCode",Arrays.asList("TZ_ASSAY_NOT_DEFINED"));           
+            crit = new JSONObject(qMap);
+            res = query.samplesByType(crit);
+            
+            assertTrue(res.isEmpty());
+        }
         
         @Test
         public void sampleTypesBySemanticSearchesUsingAllFields() throws AuthenticationException {
@@ -318,6 +423,7 @@ public class ApplicationServerQueryTest {
         }        
 
 	@Test
+        @Ignore
 	public void getExperimentWithSeekStudyID() throws Exception {
 		String property = "SEEK_STUDY_ID";
 		String propertyValue = "Study_1";
@@ -328,6 +434,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getExperimentWithSeekStudyIDNoResult() throws Exception {
 		String property = "SEEK_STUDY_ID";
 		String propertyValue = "SomeID";
@@ -336,6 +443,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getSampleWithSeekAssayID() throws Exception {
 		String property = "SEEK_ASSAY_ID";
 		String propertyValue = "Assay_1";
@@ -350,6 +458,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getSampleWithSeekAssayIDNoResult() throws Exception {
 		String property = "SEEK_ASSAY_ID";
 		String propertyValue = "SomeID";
@@ -358,6 +467,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getDataSetWithSeekDataFileID() throws Exception {
 		String property = "SEEK_DATAFILE_ID";
 		String propertyValue = "DataFile_1";
@@ -369,6 +479,7 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
+        @Ignore
 	public void getDatasetWithSeekDataFileIDNoResult() throws Exception {
 		String property = "SEEK_DATAFILE_ID";
 		String propertyValue = "SomeID";

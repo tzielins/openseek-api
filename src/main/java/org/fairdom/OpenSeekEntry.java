@@ -1,5 +1,6 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,6 +85,9 @@ public class OpenSeekEntry {
                 QueryType queryType = QueryType.valueOf(query.get("queryType").toString());
                 
                 switch(queryType) {
+                    case ALL:
+                                    result = asQuery.allEntities(query.get("entityType").toString());
+                                    break;
                     case PROPERTY: result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
 					query.get("property").toString(), query.get("propertyValue").toString());
                                         break;
@@ -92,6 +96,14 @@ public class OpenSeekEntry {
                                     result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
 					query.get("attribute").toString(), attributeValues);
                                     break;
+                    case TYPE:
+                                    if (query.get("entityType").equals("Sample")) {
+                                        List<Sample> samples = asQuery.samplesByType(query);
+                                        return new JSONCreator(samples).getJSON();
+                                    } else {
+                                        throw new InvalidOptionException("Type query for unsupported type: "+query.get("entityType"));
+                                    }
+                        
                     case SEMANTIC:
                                     if (query.get("entityType").equals("SampleType")) {
                                         List<SampleType> types = asQuery.sampleTypesBySemantic(query);

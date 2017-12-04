@@ -6,5 +6,5 @@ package org.fairdom;
  */
 
 public enum QueryType {
-	ATTRIBUTE, PROPERTY, SEMANTIC
+	ATTRIBUTE, PROPERTY, SEMANTIC, TYPE, ALL
 }

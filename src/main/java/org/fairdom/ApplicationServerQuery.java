@@ -25,6 +25,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOpt
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import java.util.Map;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -53,6 +54,10 @@ public class ApplicationServerQuery {
 		sessionToken = startSessionToken;
 		as = ApplicationServerQuery.as(endpoint);
 	}
+        
+	public List<DataSet> allDatasets() throws InvalidOptionException {
+            return dataSetsByAttribute("permId", "");
+	}        
 
 	public List<DataSet> datasetsByAnyField(String searchTerm) {
 		DataSetFetchOptions options = dataSetFetchOptions();
@@ -87,6 +92,11 @@ public class ApplicationServerQuery {
 		return as.searchDataSets(sessionToken, criterion, options).getObjects();
 	}
 
+	public List<Experiment> allExperiments() throws InvalidOptionException  {
+
+            return experimentsByAttribute("permId", "");
+	}
+        
 	public List<Experiment> experimentsByAnyField(String searchTerm) {
 		ExperimentFetchOptions options = experimentFetchOptions();
 
@@ -121,6 +131,22 @@ public class ApplicationServerQuery {
 
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 	}
+        
+        public List<? extends Object> allEntities(String type) throws InvalidOptionException {
+            
+            switch (type) {
+                case "Experiment":
+                    return allExperiments();
+                case "Sample":
+                    return allSamples();
+                case "DataSet":
+                    return allDatasets();
+                case "Space":
+                    return allSpaces();
+                default:
+                    throw new InvalidOptionException("Unrecognised type: " + type);
+            }
+        }        
 
 	public List<? extends Object> query(String type, QueryType queryType, String key, List<String> values)
 			throws InvalidOptionException {
@@ -175,6 +201,10 @@ public class ApplicationServerQuery {
 		criterion.withAnyField().thatContains(searchTerm);
 		return as.searchSamples(sessionToken, criterion, options).getObjects();
 	}
+        
+	public List<Sample> allSamples() throws InvalidOptionException {
+		return samplesByAttribute("permId", "");
+	}        
 
 	public List<Sample> samplesByAttribute(String attribute, List<String> values) throws InvalidOptionException {
 		SampleFetchOptions options = sampleFetchOptions();
@@ -201,6 +231,29 @@ public class ApplicationServerQuery {
 		return as.searchSamples(sessionToken, criterion, options).getObjects();
 	}
 
+        public List<Sample> samplesByType(JSONObject query) throws InvalidOptionException {
+
+            if (!query.containsKey("typeCode"))
+                throw new InvalidOptionException("Missing type code");
+
+            SampleSearchCriteria criterion = new SampleSearchCriteria();
+
+            if (query.get("typeCode") instanceof List) {
+                criterion.withType().withCodes().thatIn((List)query.get("typeCode"));
+            } else {
+                String typeCode = (String)query.get("typeCode");
+                criterion.withType().withCode().thatEquals(typeCode);
+            }
+            
+            SampleFetchOptions options = sampleFetchOptions();
+            
+            return as.searchSamples(sessionToken, criterion, options).getObjects();
+        }
+    
+	public List<Space> allSpaces() throws InvalidOptionException  {
+            return spacesByAttribute("permId", "");
+	}        
+        
 	public List<Space> spacesByAttribute(String attribute, List<String> values) throws InvalidOptionException {
 		SpaceFetchOptions options = new SpaceFetchOptions();
 		options.withProjects().withExperiments().withDataSets();
@@ -305,6 +358,10 @@ public class ApplicationServerQuery {
 			throw new InvalidOptionException("Invalid attribute name:" + key);
 		}
 	}
+
+
+
+
 
 
 
