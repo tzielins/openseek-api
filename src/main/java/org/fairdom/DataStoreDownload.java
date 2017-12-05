@@ -82,14 +82,14 @@ public class DataStoreDownload extends DataStoreStream {
 			DataSetFile dataSetFile = file.getDataSetFile();
 			if (dataSetFile.isDirectory()) {
 				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
-                                System.out.println("Making dir: "+dataSetFile.getPath());
+                                //System.out.println("Making dir: "+dataSetFile.getPath());
                                 if (!Files.isDirectory(dir)) {
                                     Files.createDirectories(dir);
                                 }
 			} else {
-                                System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
+                                //System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
                                 if (dataSetFile.getFileLength() == 0) {
-                                    System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
+                                    //System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
                                     continue;
                                 }
                                 Path destPath = Paths.get(destinationFolder, dataSetFile.getPath());

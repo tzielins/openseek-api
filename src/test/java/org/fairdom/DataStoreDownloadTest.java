@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ch.systemsx.cisd.common.parser.MemorySizeFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -105,7 +104,7 @@ public class DataStoreDownloadTest {
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
 
-		assertEquals("537k", MemorySizeFormatter.format(Files.size(localFile.toPath())));
+		assertEquals(549820L, Files.size(localFile.toPath()));
 
 	}
 
@@ -117,7 +116,7 @@ public class DataStoreDownloadTest {
                 
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
-		assertEquals("27.4k", MemorySizeFormatter.format(Files.size(localFile.toPath())));
+		assertEquals(28057L, Files.size(localFile.toPath()));
 
 	}
 
@@ -130,7 +129,7 @@ public class DataStoreDownloadTest {
                 
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
-		assertEquals("2.3gb", MemorySizeFormatter.format(Files.size(localFile.toPath())));
+		assertEquals("2.3gb", Files.size(localFile.toPath()));
 
 	}
 

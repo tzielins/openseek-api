@@ -18,7 +18,6 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Ignore;
@@ -35,7 +34,7 @@ public class ApplicationServerQueryTest {
 
 	@Before
 	public void setUp() throws AuthenticationException {
-            //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
             SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
             
             Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
@@ -139,10 +138,9 @@ public class ApplicationServerQueryTest {
         
 	@Test
 	public void allSpacesGivesAll() throws Exception {
-            query = localQuery();
             List<Space> spaces = query.allSpaces();
             //spaces.forEach( s -> System.out.println(s.getCode()));
-            assertEquals(7,spaces.size());
+            assertEquals(2,spaces.size());
 	}    
         
         @Test 
@@ -192,10 +190,8 @@ public class ApplicationServerQueryTest {
         
 	@Test
 	public void allExperimentsGetsAll() throws Exception {
-            query = localQuery();
-
             List<Experiment> experiments = query.allExperiments();
-            assertEquals(23,experiments.size());
+            assertEquals(2,experiments.size());
 	}        
 
 	@Test
@@ -208,9 +204,8 @@ public class ApplicationServerQueryTest {
         
         @Test
 	public void allSamplesGivesAll() throws Exception {
-                query = localQuery();
 		List<Sample> samples = query.allSamples();
-                assertEquals(8,samples.size());
+                assertEquals(4,samples.size());
 	}        
 
 	@Test
@@ -223,9 +218,8 @@ public class ApplicationServerQueryTest {
         
         @Test
         public void allDatasetsGivesAll() throws Exception {
-            query = localQuery();
             List<DataSet> data = query.allDatasets();
-            assertEquals(10,data.size());
+            assertEquals(12,data.size());
         }
 
 	@Test
@@ -295,12 +289,11 @@ public class ApplicationServerQueryTest {
         
         @Test
         public void samplesByTypeCodeWorks() throws AuthenticationException, InvalidOptionException {
-            query = localQuery();
             
             Map<String,String> qMap = new HashMap<>();
             qMap.put("entityType", "Sample");
             qMap.put("queryType",QueryType.TYPE.name());
-            qMap.put("typeCode","TZ_ASSAY");
+            qMap.put("typeCode","TZ_FAIR_ASSAY");
             
             JSONObject crit = new JSONObject(qMap);
             
@@ -310,7 +303,7 @@ public class ApplicationServerQueryTest {
             assertEquals(2, res.size());
             
             res.forEach( s -> {
-                assertEquals("TZ_ASSAY", s.getType().getCode());
+                assertEquals("TZ_FAIR_ASSAY", s.getType().getCode());
             });            
             
             qMap.put("typeCode","TZ_ASSAY_NOT_DEFINED");           
@@ -323,6 +316,7 @@ public class ApplicationServerQueryTest {
         @Test
         public void samplesByMultipleTypeCodesWorks() throws AuthenticationException, InvalidOptionException {
             
+            //local as it came from the new API
             query = localQuery();
             
             Map<String,Object> qMap = new HashMap<>();
@@ -352,6 +346,8 @@ public class ApplicationServerQueryTest {
         @Test
         public void sampleTypesBySemanticSearchesUsingAllFields() throws AuthenticationException {
             
+            query = localQuery();
+            
             Map<String,String> qMap = new HashMap<>();
             qMap.put("entityType", "SampleType");
             qMap.put("queryType",QueryType.SEMANTIC.name());
@@ -364,7 +360,6 @@ public class ApplicationServerQueryTest {
             
             JSONObject crit = new JSONObject(qMap);
             
-            query = localQuery();
             
             List<SampleType> res = query.sampleTypesBySemantic(crit);
             assertNotNull(res);
@@ -388,6 +383,8 @@ public class ApplicationServerQueryTest {
         @Test
         public void sampleTypesBySemanticSearchesUsingOnlySetFields() throws AuthenticationException {
             
+            query = localQuery();
+            
             Map<String,String> qMap = new HashMap<>();
             qMap.put("entityType", "SampleType");
             qMap.put("queryType",QueryType.SEMANTIC.name());
@@ -400,7 +397,6 @@ public class ApplicationServerQueryTest {
             
             JSONObject crit = new JSONObject(qMap);
             
-            query = localQuery();
             
             List<SampleType> res = query.sampleTypesBySemantic(crit);
             assertNotNull(res);

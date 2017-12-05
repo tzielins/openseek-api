@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,11 +51,17 @@ public class OpenSeekEntryTest {
 
 	private static String token = null;
 
-	private String as_endpoint = "https://127.0.0.1:8443/openbis/openbis";//"https://openbis-api.fair-dom.org/openbis/openbis";
-	private String dss_endpoint = "https://openbis-api.fair-dom.org/datastore_server";
+	private final String as_endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
+	private final String dss_endpoint = "https://openbis-api.fair-dom.org/datastore_server";
 	private PrintStream oldStream;
 
 	private ByteArrayOutputStream outputStream;
+        
+	@Before
+	public void setUpSSL() throws AuthenticationException {
+            SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
+        }
         
         String localEndpoint() throws AuthenticationException {
             String localAs = "https://127.0.0.1:8443/openbis/openbis";
@@ -66,7 +73,6 @@ public class OpenSeekEntryTest {
         }
         
         @Test
-        @Ignore
         public void dataSetEntityHasRichDetails() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
@@ -141,13 +147,14 @@ public class OpenSeekEntryTest {
 
         @Test
         public void samplesByType() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
             
-		String endpoints = localEndpoint();
                 
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "Sample");
                 qMap.put("queryType",QueryType.TYPE.name());
-                qMap.put("typeCode","TZ_ASSAY");
+                qMap.put("typeCode","TZ_FAIR_ASSAY");
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -170,7 +177,7 @@ public class OpenSeekEntryTest {
                 assertEquals(2,samples.size());
                 
                 samples.forEach( s -> {
-                    assertEquals("TZ_ASSAY", ((JSONObject) s.get("sample_type")).get("code"));
+                    assertEquals("TZ_FAIR_ASSAY", ((JSONObject) s.get("sample_type")).get("code"));
                 });
                 
         }
@@ -223,7 +230,10 @@ public class OpenSeekEntryTest {
         @Test
         public void allEntities() throws Exception {
             
-		String endpoints = localEndpoint();
+            
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+            
                 ObjectMapper mapper = new ObjectMapper();
 
                 Map<String,String> qMap = new HashMap<>();
