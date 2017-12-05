@@ -25,7 +25,6 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOpt
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import java.util.Map;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -79,7 +78,7 @@ public class ApplicationServerQuery {
 	}
 
 	public List<DataSet> dataSetsByAttribute(String attribute, String value) throws InvalidOptionException {
-		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
+		List<String> values = Arrays.asList(new String[] { value });
 		return dataSetsByAttribute(attribute, values);
 	}
 
@@ -118,7 +117,7 @@ public class ApplicationServerQuery {
 	}
 
 	public List<Experiment> experimentsByAttribute(String attribute, String value) throws InvalidOptionException {
-		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
+		List<String> values = Arrays.asList(new String[] { value });
 		return experimentsByAttribute(attribute, values);
 
 	}
@@ -152,17 +151,22 @@ public class ApplicationServerQuery {
 			throws InvalidOptionException {
 		List<? extends Object> result = null;
 		if (queryType == QueryType.ATTRIBUTE) {
-			if (type.equals("Experiment")) {
-				result = experimentsByAttribute(key, values);
-			} else if (type.equals("Sample")) {
-				result = samplesByAttribute(key, values);
-			} else if (type.equals("DataSet")) {
-				result = dataSetsByAttribute(key, values);
-			} else if (type.equals("Space")) {
-				result = spacesByAttribute(key, values);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
+                    switch (type) {
+                        case "Experiment":
+                            result = experimentsByAttribute(key, values);
+                            break;
+                        case "Sample":
+                            result = samplesByAttribute(key, values);
+                            break;
+                        case "DataSet":
+                            result = dataSetsByAttribute(key, values);
+                            break;
+                        case "Space":
+                            result = spacesByAttribute(key, values);
+                            break;
+                        default:
+                            throw new InvalidOptionException("Unrecognised type: " + type);
+                    }
 		} else {
 			throw new InvalidOptionException("It is only possible to query by ATTRIBUTE when using an array of values");
 		}
@@ -173,23 +177,32 @@ public class ApplicationServerQuery {
 	public List<? extends Object> query(String type, QueryType queryType, String key, String value)
 			throws InvalidOptionException {
 		List<? extends Object> result = null;
-		if (queryType == QueryType.PROPERTY) {
-			if (type.equals("Experiment")) {
-				result = experimentsByProperty(key, value);
-			} else if (type.equals("Sample")) {
-				result = samplesByProperty(key, value);
-			} else if (type.equals("DataSet")) {
-				result = dataSetsByProperty(key, value);
-			} else {
-				throw new InvalidOptionException("Unrecognised type: " + type);
-			}
-		} else if (queryType == QueryType.ATTRIBUTE) {
-			List<String> values = new ArrayList<String>();
-			values.add(value);
-			result = query(type, queryType, key, values);
-		} else {
-			throw new InvalidOptionException("Unrecognised query type");
-		}
+		if (null == queryType) {
+                    throw new InvalidOptionException("Unrecognised query type");
+                } else switch (queryType) {
+                case PROPERTY:
+                    switch (type) {
+                        case "Experiment":
+                            result = experimentsByProperty(key, value);
+                            break;
+                        case "Sample":
+                            result = samplesByProperty(key, value);
+                            break;
+                        case "DataSet":
+                            result = dataSetsByProperty(key, value);
+                            break;
+                        default:
+                            throw new InvalidOptionException("Unrecognised entity type: " + type);
+                    }
+                    break;
+                case ATTRIBUTE:
+                    List<String> values = new ArrayList<>();
+                    values.add(value);
+                    result = query(type, queryType, key, values);
+                    break;
+                default:
+                    throw new InvalidOptionException("Unrecognised query type");
+            }
 
 		return result;
 	}
@@ -218,7 +231,7 @@ public class ApplicationServerQuery {
 	}
 
 	public List<Sample> samplesByAttribute(String attribute, String value) throws InvalidOptionException {
-		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
+		List<String> values = Arrays.asList(new String[] { value });
 		return samplesByAttribute(attribute, values);
 	}
 
@@ -231,6 +244,7 @@ public class ApplicationServerQuery {
 		return as.searchSamples(sessionToken, criterion, options).getObjects();
 	}
 
+        @SuppressWarnings("unchecked")
         public List<Sample> samplesByType(JSONObject query) throws InvalidOptionException {
 
             if (!query.containsKey("typeCode"))
@@ -239,7 +253,8 @@ public class ApplicationServerQuery {
             SampleSearchCriteria criterion = new SampleSearchCriteria();
 
             if (query.get("typeCode") instanceof List) {
-                criterion.withType().withCodes().thatIn((List)query.get("typeCode"));
+                
+                criterion.withType().withCodes().thatIn((List<String>)query.get("typeCode"));
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
@@ -269,11 +284,11 @@ public class ApplicationServerQuery {
 	}
 
 	public List<Space> spacesByAttribute(String attribute, String value) throws InvalidOptionException {
-		List<String> values = new ArrayList<String>(Arrays.asList(new String[] { value }));
+		List<String> values = Arrays.asList(new String[] { value });
 		return spacesByAttribute(attribute, values);
 	}
         
-        protected <K> boolean notNullAtKey(Map<K,?> map,K key) {
+        protected <K> boolean notNullAtKey(Map map,K key) {
             return map.containsKey(key) && ( map.get(key) != null);
         }
         

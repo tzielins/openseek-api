@@ -6,7 +6,7 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 
 def mainClass='org.fairdom.OpenSeekEntry'
-def jarVersion='0.12'
+def jarVersion='0.13'
 
 
 repositories {
@@ -16,11 +16,16 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile fileTree(dir: 'libs', include: '*.jar')
+//    compile 'com.fasterxml.jackson.core:jackson-core:+',
+//            'com.fasterxml.jackson.core:jackson-annotations:+',
+//            'com.fasterxml.jackson.core:jackson-databind:+',
+//            'org.reflections:reflections:0.9.9-RC1',
+//            'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'com.fasterxml.jackson.core:jackson-core:+',
             'com.fasterxml.jackson.core:jackson-annotations:+',
             'com.fasterxml.jackson.core:jackson-databind:+',
             'org.reflections:reflections:0.9.9-RC1',
-            'com.googlecode.json-simple:json-simple:1.1'
+            'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 jar {
