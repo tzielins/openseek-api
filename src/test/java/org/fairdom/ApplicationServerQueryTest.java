@@ -344,6 +344,23 @@ public class ApplicationServerQueryTest {
         }
         
         @Test
+        public void allSampleTypes() throws AuthenticationException {
+                        
+            List<SampleType> res = query.allSampleTypes();
+            assertNotNull(res);
+            assertFalse(res.isEmpty());
+            assertEquals(30,res.size());
+            
+        }
+        
+	@Test
+	public void sampleTypesByCode() throws Exception {
+		List<SampleType> res = query.sampleTypesByCode("TZ_FAIR_ASSAY");
+                assertEquals(1, res.size());
+                assertEquals("TZ_FAIR_ASSAY", res.get(0).getCode());
+	}        
+        
+        @Test
         public void sampleTypesBySemanticSearchesUsingAllFields() throws AuthenticationException {
             
             query = localQuery();

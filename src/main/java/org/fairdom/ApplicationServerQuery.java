@@ -142,6 +142,8 @@ public class ApplicationServerQuery {
                     return allDatasets();
                 case "Space":
                     return allSpaces();
+                case "SampleType":
+                    return allSampleTypes();
                 default:
                     throw new InvalidOptionException("Unrecognised type: " + type);
             }
@@ -163,6 +165,10 @@ public class ApplicationServerQuery {
                             break;
                         case "Space":
                             result = spacesByAttribute(key, values);
+                            break;
+                        case "SampleType":
+                            if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
+                            result = sampleTypesByCode(values.get(0));
                             break;
                         default:
                             throw new InvalidOptionException("Unrecognised type: " + type);
@@ -273,8 +279,8 @@ public class ApplicationServerQuery {
 		SpaceFetchOptions options = new SpaceFetchOptions();
 		options.withProjects().withExperiments().withDataSets();
 		options.withSamples().withDataSets();
-
 		SpaceSearchCriteria criterion = new SpaceSearchCriteria();
+                
 		criterion.withOrOperator();
 		for (String value : values) {
 			criterion.withPermId().thatContains(value);
@@ -291,6 +297,33 @@ public class ApplicationServerQuery {
         protected <K> boolean notNullAtKey(Map map,K key) {
             return map.containsKey(key) && ( map.get(key) != null);
         }
+        
+        public List<SampleType> allSampleTypes() {
+            
+            SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
+            fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+
+            SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
+            
+            SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();
+            
+        }    
+        
+        public List<SampleType> sampleTypesByCode(String code) {
+            
+            SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
+            fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            
+            SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
+            
+            searchCriteria.withCode().thatEquals(code);
+            
+            SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();            
+        }        
         
         public List<SampleType> sampleTypesBySemantic(JSONObject query) throws AuthenticationException {
             
@@ -373,6 +406,12 @@ public class ApplicationServerQuery {
 			throw new InvalidOptionException("Invalid attribute name:" + key);
 		}
 	}
+
+
+
+
+
+
 
 
 

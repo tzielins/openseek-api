@@ -183,6 +183,72 @@ public class OpenSeekEntryTest {
         }
         
         @Test
+        public void allSampleTypes() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+                          
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "SampleType");
+                qMap.put("queryType",QueryType.ALL.name());
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("sampletypes"));
+                List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");
+                
+                assertEquals(30,sampletypes.size());
+        }
+        
+        @Test
+        public void sampleTypesByCode() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+                          
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "SampleType");
+                qMap.put("queryType",QueryType.ATTRIBUTE.name());
+                qMap.put("attribute","CODE");
+                qMap.put("attributeValue","TZ_FAIR_ASSAY");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("sampletypes"));
+                List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");                
+                assertEquals(1,sampletypes.size());
+                assertEquals("TZ_FAIR_ASSAY",sampletypes.get(0).get("code"));
+        }        
+        
+        @Test
         public void sampleTypesCanBeSearchedBySemanticAnnotations() throws Exception {
             
 		String endpoints = localEndpoint();
@@ -213,12 +279,12 @@ public class OpenSeekEntryTest {
                 List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");
                 
                 assertEquals(2,sampletypes.size());
-                JSONObject sam = sampletypes.get(0);
+                JSONObject sam = sampletypes.get(1);
                 assertEquals("UNKNOWN",((JSONObject)sam.get("permId")).get("permId"));
                 assertEquals("UNKNOWN",sam.get("code"));
                 assertEquals("2017-11-20 17:34:28.861",sam.get("modificationDate"));
 
-                sam = sampletypes.get(1);
+                sam = sampletypes.get(0);
                 assertEquals("TZ_ASSAY",((JSONObject)sam.get("permId")).get("permId"));
                 assertEquals("TZ_ASSAY",sam.get("code"));
                 assertEquals("2017-11-21 15:33:36.531",sam.get("modificationDate"));

@@ -87,6 +87,11 @@ public class OpenSeekEntry {
                 switch(queryType) {
                     case ALL:
                                     result = asQuery.allEntities(query.get("entityType").toString());
+                                    
+                                    if (query.get("entityType").equals("SampleType")) {
+                                        return mapToJsonString("sampletypes",result);
+                                    } 
+                                    
                                     break;
                     case PROPERTY: result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
 					query.get("property").toString(), query.get("propertyValue").toString());
@@ -95,6 +100,11 @@ public class OpenSeekEntry {
                                     List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
                                     result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
 					query.get("attribute").toString(), attributeValues);
+                                    
+                                    if (query.get("entityType").equals("SampleType")) {
+                                        return mapToJsonString("sampletypes",result);
+                                    }
+                                    
                                     break;
                     case TYPE:
                                     if (query.get("entityType").equals("Sample")) {
