@@ -183,6 +183,46 @@ public class OpenSeekEntryTest {
         }
         
         @Test
+        public void samplesByTypes() throws Exception {
+            
+		String endpoints = localEndpoint();
+            
+                
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "Sample");
+                qMap.put("queryType",QueryType.TYPE.name());
+                qMap.put("typeCodes","TZ_ASSAY,EXPERIMENTAL_STEP");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("samples"));
+                List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
+                
+                assertEquals(4,samples.size());
+                
+                List<String> exp = Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP");
+                samples.forEach( s -> {
+                    assertTrue(exp.contains(((JSONObject) s.get("sample_type")).get("code")));
+                });                
+                
+                
+        }
+        
+        
+        @Test
         public void allSampleTypes() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";

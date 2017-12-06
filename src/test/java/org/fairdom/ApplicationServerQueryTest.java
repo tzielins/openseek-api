@@ -322,7 +322,7 @@ public class ApplicationServerQueryTest {
             Map<String,Object> qMap = new HashMap<>();
             qMap.put("entityType", "Sample");
             qMap.put("queryType",QueryType.TYPE.name());
-            qMap.put("typeCode",Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP"));
+            qMap.put("typeCodes","TZ_ASSAY,EXPERIMENTAL_STEP");
             
             JSONObject crit = new JSONObject(qMap);
             
@@ -336,7 +336,7 @@ public class ApplicationServerQueryTest {
                 assertTrue(exp.contains(s.getType().getCode()));
             });            
             
-            qMap.put("typeCode",Arrays.asList("TZ_ASSAY_NOT_DEFINED"));           
+            qMap.put("typeCodes","TZ_ASSAY_NOT_DEFINED");           
             crit = new JSONObject(qMap);
             res = query.samplesByType(crit);
             

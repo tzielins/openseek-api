@@ -253,14 +253,14 @@ public class ApplicationServerQuery {
         @SuppressWarnings("unchecked")
         public List<Sample> samplesByType(JSONObject query) throws InvalidOptionException {
 
-            if (!query.containsKey("typeCode"))
-                throw new InvalidOptionException("Missing type code");
+            if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
+                throw new InvalidOptionException("Missing type code(s)");
 
             SampleSearchCriteria criterion = new SampleSearchCriteria();
 
-            if (query.get("typeCode") instanceof List) {
-                
-                criterion.withType().withCodes().thatIn((List<String>)query.get("typeCode"));
+            if (query.containsKey("typeCodes")) {
+                List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
+                criterion.withType().withCodes().thatIn(codes);
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
