@@ -1,5 +1,6 @@
 package org.fairdom;
 
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -91,6 +92,9 @@ public class OpenSeekEntry {
                                     if (query.get("entityType").equals("SampleType")) {
                                         return mapToJsonString("sampletypes",result);
                                     } 
+                                    if (query.get("entityType").equals("DataSetType")) {
+                                        return mapToJsonString("datasettypes",result);
+                                    } 
                                     
                                     break;
                     case PROPERTY: result = asQuery.query(query.get("entityType").toString(), QueryType.PROPERTY,
@@ -104,12 +108,18 @@ public class OpenSeekEntry {
                                     if (query.get("entityType").equals("SampleType")) {
                                         return mapToJsonString("sampletypes",result);
                                     }
+                                    if (query.get("entityType").equals("DataSetType")) {
+                                        return mapToJsonString("datasettypes",result);
+                                    }
                                     
                                     break;
                     case TYPE:
                                     if (query.get("entityType").equals("Sample")) {
                                         List<Sample> samples = asQuery.samplesByType(query);
                                         return new JSONCreator(samples).getJSON();
+                                    } else if (query.get("entityType").equals("DataSet")) {
+                                        List<DataSet> sets = asQuery.dataSetsByType(query);
+                                        return new JSONCreator(sets).getJSON();
                                     } else {
                                         throw new InvalidOptionException("Type query for unsupported type: "+query.get("entityType"));
                                     }

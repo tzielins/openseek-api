@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSetType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
@@ -433,7 +434,82 @@ public class ApplicationServerQueryTest {
                 assertFalse(res.isEmpty());
                 assertEquals("TZ_ASSAY",res.get(0).getCode());              
             }
-        }        
+        }   
+        
+	@Test
+	public void dataSetTypesByCode() throws Exception {
+		List<DataSetType> res = query.dataSetTypesByCode("TZ_FAIR_TEST");
+                assertEquals(1, res.size());
+                assertEquals("TZ_FAIR_TEST", res.get(0).getCode());
+	}    
+        
+        @Test
+        public void allDataSetTypesGivesAll() throws AuthenticationException {
+                        
+            List<DataSetType> res = query.allDataSetTypes();
+            assertNotNull(res);
+            assertFalse(res.isEmpty());
+            assertEquals(30,res.size());
+            
+        }  
+        
+        @Test
+        public void datasetsByTypeCodeWorks() throws AuthenticationException, InvalidOptionException {
+            
+            Map<String,String> qMap = new HashMap<>();
+            qMap.put("entityType", "DataSet");
+            qMap.put("queryType",QueryType.TYPE.name());
+            qMap.put("typeCode","TZ_FAIR_TEST");
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            
+            List<DataSet> res = query.dataSetsByType(crit);
+            assertNotNull(res);
+            assertEquals(4, res.size());
+            
+            res.forEach( s -> {
+                assertEquals("TZ_FAIR_TEST", s.getType().getCode());
+            });            
+            
+            qMap.put("typeCode","TZ_ASSAY_NOT_DEFINED");           
+            crit = new JSONObject(qMap);
+            res = query.dataSetsByType(crit);
+            
+            assertTrue(res.isEmpty());
+        }
+        
+        @Test
+        public void datasetsByMultipleTypeCodesWorks() throws AuthenticationException, InvalidOptionException {
+            
+            //local as it came from the new API
+            query = localQuery();
+            
+            Map<String,Object> qMap = new HashMap<>();
+            qMap.put("entityType", "DataSet");
+            qMap.put("queryType",QueryType.TYPE.name());
+            qMap.put("typeCodes","TZ_FAIR,UNKNOWN");
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            
+            List<DataSet> res = query.dataSetsByType(crit);
+            assertNotNull(res);
+            assertEquals(8, res.size());
+            
+            List<String> exp = Arrays.asList("TZ_FAIR","UNKNOWN");
+            res.forEach( s -> {
+                assertTrue(exp.contains(s.getType().getCode()));
+            });            
+            
+            qMap.put("typeCodes","TZ_ASSAY_NOT_DEFINED");           
+            crit = new JSONObject(qMap);
+            res = query.dataSetsByType(crit);
+            
+            assertTrue(res.isEmpty());
+        }
+        
+        
 
 	@Test
         @Ignore

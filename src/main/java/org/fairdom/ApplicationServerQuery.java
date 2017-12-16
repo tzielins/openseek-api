@@ -8,8 +8,11 @@ import ch.ethz.sis.openbis.generic.asapi.v3.IApplicationServerApi;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.AbstractEntitySearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.common.search.SearchResult;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSetType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetFetchOptions;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetTypeFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetSearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetTypeSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.fetchoptions.ExperimentFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSearchCriteria;
@@ -90,6 +93,28 @@ public class ApplicationServerQuery {
 
 		return as.searchDataSets(sessionToken, criterion, options).getObjects();
 	}
+        
+        @SuppressWarnings("unchecked")
+        public List<DataSet> dataSetsByType(JSONObject query) throws InvalidOptionException {
+
+            if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
+                throw new InvalidOptionException("Missing type code(s)");
+
+            DataSetSearchCriteria criterion = new DataSetSearchCriteria();
+
+            if (query.containsKey("typeCodes")) {
+                List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
+                criterion.withType().withCodes().thatIn(codes);
+            } else {
+                String typeCode = (String)query.get("typeCode");
+                criterion.withType().withCode().thatEquals(typeCode);
+            }
+            
+            DataSetFetchOptions options = dataSetFetchOptions();
+            
+            return as.searchDataSets(sessionToken, criterion, options).getObjects();
+        }
+        
 
 	public List<Experiment> allExperiments() throws InvalidOptionException  {
 
@@ -144,6 +169,8 @@ public class ApplicationServerQuery {
                     return allSpaces();
                 case "SampleType":
                     return allSampleTypes();
+                case "DataSetType":
+                    return allDataSetTypes();
                 default:
                     throw new InvalidOptionException("Unrecognised type: " + type);
             }
@@ -169,6 +196,10 @@ public class ApplicationServerQuery {
                         case "SampleType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
                             result = sampleTypesByCode(values.get(0));
+                            break;
+                        case "DataSetType":
+                            if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
+                            result = dataSetTypesByCode(values.get(0));
                             break;
                         default:
                             throw new InvalidOptionException("Unrecognised type: " + type);
@@ -311,6 +342,8 @@ public class ApplicationServerQuery {
             
         }    
         
+       
+        
         public List<SampleType> sampleTypesByCode(String code) {
             
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
@@ -358,6 +391,33 @@ public class ApplicationServerQuery {
             return types.getObjects();
             
         }        
+        
+        public List<DataSetType> dataSetTypesByCode(String code) {
+            
+            DataSetTypeFetchOptions fetchOptions = new DataSetTypeFetchOptions();
+            //fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            
+            DataSetTypeSearchCriteria searchCriteria = new DataSetTypeSearchCriteria();
+            
+            searchCriteria.withCode().thatEquals(code);
+            
+            SearchResult<DataSetType> types = as.searchDataSetTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();            
+        }  
+        
+        public List<DataSetType> allDataSetTypes() {
+            
+            DataSetTypeFetchOptions fetchOptions = new DataSetTypeFetchOptions();
+            //fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+
+            DataSetTypeSearchCriteria searchCriteria = new DataSetTypeSearchCriteria();
+            
+            SearchResult<DataSetType> types = as.searchDataSetTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();
+            
+        }           
 
 	private DataSetFetchOptions dataSetFetchOptions() {
 		DataSetFetchOptions options = new DataSetFetchOptions();
