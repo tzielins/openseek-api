@@ -13,6 +13,7 @@ import org.junit.Test;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSetType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.ExperimentType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
@@ -193,7 +194,65 @@ public class ApplicationServerQueryTest {
 	public void allExperimentsGetsAll() throws Exception {
             List<Experiment> experiments = query.allExperiments();
             assertEquals(2,experiments.size());
-	}        
+	}  
+        
+        @Test
+        public void experimentsByMultipleTypeCodesWorks() throws AuthenticationException, InvalidOptionException {
+            
+            //local as it came from the new API
+            query = localQuery();
+            
+            Map<String,Object> qMap = new HashMap<>();
+            qMap.put("entityType", "Experiment");
+            qMap.put("queryType",QueryType.TYPE.name());
+            qMap.put("typeCodes","DEFAULT_EXPERIMENT,UNKNOWN");
+            
+            JSONObject crit = new JSONObject(qMap);
+            
+            
+            List<Experiment> res = query.experimentsByType(crit);
+            assertNotNull(res);
+            assertEquals(4, res.size());
+            
+            List<String> exp = Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN");
+            res.forEach( s -> {
+                assertTrue(exp.contains(s.getType().getCode()));
+            });            
+            
+            qMap.put("typeCodes","TZ_ASSAY_NOT_DEFINED");           
+            crit = new JSONObject(qMap);
+            res = query.experimentsByType(crit);
+            
+            assertTrue(res.isEmpty());
+        }
+        
+        
+        @Test
+        public void allExprimentTypes() throws AuthenticationException {
+                        
+            List<ExperimentType> res = query.allExperimentTypes();
+            assertNotNull(res);
+            assertFalse(res.isEmpty());
+            assertEquals(7,res.size());
+            
+        }
+        
+	@Test
+	public void experimentTypesByCode() throws Exception {
+            query = localQuery();
+		List<ExperimentType> res = query.experimentTypesByCodes(Arrays.asList("DEFAULT_EXPERIMENT"));
+                assertEquals(1, res.size());
+                assertEquals("DEFAULT_EXPERIMENT", res.get(0).getCode());
+	}   
+        
+	@Test
+	public void eperimentTypesByCodes() throws Exception {
+            query = localQuery();
+		List<ExperimentType> res = query.experimentTypesByCodes(Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN"));
+                assertEquals(2, res.size());
+                assertEquals("DEFAULT_EXPERIMENT", res.get(1).getCode());
+                assertEquals("UNKNOWN", res.get(0).getCode());
+	}         
 
 	@Test
 	public void getAllSamples() throws Exception {
@@ -330,7 +389,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(4, res.size());
+            assertEquals(8, res.size());
             
             List<String> exp = Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP");
             res.forEach( s -> {
@@ -343,6 +402,8 @@ public class ApplicationServerQueryTest {
             
             assertTrue(res.isEmpty());
         }
+        
+        
         
         @Test
         public void allSampleTypes() throws AuthenticationException {
@@ -359,6 +420,15 @@ public class ApplicationServerQueryTest {
 		List<SampleType> res = query.sampleTypesByCode("TZ_FAIR_ASSAY");
                 assertEquals(1, res.size());
                 assertEquals("TZ_FAIR_ASSAY", res.get(0).getCode());
+	}   
+        
+	@Test
+	public void sampleTypesByCodes() throws Exception {
+            query = localQuery();
+		List<SampleType> res = query.sampleTypesByCode("TZ_ASSAY,UNKNOWN");
+                assertEquals(2, res.size());
+                assertEquals("TZ_ASSAY", res.get(0).getCode());
+                assertEquals("UNKNOWN", res.get(1).getCode());
 	}        
         
         @Test

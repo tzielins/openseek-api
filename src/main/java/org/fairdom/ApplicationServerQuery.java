@@ -14,8 +14,11 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetType
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetTypeSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.ExperimentType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.fetchoptions.ExperimentFetchOptions;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.fetchoptions.ExperimentTypeFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentSearchCriteria;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.search.ExperimentTypeSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchOptions;
@@ -156,6 +159,63 @@ public class ApplicationServerQuery {
 		return as.searchExperiments(sessionToken, criterion, options).getObjects();
 	}
         
+        @SuppressWarnings("unchecked")
+        public List<Experiment> experimentsByType(JSONObject query) throws InvalidOptionException {
+
+            if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
+                throw new InvalidOptionException("Missing type code(s)");
+
+            ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
+
+            if (query.containsKey("typeCodes")) {
+                List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
+                criterion.withType().withCodes().thatIn(codes);
+            } else {
+                String typeCode = (String)query.get("typeCode");
+                criterion.withType().withCode().thatEquals(typeCode);
+            }
+            
+            ExperimentFetchOptions options = experimentFetchOptions();
+            
+            return as.searchExperiments(sessionToken, criterion, options).getObjects();
+        }
+        
+        
+        public List<ExperimentType> allExperimentTypes() {
+            
+            ExperimentTypeFetchOptions fetchOptions = new ExperimentTypeFetchOptions();
+            // fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+
+            ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();
+            
+            SearchResult<ExperimentType> types = as.searchExperimentTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();
+            
+        }       
+        
+        public List<ExperimentType> experimentTypesByCodes(List<String> codes) {
+            
+            ExperimentTypeFetchOptions fetchOptions = new ExperimentTypeFetchOptions();
+            // fetchOptions.withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            
+            ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();
+            
+            //if (code.contains(",")) {
+                //List<String> codes = Arrays.asList(code.split(","));
+                //System.out.println("By CODES: "+codes);
+                searchCriteria.withCodes().thatIn(codes);
+            //} else {
+            //    System.out.println("By COD: "+code);
+            //    searchCriteria.withCode().thatEquals(code);
+            //}
+            
+            SearchResult<ExperimentType> types = as.searchExperimentTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();            
+        }        
+        
+        
         public List<? extends Object> allEntities(String type) throws InvalidOptionException {
             
             switch (type) {
@@ -171,6 +231,8 @@ public class ApplicationServerQuery {
                     return allSampleTypes();
                 case "DataSetType":
                     return allDataSetTypes();
+                case "ExperimentType":
+                    return allExperimentTypes();
                 default:
                     throw new InvalidOptionException("Unrecognised type: " + type);
             }
@@ -200,6 +262,10 @@ public class ApplicationServerQuery {
                         case "DataSetType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
                             result = dataSetTypesByCode(values.get(0));
+                            break;
+                        case "ExperimentType":
+                            if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
+                            result = experimentTypesByCodes(values);
                             break;
                         default:
                             throw new InvalidOptionException("Unrecognised type: " + type);
@@ -352,7 +418,12 @@ public class ApplicationServerQuery {
             
             SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
             
-            searchCriteria.withCode().thatEquals(code);
+            if (code.contains(",")) {
+                List<String> codes = Arrays.asList(code.split(","));
+                searchCriteria.withCodes().thatIn(codes);
+            } else {
+                searchCriteria.withCode().thatEquals(code);
+            }
             
             SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();            

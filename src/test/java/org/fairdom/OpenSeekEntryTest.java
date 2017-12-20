@@ -288,7 +288,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("samples"));
                 List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
                 
-                assertEquals(4,samples.size());
+                assertEquals(8,samples.size());
                 
                 List<String> exp = Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP");
                 samples.forEach( s -> {
@@ -414,7 +414,9 @@ public class OpenSeekEntryTest {
         public void allDataSetTypes() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-                          
+                   
+		//endpoints = localEndpoint();
+                
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "DataSetType");
                 qMap.put("queryType",QueryType.ALL.name());
@@ -476,6 +478,131 @@ public class OpenSeekEntryTest {
                 assertEquals("TZ_FAIR_TEST",types.get(0).get("code"));
         }        
         
+        @Test
+        public void allExperimentTypes() throws Exception {
+		String token = getToken();
+		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+                          
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "ExperimentType");
+                qMap.put("queryType",QueryType.ALL.name());
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("experimenttypes"));
+                List<JSONObject> types = (List<JSONObject>)jsonObj.get("experimenttypes");
+                
+                assertEquals(7,types.size());
+        }
+        
+        @Test
+        public void experimentTypesByCode() throws Exception {
+		//String token = getToken();
+		//String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+                         
+                String endpoints = localEndpoint();
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "ExperimentType");
+                qMap.put("queryType",QueryType.ATTRIBUTE.name());
+                qMap.put("attribute","CODE");
+                qMap.put("attributeValue","DEFAULT_EXPERIMENT");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("experimenttypes"));
+                List<JSONObject> types = (List<JSONObject>)jsonObj.get("experimenttypes");                
+                assertEquals(1,types.size());
+                assertEquals("DEFAULT_EXPERIMENT",types.get(0).get("code"));
+                
+                qMap.put("attributeValue","COLLECTION,DEFAULT_EXPERIMENT,");   
+                query = mapper.writeValueAsString(qMap);
+                args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                options = new OptionParser(args);                
+                client = new OpenSeekEntry(args);
+                res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("experimenttypes"));
+                types = (List<JSONObject>)jsonObj.get("experimenttypes");                
+                assertEquals(2,types.size());
+                
+        }        
+        
+        @Test
+        public void experimentsByTypes() throws Exception {
+            
+		String endpoints = localEndpoint();
+            
+                
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "Experiment");
+                qMap.put("queryType",QueryType.TYPE.name());
+                qMap.put("typeCodes","DEFAULT_EXPERIMENT,UNKNOWN");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("experiments"));
+                List<JSONObject> objs = (List<JSONObject>)jsonObj.get("experiments");
+                
+                assertEquals(4,objs.size());
+                
+                List<String> exp = Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN");
+                objs.forEach( s -> {
+                    assertTrue(exp.contains(((JSONObject) s.get("experiment_type")).get("code")));
+                });                
+                
+                
+        }
+        
+        
         
         @Test
         public void allEntities() throws Exception {
@@ -484,6 +611,7 @@ public class OpenSeekEntryTest {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
             
+                //endpoints = localEndpoint();
                 ObjectMapper mapper = new ObjectMapper();
 
                 Map<String,String> qMap = new HashMap<>();
@@ -504,7 +632,7 @@ public class OpenSeekEntryTest {
                     String res = client.doApplicationServerQuery(options);
                     
                     assertNotNull(res);
-                    //System.out.println("Res:\n"+res);
+                    // System.out.println("Res:\n"+res);
                 
                     JSONObject jsonObj = JSONHelper.processJSON(res);
                 
