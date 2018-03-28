@@ -53,7 +53,7 @@ public class OptionParser {
 
 	public List<String> constructAttributeValues(String attributeValues) {
 		String[] values = attributeValues.split(",");
-		List<String> sanitizedValues = new ArrayList<String>();
+		List<String> sanitizedValues = new ArrayList<>();
 		for (String value : values) {
 			value = value.trim();
 			if (value.length() > 0) {

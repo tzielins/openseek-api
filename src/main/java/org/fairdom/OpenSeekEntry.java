@@ -108,7 +108,6 @@ public class OpenSeekEntry {
                                     List<String> attributeValues = options.constructAttributeValues(query.get("attributeValue").toString());
                                     result = asQuery.query(query.get("entityType").toString(), QueryType.ATTRIBUTE,
 					query.get("attribute").toString(), attributeValues);
-                                    
                                     if (query.get("entityType").equals("SampleType")) {
                                         return mapToJsonString("sampletypes",result);
                                     }

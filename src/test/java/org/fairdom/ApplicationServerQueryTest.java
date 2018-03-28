@@ -36,14 +36,25 @@ public class ApplicationServerQueryTest {
 
 	@Before
 	public void setUp() throws AuthenticationException {
-            SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
             SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
             
-            Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
+            /*Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
 			"apiuser");
             sessionToken = au.sessionToken();
             endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
             query = new ApplicationServerQuery(endpoint, sessionToken);
+            */
+            Authentication au = new Authentication("https://127.0.0.1:8443/openbis/openbis"
+                    , "seek", "seek");
+            sessionToken = au.sessionToken();
+            endpoint = "https://127.0.0.1:8443/openbis/openbis";
+            query = new ApplicationServerQuery(endpoint, sessionToken);
+    
+            //for a bit so it work when fairdom is down
+            query = localQuery();
+
+            
 	}
         
         protected ApplicationServerQuery localQuery() throws AuthenticationException {
@@ -146,7 +157,7 @@ public class ApplicationServerQueryTest {
 	}    
         
         @Test 
-        public void allEntitiesWorks() throws InvalidOptionException {
+        public void allEntitiesWorks() throws InvalidOptionException {            
             List<String> types = Arrays.asList("Sample","DataSet","Experiment","Space");
             for (String type : types)
                 assertFalse(query.allEntities(type).isEmpty());
@@ -350,10 +361,11 @@ public class ApplicationServerQueryTest {
         @Test
         public void samplesByTypeCodeWorks() throws AuthenticationException, InvalidOptionException {
             
+            query = localQuery();
             Map<String,String> qMap = new HashMap<>();
             qMap.put("entityType", "Sample");
             qMap.put("queryType",QueryType.TYPE.name());
-            qMap.put("typeCode","TZ_FAIR_ASSAY");
+            qMap.put("typeCode","TZ_ASSAY");
             
             JSONObject crit = new JSONObject(qMap);
             
@@ -363,7 +375,7 @@ public class ApplicationServerQueryTest {
             assertEquals(2, res.size());
             
             res.forEach( s -> {
-                assertEquals("TZ_FAIR_ASSAY", s.getType().getCode());
+                assertEquals("TZ_ASSAY", s.getType().getCode());
             });            
             
             qMap.put("typeCode","TZ_ASSAY_NOT_DEFINED");           
@@ -425,7 +437,7 @@ public class ApplicationServerQueryTest {
 	@Test
 	public void sampleTypesByCodes() throws Exception {
             query = localQuery();
-		List<SampleType> res = query.sampleTypesByCode("TZ_ASSAY,UNKNOWN");
+		List<SampleType> res = query.sampleTypesByCodes(Arrays.asList("TZ_ASSAY","UNKNOWN"));
                 assertEquals(2, res.size());
                 assertEquals("TZ_ASSAY", res.get(0).getCode());
                 assertEquals("UNKNOWN", res.get(1).getCode());
@@ -512,6 +524,13 @@ public class ApplicationServerQueryTest {
                 assertEquals(1, res.size());
                 assertEquals("TZ_FAIR_TEST", res.get(0).getCode());
 	}    
+        
+	@Test
+	public void dataSetTypesByCodes() throws Exception {
+		List<DataSetType> res = query.dataSetTypesByCodes(Arrays.asList("TZ_FAIR_TEST","UNKOWN"));
+                assertEquals(2, res.size());
+                assertEquals("TZ_FAIR_TEST", res.get(0).getCode());
+	}          
         
         @Test
         public void allDataSetTypesGivesAll() throws AuthenticationException {

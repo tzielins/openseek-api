@@ -257,11 +257,11 @@ public class ApplicationServerQuery {
                             break;
                         case "SampleType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
-                            result = sampleTypesByCode(values.get(0));
+                            result = sampleTypesByCodes(values);
                             break;
                         case "DataSetType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
-                            result = dataSetTypesByCode(values.get(0));
+                            result = dataSetTypesByCodes(values);
                             break;
                         case "ExperimentType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
@@ -409,8 +409,11 @@ public class ApplicationServerQuery {
         }    
         
        
-        
         public List<SampleType> sampleTypesByCode(String code) {
+            return sampleTypesByCodes(Arrays.asList(code));
+        }
+        
+        public List<SampleType> sampleTypesByCodes(List<String> codes) {
             
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
             fetchOptions.withSemanticAnnotations();
@@ -418,12 +421,12 @@ public class ApplicationServerQuery {
             
             SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
             
-            if (code.contains(",")) {
-                List<String> codes = Arrays.asList(code.split(","));
+            //if (code.contains(",")) {
+                //List<String> codes = Arrays.asList(code.split(","));
                 searchCriteria.withCodes().thatIn(codes);
-            } else {
-                searchCriteria.withCode().thatEquals(code);
-            }
+            //} else {
+            //    searchCriteria.withCode().thatEquals(code);
+            //}
             
             SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();            
@@ -464,6 +467,10 @@ public class ApplicationServerQuery {
         }        
         
         public List<DataSetType> dataSetTypesByCode(String code) {
+            return dataSetTypesByCodes(Arrays.asList(code));
+        }
+        
+        public List<DataSetType> dataSetTypesByCodes(List<String> codes) {
             
             DataSetTypeFetchOptions fetchOptions = new DataSetTypeFetchOptions();
             //fetchOptions.withSemanticAnnotations();
@@ -471,7 +478,8 @@ public class ApplicationServerQuery {
             
             DataSetTypeSearchCriteria searchCriteria = new DataSetTypeSearchCriteria();
             
-            searchCriteria.withCode().thatEquals(code);
+            //searchCriteria.withCode().thatEquals(code);
+            searchCriteria.withCodes().thatIn(codes);
             
             SearchResult<DataSetType> types = as.searchDataSetTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();            

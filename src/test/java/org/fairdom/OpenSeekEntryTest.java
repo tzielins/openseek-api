@@ -59,7 +59,7 @@ public class OpenSeekEntryTest {
         
 	@Before
 	public void setUpSSL() throws AuthenticationException {
-            SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
             SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
         }
         
@@ -364,6 +364,40 @@ public class OpenSeekEntryTest {
                 assertEquals(1,sampletypes.size());
                 assertEquals("TZ_FAIR_ASSAY",sampletypes.get(0).get("code"));
         }        
+        
+        @Test
+        public void sampleTypesByCodes() throws Exception {
+                
+            String endpoints = localEndpoint(); 
+            
+                Map<String,String> qMap = new HashMap<>();
+                qMap.put("entityType", "SampleType");
+                qMap.put("queryType",QueryType.ATTRIBUTE.name());
+                qMap.put("attribute","CODE");
+                qMap.put("attributeValue","TZ_ASSAY,UNKNOWN");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String query = mapper.writeValueAsString(qMap);
+                //System.out.println("Query:\n"+query);
+                
+                
+		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
+
+                OptionParser options = new OptionParser(args);
+                
+                OpenSeekEntry client = new OpenSeekEntry(args);
+                String res = client.doApplicationServerQuery(options);
+                
+                assertNotNull(res);
+                //System.out.println("Res:\n"+res);
+                
+                JSONObject jsonObj = JSONHelper.processJSON(res);
+                
+                assertNotNull(jsonObj.get("sampletypes"));
+                List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");                
+                assertEquals(2,sampletypes.size());
+                assertEquals("TZ_ASSAY",sampletypes.get(0).get("code"));
+        } 
         
         @Test
         public void sampleTypesCanBeSearchedBySemanticAnnotations() throws Exception {
