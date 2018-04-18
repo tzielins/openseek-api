@@ -51,15 +51,17 @@ public class OpenSeekEntryTest {
 
 	private static String token = null;
 
-	private final String as_endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
-	private final String dss_endpoint = "https://openbis-api.fair-dom.org/datastore_server";
+	//private final String as_endpoint = "https://openbis-api.fair-dom.org/openbis/openbis";
+	//private final String dss_endpoint = "https://openbis-api.fair-dom.org/datastore_server";
+	private final String as_endpoint = "https://127.0.0.1:8443/openbis/openbis";
+	private final String dss_endpoint = "https://127.0.0.1:8444/datastore_server";
 	private PrintStream oldStream;
 
 	private ByteArrayOutputStream outputStream;
         
 	@Before
 	public void setUpSSL() throws AuthenticationException {
-            SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
+            //SslCertificateHelper.addTrustedUrl("https://openbis-api.fair-dom.org/openbis/openbis");   
             SslCertificateHelper.addTrustedUrl("https://127.0.0.1:8443/openbis/openbis");            
         }
         
@@ -76,7 +78,8 @@ public class OpenSeekEntryTest {
         public void dataSetEntityHasRichDetails() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20170907185702684-36\"}";
+                String id = "20180418145905365-49";
+		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\""+id+"\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172401546-38\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002190934144-40\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171004182824553-41\"}";
@@ -97,13 +100,13 @@ public class OpenSeekEntryTest {
                 
                 assertEquals(1,sets.size());
                 JSONObject set = sets.get(0);
-                assertEquals("2017-09-07 17:57:03.040768",set.get("registrationDate"));
-                assertEquals("apiuser",set.get("registerator"));
+                //assertEquals("2017-09-07 17:57:03.040768",set.get("registrationDate"));
+                //assertEquals("apiuser",set.get("registerator"));
                 
                 JSONObject prop = (JSONObject) set.get("properties");
                 assertNotNull(prop);
                 assertEquals("TOMEK test set",prop.getOrDefault("NAME", "missing"));
-                assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("rich metadata"));
+                //assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("rich metadata"));
                 
         }
         
@@ -112,11 +115,11 @@ public class OpenSeekEntryTest {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
             
-                
+                String typeN = "RAW_DATA";
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "DataSet");
                 qMap.put("queryType",QueryType.TYPE.name());
-                qMap.put("typeCode","TZ_FAIR_TEST");
+                qMap.put("typeCode",typeN);
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -136,10 +139,10 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasets"));
                 List<JSONObject> sets = (List<JSONObject>)jsonObj.get("datasets");
                 
-                assertEquals(4,sets.size());
+                assertEquals(2,sets.size());
                 
                 sets.forEach( s -> {
-                    assertEquals("TZ_FAIR_TEST", ((JSONObject) s.get("dataset_type")).get("code"));
+                    assertEquals(typeN, ((JSONObject) s.get("dataset_type")).get("code"));
                 });
                 
         }
@@ -153,7 +156,7 @@ public class OpenSeekEntryTest {
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "DataSet");
                 qMap.put("queryType",QueryType.TYPE.name());
-                qMap.put("typeCodes","TZ_FAIR,UNKOWN");
+                qMap.put("typeCodes","RAW_DATA,UNKOWN");
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -173,9 +176,9 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasets"));
                 List<JSONObject> sets = (List<JSONObject>)jsonObj.get("datasets");
                 
-                assertEquals(7,sets.size());
+                assertEquals(2,sets.size());
                 
-                List<String> exp = Arrays.asList("TZ_FAIR","UNKOWN");
+                List<String> exp = Arrays.asList("RAW_DATA","UNKOWN");
                 sets.forEach( s -> {
                     assertTrue(exp.contains(((JSONObject) s.get("dataset_type")).get("code")));
                 });                
@@ -185,11 +188,14 @@ public class OpenSeekEntryTest {
         
         
         @Test
-        @Ignore
+        //@Ignore
         public void sampleEntityHasRichDetails() throws Exception {
-		String token = getToken();
-		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-		String query = "{\"entityType\":\"Sample\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172111346-37\"}";
+            String endpoints = localEndpoint();
+            String id = "20180418154046965-53";
+
+            //String token = getToken();
+            //String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
+            String query = "{\"entityType\":\"Sample\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\""+id+"\"}";
 		//String query = "{\"entityType\":\"Sample\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172639055-39\"}";
                 
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
@@ -208,17 +214,17 @@ public class OpenSeekEntryTest {
                 
                 assertEquals(1,samples.size());
                 JSONObject sam = samples.get(0);
-                assertEquals("2017-10-02 16:21:11.346421",sam.get("registrationDate"));
-                assertEquals("apiuser",sam.get("registerator"));
+                //assertEquals("2017-10-02 16:21:11.346421",sam.get("registrationDate"));
+                //assertEquals("apiuser",sam.get("registerator"));
                 
                 JSONObject prop = (JSONObject) sam.get("properties");
                 assertNotNull(prop);
-                assertEquals("Tomek First",prop.getOrDefault("NAME", "missing"));
-                assertTrue(prop.getOrDefault("DESCRIPTION", "").toString().contains("assay"));
+                assertEquals("Purification",prop.getOrDefault("NAME", "missing"));
+                assertTrue(prop.getOrDefault("EXPERIMENTAL_GOALS", "").toString().contains("<head>"));
                 
                 JSONArray sets = (JSONArray)sam.get("datasets");
                 assertNotNull(sets);
-                assertTrue(sets.contains("20171002172401546-38"));
+                assertTrue(sets.contains("20180418165410152-56"));
             
         }
 
@@ -227,11 +233,11 @@ public class OpenSeekEntryTest {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
             
-                
+                String typeN = "EXPERIMENTAL_STEP";
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "Sample");
                 qMap.put("queryType",QueryType.TYPE.name());
-                qMap.put("typeCode","TZ_FAIR_ASSAY");
+                qMap.put("typeCode",typeN);
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -254,7 +260,7 @@ public class OpenSeekEntryTest {
                 assertEquals(2,samples.size());
                 
                 samples.forEach( s -> {
-                    assertEquals("TZ_FAIR_ASSAY", ((JSONObject) s.get("sample_type")).get("code"));
+                    assertEquals(typeN, ((JSONObject) s.get("sample_type")).get("code"));
                 });
                 
         }
@@ -268,7 +274,7 @@ public class OpenSeekEntryTest {
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "Sample");
                 qMap.put("queryType",QueryType.TYPE.name());
-                qMap.put("typeCodes","TZ_ASSAY,EXPERIMENTAL_STEP");
+                qMap.put("typeCodes","UNKNOWN,EXPERIMENTAL_STEP");
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -288,9 +294,9 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("samples"));
                 List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
                 
-                assertEquals(8,samples.size());
+                assertEquals(3,samples.size());
                 
-                List<String> exp = Arrays.asList("TZ_ASSAY","EXPERIMENTAL_STEP");
+                List<String> exp = Arrays.asList("UNKNOWN","EXPERIMENTAL_STEP");
                 samples.forEach( s -> {
                     assertTrue(exp.contains(((JSONObject) s.get("sample_type")).get("code")));
                 });                
@@ -328,7 +334,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("sampletypes"));
                 List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");
                 
-                assertEquals(30,sampletypes.size());
+                assertEquals(24,sampletypes.size());
         }
         
         @Test
@@ -336,11 +342,12 @@ public class OpenSeekEntryTest {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
                           
+                String typeN = "EXPERIMENTAL_STEP";
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "SampleType");
                 qMap.put("queryType",QueryType.ATTRIBUTE.name());
                 qMap.put("attribute","CODE");
-                qMap.put("attributeValue","TZ_FAIR_ASSAY");
+                qMap.put("attributeValue",typeN);
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -362,10 +369,11 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("sampletypes"));
                 List<JSONObject> sampletypes = (List<JSONObject>)jsonObj.get("sampletypes");                
                 assertEquals(1,sampletypes.size());
-                assertEquals("TZ_FAIR_ASSAY",sampletypes.get(0).get("code"));
+                assertEquals(typeN,sampletypes.get(0).get("code"));
         }        
         
         @Test
+        @Ignore("Seemantic annotations not supported yet")
         public void sampleTypesCanBeSearchedBySemanticAnnotations() throws Exception {
             
 		String endpoints = localEndpoint();
@@ -441,19 +449,20 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasettypes"));
                 List<JSONObject> types = (List<JSONObject>)jsonObj.get("datasettypes");
                 
-                assertEquals(30,types.size());
+                assertEquals(6,types.size());
         }
         
         @Test
         public void dataSetTypesByCode() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-                          
+                   
+                String typeN = "RAW_DATA";
                 Map<String,String> qMap = new HashMap<>();
                 qMap.put("entityType", "DataSetType");
                 qMap.put("queryType",QueryType.ATTRIBUTE.name());
                 qMap.put("attribute","CODE");
-                qMap.put("attributeValue","TZ_FAIR_TEST");
+                qMap.put("attributeValue",typeN);
 
                 ObjectMapper mapper = new ObjectMapper();
                 String query = mapper.writeValueAsString(qMap);
@@ -475,7 +484,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasettypes"));
                 List<JSONObject> types = (List<JSONObject>)jsonObj.get("datasettypes");                
                 assertEquals(1,types.size());
-                assertEquals("TZ_FAIR_TEST",types.get(0).get("code"));
+                assertEquals(typeN,types.get(0).get("code"));
         }        
         
         @Test
@@ -507,7 +516,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("experimenttypes"));
                 List<JSONObject> types = (List<JSONObject>)jsonObj.get("experimenttypes");
                 
-                assertEquals(7,types.size());
+                assertEquals(6,types.size());
         }
         
         @Test
@@ -592,7 +601,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("experiments"));
                 List<JSONObject> objs = (List<JSONObject>)jsonObj.get("experiments");
                 
-                assertEquals(4,objs.size());
+                assertEquals(3,objs.size());
                 
                 List<String> exp = Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN");
                 objs.forEach( s -> {
@@ -648,9 +657,11 @@ public class OpenSeekEntryTest {
         @Test
         @Ignore
         public void fetchingFilesJSON() throws Exception {
+            String id = "20171002190934144-40";
+            id = "20180418165410152-56";
 		String token = getToken();
 		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\"20171002190934144-40\"}";
+		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\""+id+"\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
             
 
@@ -670,7 +681,7 @@ public class OpenSeekEntryTest {
         
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void doAsQuery() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
@@ -681,31 +692,35 @@ public class OpenSeekEntryTest {
 	}
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void testLogin() throws Exception {
-		String account = "{\"username\":\"apiuser\", \"password\":\"apiuser\"}";
+                String login =  "seek";
+                String pass = "seek";
+		String account = "{\"username\":\""+login+"\", \"password\":\""+pass+"\"}";
 		String[] args = new String[] { "-account", account, "-endpoints", "{\"as\":\"" + as_endpoint + "\"}" };
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("token"));
 	}
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void doDSSQuery() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"PROPERTY\", \"property\":\"SEEK_DATAFILE_ID\", \"propertyValue\":\"DataFile_1\"}";
+		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"PROPERTY\", \"property\":\"NAME\", \"propertyValue\":\"TOMEK test set\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("datasetfiles"));
 	}
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void doDSSQueryByDataSetPermId() throws Exception {
 		String token = getToken();
+                String id = "20151217153943290-5";
+                id = "20180418165410152-56";
 		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\"20151217153943290-5\"}";
+		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\""+id+"\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };
 		JSONObject jsonObj = doExecute(args);
 		assertNotNull(jsonObj.get("datasetfiles"));
@@ -742,7 +757,8 @@ public class OpenSeekEntryTest {
 
 	private String getToken() throws AuthenticationException {
 		if (OpenSeekEntryTest.token == null) {
-			Authentication au = new Authentication(as_endpoint, "apiuser", "apiuser");
+			//Authentication au = new Authentication(as_endpoint, "apiuser", "apiuser");
+                        Authentication au = new Authentication(as_endpoint, "seek", "seek");
 			OpenSeekEntryTest.token = au.sessionToken();
 			assertNotNull(OpenSeekEntryTest.token);
 		}

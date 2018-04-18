@@ -30,6 +30,7 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOpt
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
 import ch.systemsx.cisd.common.spring.HttpInvokerUtils;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.json.simple.JSONObject;
 
 /**
@@ -102,17 +103,28 @@ public class ApplicationServerQuery {
             if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
                 throw new InvalidOptionException("Missing type code(s)");
 
+            DataSetFetchOptions options = dataSetFetchOptions();
             DataSetSearchCriteria criterion = new DataSetSearchCriteria();
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                criterion.withType().withCodes().thatIn(codes);
+                //criterion.withType().withCodes().thatIn(codes);
+                //temporary fix
+                return codes.stream()
+                    .map( c -> {
+                        DataSetSearchCriteria criteria = new DataSetSearchCriteria();
+                        criteria.withType().withCode().thatEquals(c);
+                        return criteria;
+                    }).flatMap( c -> 
+                            as.searchDataSets(sessionToken, c, options)
+                                    .getObjects()
+                                    .stream())
+                    .collect(Collectors.toList());                  
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
             }
             
-            DataSetFetchOptions options = dataSetFetchOptions();
             
             return as.searchDataSets(sessionToken, criterion, options).getObjects();
         }
@@ -164,17 +176,29 @@ public class ApplicationServerQuery {
             if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
                 throw new InvalidOptionException("Missing type code(s)");
 
+            ExperimentFetchOptions options = experimentFetchOptions();
             ExperimentSearchCriteria criterion = new ExperimentSearchCriteria();
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                criterion.withType().withCodes().thatIn(codes);
+                //criterion.withType().withCodes().thatIn(codes);
+                //temporary fix
+                return codes.stream()
+                    .map( c -> {
+                        ExperimentSearchCriteria criteria = new ExperimentSearchCriteria();
+                        criteria.withType().withCode().thatEquals(c);
+                        return criteria;
+                    }).flatMap( c -> 
+                            as.searchExperiments(sessionToken, c, options)
+                                    .getObjects()
+                                    .stream())
+                    .collect(Collectors.toList());             
+                
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
             }
             
-            ExperimentFetchOptions options = experimentFetchOptions();
             
             return as.searchExperiments(sessionToken, criterion, options).getObjects();
         }
@@ -199,19 +223,23 @@ public class ApplicationServerQuery {
             //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
             fetchOptions.withPropertyAssignments();
             
-            ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();
-            
-            //if (code.contains(",")) {
-                //List<String> codes = Arrays.asList(code.split(","));
-                //System.out.println("By CODES: "+codes);
-                searchCriteria.withCodes().thatIn(codes);
-            //} else {
-            //    System.out.println("By COD: "+code);
-            //    searchCriteria.withCode().thatEquals(code);
-            //}
-            
+            /*ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();            
+            searchCriteria.withCodes().thatIn(codes);
             SearchResult<ExperimentType> types = as.searchExperimentTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();            
+            */
+                //temporary fix
+                return codes.stream()
+                    .map( c -> {
+                        ExperimentTypeSearchCriteria criteria = new ExperimentTypeSearchCriteria();
+                        criteria.withCode().thatEquals(c);
+                        return criteria;
+                    }).flatMap( c -> 
+                            as.searchExperimentTypes(sessionToken, c, fetchOptions)
+                                    .getObjects()
+                                    .stream())
+                    .collect(Collectors.toList());             
+            
         }        
         
         
@@ -352,17 +380,28 @@ public class ApplicationServerQuery {
             if (!query.containsKey("typeCode") && !query.containsKey("typeCodes"))
                 throw new InvalidOptionException("Missing type code(s)");
 
+            SampleFetchOptions options = sampleFetchOptions();
             SampleSearchCriteria criterion = new SampleSearchCriteria();
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                criterion.withType().withCodes().thatIn(codes);
+                //criterion.withType().withCodes().thatIn(codes);
+                //temporary fix
+                return codes.stream()
+                    .map( c -> {
+                        SampleSearchCriteria criteria = new SampleSearchCriteria();
+                        criteria.withType().withCode().thatEquals(c);
+                        return criteria;
+                    }).flatMap( c -> 
+                            as.searchSamples(sessionToken, c, options)
+                                    .getObjects()
+                                    .stream())
+                    .collect(Collectors.toList());                
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
             }
             
-            SampleFetchOptions options = sampleFetchOptions();
             
             return as.searchSamples(sessionToken, criterion, options).getObjects();
         }
@@ -421,7 +460,18 @@ public class ApplicationServerQuery {
             
             if (code.contains(",")) {
                 List<String> codes = Arrays.asList(code.split(","));
-                searchCriteria.withCodes().thatIn(codes);
+                //searchCriteria.withCodes().thatIn(codes);
+                //temporary fix for client that does not support multiple codes
+                return codes.stream()
+                    .map( c -> {
+                        SampleTypeSearchCriteria criteria = new SampleTypeSearchCriteria();
+                        criteria.withCode().thatEquals(c);
+                        return criteria;
+                    }).flatMap( c -> 
+                            as.searchSampleTypes(sessionToken, c, fetchOptions)
+                                    .getObjects()
+                                    .stream())
+                    .collect(Collectors.toList());
             } else {
                 searchCriteria.withCode().thatEquals(code);
             }

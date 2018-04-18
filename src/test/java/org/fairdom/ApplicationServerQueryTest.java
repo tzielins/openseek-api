@@ -59,7 +59,7 @@ public class ApplicationServerQueryTest {
 		List<? extends Object> result = query.query("Space", QueryType.ATTRIBUTE, "permID", "");
 		assertTrue(result.size() > 0);
 
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 		values.add("");
 		result = query.query("Space", QueryType.ATTRIBUTE, "permID", values);
 		assertTrue(result.size() > 0);
@@ -68,7 +68,7 @@ public class ApplicationServerQueryTest {
 	@Test
         @Ignore
 	public void getSpacesByPermIDs() throws Exception {
-		List<String> permids = new ArrayList<String>();
+		List<String> permids = new ArrayList<>();
 		permids.add("API-SPACE");
 		permids.add("DEFAULT");
 		List<Space> spaces = query.spacesByAttribute("permId", permids);
@@ -80,7 +80,7 @@ public class ApplicationServerQueryTest {
 	@Test
         @Ignore
 	public void getSpacesByPermID() throws Exception {
-		List<String> permids = new ArrayList<String>();
+		List<String> permids = new ArrayList<>();
 		permids.add("API-SPACE");
 		List<Space> spaces = query.spacesByAttribute("permId", permids);
 		assertEquals(1, spaces.size());
@@ -156,7 +156,7 @@ public class ApplicationServerQueryTest {
 	@Test
         @Ignore
 	public void getExperimentsByPermID() throws Exception {
-		List<String> permids = new ArrayList<String>();
+		List<String> permids = new ArrayList<>();
 		permids.add("20151216143716562-2");
 		List<Experiment> experiments = query.experimentsByAttribute("permId", permids);
 		assertEquals(1, experiments.size());
@@ -253,8 +253,8 @@ public class ApplicationServerQueryTest {
             query = localQuery();
             List<ExperimentType> res = query.experimentTypesByCodes(Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN"));
             assertEquals(2, res.size());
-            assertEquals("DEFAULT_EXPERIMENT", res.get(1).getCode());
-            assertEquals("UNKNOWN", res.get(0).getCode());
+            assertEquals("DEFAULT_EXPERIMENT", res.get(0).getCode());
+            assertEquals("UNKNOWN", res.get(1).getCode());
 	}         
 
 	@Test
@@ -282,7 +282,7 @@ public class ApplicationServerQueryTest {
         @Test
         public void allDatasetsGivesAll() throws Exception {
             List<DataSet> data = query.allDatasets();
-            assertEquals(3,data.size());
+            assertEquals(4,data.size());
         }
 
 	@Test
@@ -586,7 +586,7 @@ public class ApplicationServerQueryTest {
             
             List<DataSet> res = query.dataSetsByType(crit);
             assertNotNull(res);
-            assertEquals(8, res.size());
+            assertEquals(3, res.size());
             
             List<String> exp = Arrays.asList("RAW_DATA","UNKNOWN");
             res.forEach( s -> {
@@ -674,7 +674,7 @@ public class ApplicationServerQueryTest {
 		String propertyValue = "Low light diurnal";
 		List<? extends Object> result = query.query(type, QueryType.PROPERTY, property, propertyValue);
 		String jsonResult = new JSONCreator(result).getJSON();
-		;
+		
 		assertTrue(jsonResult.matches("(.*)Low light diurnal(.*)"));
 	}
 
