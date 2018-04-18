@@ -25,7 +25,6 @@ import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleFetchO
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.fetchoptions.SampleTypeFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.search.SampleTypeSearchCriteria;
-import ch.ethz.sis.openbis.generic.asapi.v3.dto.semanticannotation.search.SemanticAnnotationSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.fetchoptions.SpaceFetchOptions;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.search.SpaceSearchCriteria;
@@ -184,8 +183,8 @@ public class ApplicationServerQuery {
         public List<ExperimentType> allExperimentTypes() {
             
             ExperimentTypeFetchOptions fetchOptions = new ExperimentTypeFetchOptions();
-            // fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
 
             ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();
             
@@ -197,8 +196,8 @@ public class ApplicationServerQuery {
         public List<ExperimentType> experimentTypesByCodes(List<String> codes) {
             
             ExperimentTypeFetchOptions fetchOptions = new ExperimentTypeFetchOptions();
-            // fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
             
             ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();
             
@@ -398,8 +397,9 @@ public class ApplicationServerQuery {
         public List<SampleType> allSampleTypes() {
             
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
-            fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
 
             SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
             
@@ -413,8 +413,9 @@ public class ApplicationServerQuery {
         public List<SampleType> sampleTypesByCode(String code) {
             
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
-            fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
             
             SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
             
@@ -431,6 +432,8 @@ public class ApplicationServerQuery {
         
         public List<SampleType> sampleTypesBySemantic(JSONObject query) throws AuthenticationException {
             
+            throw new UnsupportedOperationException("Semantic annotationa are not available in official release");
+            /*
             SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
             fetchOptions.withSemanticAnnotations();
             fetchOptions.withPropertyAssignments().withSemanticAnnotations();
@@ -460,14 +463,14 @@ public class ApplicationServerQuery {
 
             SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();
-            
+            */
         }        
         
         public List<DataSetType> dataSetTypesByCode(String code) {
             
             DataSetTypeFetchOptions fetchOptions = new DataSetTypeFetchOptions();
-            //fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
             
             DataSetTypeSearchCriteria searchCriteria = new DataSetTypeSearchCriteria();
             
@@ -480,8 +483,8 @@ public class ApplicationServerQuery {
         public List<DataSetType> allDataSetTypes() {
             
             DataSetTypeFetchOptions fetchOptions = new DataSetTypeFetchOptions();
-            //fetchOptions.withSemanticAnnotations();
-            fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
 
             DataSetTypeSearchCriteria searchCriteria = new DataSetTypeSearchCriteria();
             
