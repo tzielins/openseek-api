@@ -178,8 +178,8 @@ public class ApplicationServerQueryTest {
 		List<String> permids = new ArrayList<>();
 		//permids.add("20151216112932823-1");
 		//permids.add("20151216143716562-2");
-		permids.add("20180418145822544-47");
-		permids.add("20180418150007367-50");
+		permids.add("20180418141729157-47");
+		permids.add("20180424181519696-54");
 		List<Experiment> experiments = query.experimentsByAttribute("permId", permids);
 		assertEquals(2, experiments.size());
 		String json = new JSONCreator(experiments).getJSON();
@@ -271,7 +271,7 @@ public class ApplicationServerQueryTest {
         @Test
 	public void allSamplesGivesAll() throws Exception {
 		List<Sample> samples = query.allSamples();
-                assertEquals(7,samples.size());
+                assertEquals(11,samples.size());
 	}        
 
 	@Test
@@ -285,7 +285,7 @@ public class ApplicationServerQueryTest {
         @Test
         public void allDatasetsGivesAll() throws Exception {
             List<DataSet> data = query.allDatasets();
-            assertEquals(4,data.size());
+            assertEquals(5,data.size());
         }
         
 
@@ -294,7 +294,7 @@ public class ApplicationServerQueryTest {
         //@Ignore
 	public void getDatasetByAttribute() throws Exception {
 		//List<DataSet> data = query.dataSetsByAttribute("permId", "20151217153943290-5");
-		List<DataSet> data = query.dataSetsByAttribute("permId", "20180418145905365-49");
+		List<DataSet> data = query.dataSetsByAttribute("permId", "20180424181745930-58");
                 
 		String json = new JSONCreator(data).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
@@ -307,8 +307,8 @@ public class ApplicationServerQueryTest {
 		List<String> values = new ArrayList<>();
 		//values.add("20151217153943290-5");
 		//values.add("20160210130359377-22");
-		values.add("20180418145905365-49");
-		values.add("20180418150033700-51");
+		values.add("20180418142059396-52");
+		values.add("20180424181745930-58");
 		List<DataSet> data = query.dataSetsByAttribute("permId", values);
 		String json = new JSONCreator(data).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
@@ -319,7 +319,7 @@ public class ApplicationServerQueryTest {
         public void getsDataSetWithRichMetadata() throws Exception {
             
             //String setId = "20170907185702684-36";
-            String setId = "20180418145905365-49";
+            String setId = "20180424182903704-59";
             List<DataSet> sets = query.dataSetsByAttribute("permId", setId);
             assertEquals(1,sets.size());
             
@@ -327,7 +327,7 @@ public class ApplicationServerQueryTest {
             assertEquals(setId,set.getPermId().getPermId());
             
             //LocalDateTime reg = LocalDateTime.of(2017,9,7,17,57,3);
-            LocalDateTime reg = LocalDateTime.of(2018,04,18,17,57,3);
+            LocalDateTime reg = LocalDateTime.of(2018,04,24,18,29,4);
            
             assertEquals(reg.toLocalDate(),
                     set.getRegistrationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
@@ -343,7 +343,7 @@ public class ApplicationServerQueryTest {
         @Test
         public void getsSamplesWithRichMetadata() throws Exception {
             
-            String perId = "20180418154046965-53";
+            String perId = "20180424183252267-60";
             List<Sample> res = query.samplesByAttribute("permId", perId);
             assertEquals(1,res.size());
             
@@ -351,7 +351,7 @@ public class ApplicationServerQueryTest {
             assertEquals(perId,sam.getPermId().getPermId());
             
             //LocalDateTime reg = LocalDateTime.of(2017,10,2,16,21,11);
-            LocalDateTime reg = LocalDateTime.of(2018,04,18,14,58,22);
+            LocalDateTime reg = LocalDateTime.of(2018,04,24,18,32,52);
            
             assertEquals(reg.toLocalDate(),
                     sam.getRegistrationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
@@ -378,7 +378,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(3, res.size());
+            assertEquals(6, res.size());
             
             res.forEach( s -> {
                 assertEquals(typeN, s.getType().getCode());
@@ -407,7 +407,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(4, res.size());
+            assertEquals(6, res.size());
             
             List<String> exp = Arrays.asList("UNKNOWN","EXPERIMENTAL_STEP");
             res.forEach( s -> {
@@ -562,7 +562,7 @@ public class ApplicationServerQueryTest {
             List<DataSet> res = query.dataSetsByType(crit);
             assertNotNull(res);
             //assertEquals(4, res.size());
-            assertEquals(2, res.size());
+            assertEquals(4, res.size());
             
             res.forEach( s -> {
                 assertEquals(typeN, s.getType().getCode());
@@ -591,7 +591,7 @@ public class ApplicationServerQueryTest {
             
             List<DataSet> res = query.dataSetsByType(crit);
             assertNotNull(res);
-            assertEquals(3, res.size());
+            assertEquals(4, res.size());
             
             List<String> exp = Arrays.asList("RAW_DATA","UNKNOWN");
             res.forEach( s -> {
@@ -676,11 +676,11 @@ public class ApplicationServerQueryTest {
 	public void jsonResultforExperiment() throws Exception {
 		String type = "Experiment";
 		String property = "NAME";
-		String propertyValue = "Low light diurnal";
+		String propertyValue = "Promoters modelling";
 		List<? extends Object> result = query.query(type, QueryType.PROPERTY, property, propertyValue);
 		String jsonResult = new JSONCreator(result).getJSON();
 		
-		assertTrue(jsonResult.matches("(.*)Low light diurnal(.*)"));
+		assertTrue(jsonResult.matches("(.*)Promoters modelling(.*)"));
 	}
 
 	@Test(expected = InvalidOptionException.class)
@@ -746,13 +746,13 @@ public class ApplicationServerQueryTest {
 	@Test
 	public void samplesByAnyField() throws Exception {
 		// code
-		String searchTerm = "S1";
+		String searchTerm = "EXP6";
 		List<Sample> samples = query.samplesByAnyField(searchTerm);
 		assertTrue(samples.size() > 0);
 
 		// permID
 		//searchTerm = "20151216143743603-3";
-		searchTerm = "20180418154046965-53";                
+		searchTerm = "20180424183252267-60";                
 		samples = query.samplesByAnyField(searchTerm);
 		assertTrue(samples.size() > 0);
 
@@ -780,7 +780,7 @@ public class ApplicationServerQueryTest {
 	@Test
 	public void datasetsByAnyField() throws Exception {
 		// permID
-		String searchTerm = "20180418145905365-49";
+		String searchTerm = "20180424181745930-58";
 		List<DataSet> datasets = query.datasetsByAnyField(searchTerm);
 		assertTrue(datasets.size() > 0);
 

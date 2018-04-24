@@ -34,24 +34,32 @@ public class DataStoreDownloadTest {
 
 	@Before
 	public void setUp() throws AuthenticationException, IOException {
-		Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
+		/*Authentication au = new Authentication("https://openbis-api.fair-dom.org/openbis/openbis", "apiuser",
 				"apiuser");
 		endpoint = "https://openbis-api.fair-dom.org/datastore_server";
-		sessionToken = au.sessionToken();
+		sessionToken = au.sessionToken();*/
                 
+                String ass = "https://127.0.0.1:8443/openbis/openbis";
+                Authentication au = new Authentication(ass, "seek","seek");                
+                
+                endpoint = "https://127.0.0.1:8444/datastore_server";
+		sessionToken = au.sessionToken();
                 localFile = testFolder.newFile();
 	}
 
 	@Test
 	public void downloadSingleFile() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
-		String permId = "20151217153943290-5";
-		String source = "original/api-test";
+		//String permId = "20151217153943290-5";
+		String permId = "20180424182903704-59";
+                
+		//String source = "original/api-test";
+                String source = "original/DEFAULT/antibiotic_plate_labelled_downloaded.png";
 
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
 
-		assertEquals(25, Files.size(localFile.toPath()));
+		assertEquals(224785, Files.size(localFile.toPath()));
                 
 
 	}
@@ -59,17 +67,18 @@ public class DataStoreDownloadTest {
 	@Test
 	public void downloadUtf8File() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
-		String permId = "20160210130359377-22";
-		String source = "original/utf8.txt";
+		String permId = "20180418142059396-52";
+		String source = "original/java_error_in_RUBYMINE_.log";
 
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
 
-		assertEquals(49, Files.size(localFile.toPath()));
+		assertEquals(126251, Files.size(localFile.toPath()));
 
 	}
 
 	@Test
+        @Ignore
 	public void downloadChineseCharatersFile() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
 		String permId = "20160212141703195-28";
@@ -83,6 +92,7 @@ public class DataStoreDownloadTest {
 	}
 
 	@Test
+        @Ignore
 	public void downloadWesternEncodeFile() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
 		String permId = "20160212140647105-27";
@@ -99,20 +109,27 @@ public class DataStoreDownloadTest {
 	@Test
 	public void downloadImageFile() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
-		String permId = "20160210130454955-23";
-		String source = "original/autumn.jpg";
+		//String permId = "20160210130454955-23";
+		//String source = "original/autumn.jpg";
+                
+		String permId = "20180424182903704-59";
+                
+		//String source = "original/api-test";
+                String source = "original/DEFAULT/antibiotic_plate_labelled_downloaded.png";                
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
 
-		assertEquals(549820L, Files.size(localFile.toPath()));
+		assertEquals(224785L, Files.size(localFile.toPath()));
 
 	}
 
 	@Test
+        @Ignore
 	public void downloadFileWithSpaceInName() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
 		String permId = "20160322172551664-35";
 		String source = "original/Genes List Nature Paper Test.docx";
+                
                 
 		assertEquals(0,localFile.length());
 		download.downloadSingleFile(permId, source, localFile.getAbsolutePath());
@@ -136,7 +153,7 @@ public class DataStoreDownloadTest {
 	@Test
 	public void downloadFolder() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
-		String permId = "20160215111736723-31";
+		String permId = "20180424182903704-59";
 		String sourceRelativeFolder = "original/DEFAULT";
                 
                 File destinationFolder = testFolder.newFolder();
@@ -152,8 +169,8 @@ public class DataStoreDownloadTest {
                                             .collect(Collectors.toList());
                     
                     assertEquals(2,names.size());
-                    assertTrue(names.contains("fairdom-logo-compact.svg"));
-                    assertTrue(names.contains("Stanford_et_al-2015-Molecular_Systems_Biology.pdf"));
+                    assertTrue(names.contains("antibiotic_plate_labelled_downloaded.png"));
+                    assertTrue(names.contains("sop120160315195112_9044.jpg"));
                 }
 		//System.out.println(filesInFolder.get(0));
 		//System.out.println(filesInFolder.get(1));
@@ -165,7 +182,7 @@ public class DataStoreDownloadTest {
 	@Test
 	public void downloadDataSetFiles() throws Exception {
 		DataStoreDownload download = new DataStoreDownload(endpoint, sessionToken);
-		String permId = "20151217153943290-5";
+		String permId = "20180424182903704-59";
 		String sourceRelativeFolder = "original";
                 
                 File destinationFolder = testFolder.newFolder();
@@ -181,7 +198,7 @@ public class DataStoreDownloadTest {
                                             .collect(Collectors.toList());
                     
                     assertEquals(1,names.size());
-                    assertTrue(names.contains("api-test"));
+                    assertTrue(names.contains("DEFAULT"));
                     
                 }
                 

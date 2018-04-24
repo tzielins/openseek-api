@@ -78,7 +78,7 @@ public class OpenSeekEntryTest {
         public void dataSetEntityHasRichDetails() throws Exception {
 		String token = getToken();
 		String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
-                String id = "20180418145905365-49";
+                String id = "20180424182903704-59";
 		String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\""+id+"\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002172401546-38\"}";
 		//String query = "{\"entityType\":\"DataSet\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"permID\", \"attributeValue\":\"20171002190934144-40\"}";
@@ -139,7 +139,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasets"));
                 List<JSONObject> sets = (List<JSONObject>)jsonObj.get("datasets");
                 
-                assertEquals(2,sets.size());
+                assertEquals(4,sets.size());
                 
                 sets.forEach( s -> {
                     assertEquals(typeN, ((JSONObject) s.get("dataset_type")).get("code"));
@@ -176,7 +176,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("datasets"));
                 List<JSONObject> sets = (List<JSONObject>)jsonObj.get("datasets");
                 
-                assertEquals(2,sets.size());
+                assertEquals(4,sets.size());
                 
                 List<String> exp = Arrays.asList("RAW_DATA","UNKOWN");
                 sets.forEach( s -> {
@@ -191,7 +191,8 @@ public class OpenSeekEntryTest {
         //@Ignore
         public void sampleEntityHasRichDetails() throws Exception {
             String endpoints = localEndpoint();
-            String id = "20180418154046965-53";
+            //String id = "20180418154046965-53";
+            String id = "20180424183252267-60";
 
             //String token = getToken();
             //String endpoints = "{\"as\":\"" + as_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
@@ -224,7 +225,7 @@ public class OpenSeekEntryTest {
                 
                 JSONArray sets = (JSONArray)sam.get("datasets");
                 assertNotNull(sets);
-                assertTrue(sets.contains("20180418165410152-56"));
+                assertTrue(sets.contains("20180424190003304-62"));
             
         }
 
@@ -257,7 +258,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("samples"));
                 List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
                 
-                assertEquals(2,samples.size());
+                assertEquals(6,samples.size());
                 
                 samples.forEach( s -> {
                     assertEquals(typeN, ((JSONObject) s.get("sample_type")).get("code"));
@@ -294,7 +295,7 @@ public class OpenSeekEntryTest {
                 assertNotNull(jsonObj.get("samples"));
                 List<JSONObject> samples = (List<JSONObject>)jsonObj.get("samples");
                 
-                assertEquals(3,samples.size());
+                assertEquals(6,samples.size());
                 
                 List<String> exp = Arrays.asList("UNKNOWN","EXPERIMENTAL_STEP");
                 samples.forEach( s -> {
@@ -718,7 +719,7 @@ public class OpenSeekEntryTest {
 	public void doDSSQueryByDataSetPermId() throws Exception {
 		String token = getToken();
                 String id = "20151217153943290-5";
-                id = "20180418165410152-56";
+                id = "20180424182903704-59";
 		String endpoints = "{\"dss\":\"" + dss_endpoint + "\",\"sessionToken\":\"" + token + "\"}";
 		String query = "{\"entityType\":\"DataSetFile\", \"queryType\":\"ATTRIBUTE\", \"attribute\":\"dataSetPermId\", \"attributeValue\":\""+id+"\"}";
 		String[] args = new String[] { "-endpoints", endpoints, "-query", query };

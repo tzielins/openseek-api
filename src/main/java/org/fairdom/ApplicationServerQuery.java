@@ -113,18 +113,7 @@ public class ApplicationServerQuery {
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                //criterion.withType().withCodes().thatIn(codes);
-                //temporary fix
-                return codes.stream()
-                    .map( c -> {
-                        DataSetSearchCriteria criteria = new DataSetSearchCriteria();
-                        criteria.withType().withCode().thatEquals(c);
-                        return criteria;
-                    }).flatMap( c -> 
-                            as.searchDataSets(sessionToken, c, options)
-                                    .getObjects()
-                                    .stream())
-                    .collect(Collectors.toList());                  
+                criterion.withType().withCodes().thatIn(codes);
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
@@ -186,18 +175,7 @@ public class ApplicationServerQuery {
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                //criterion.withType().withCodes().thatIn(codes);
-                //temporary fix
-                return codes.stream()
-                    .map( c -> {
-                        ExperimentSearchCriteria criteria = new ExperimentSearchCriteria();
-                        criteria.withType().withCode().thatEquals(c);
-                        return criteria;
-                    }).flatMap( c -> 
-                            as.searchExperiments(sessionToken, c, options)
-                                    .getObjects()
-                                    .stream())
-                    .collect(Collectors.toList());             
+                criterion.withType().withCodes().thatIn(codes);
                 
             } else {
                 String typeCode = (String)query.get("typeCode");
@@ -228,23 +206,10 @@ public class ApplicationServerQuery {
             //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
             fetchOptions.withPropertyAssignments();
             
-            /*ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();            
+            ExperimentTypeSearchCriteria searchCriteria = new ExperimentTypeSearchCriteria();            
             searchCriteria.withCodes().thatIn(codes);
             SearchResult<ExperimentType> types = as.searchExperimentTypes(sessionToken, searchCriteria, fetchOptions);
             return types.getObjects();            
-            */
-                //temporary fix
-                return codes.stream()
-                    .map( c -> {
-                        ExperimentTypeSearchCriteria criteria = new ExperimentTypeSearchCriteria();
-                        criteria.withCode().thatEquals(c);
-                        return criteria;
-                    }).flatMap( c -> 
-                            as.searchExperimentTypes(sessionToken, c, fetchOptions)
-                                    .getObjects()
-                                    .stream())
-                    .collect(Collectors.toList());             
-            
         }        
         
         
@@ -390,18 +355,7 @@ public class ApplicationServerQuery {
 
             if (query.containsKey("typeCodes")) {
                 List<String> codes = Arrays.asList(query.get("typeCodes").toString().split(","));
-                //criterion.withType().withCodes().thatIn(codes);
-                //temporary fix
-                return codes.stream()
-                    .map( c -> {
-                        SampleSearchCriteria criteria = new SampleSearchCriteria();
-                        criteria.withType().withCode().thatEquals(c);
-                        return criteria;
-                    }).flatMap( c -> 
-                            as.searchSamples(sessionToken, c, options)
-                                    .getObjects()
-                                    .stream())
-                    .collect(Collectors.toList());                
+                criterion.withType().withCodes().thatIn(codes);
             } else {
                 String typeCode = (String)query.get("typeCode");
                 criterion.withType().withCode().thatEquals(typeCode);
@@ -465,18 +419,7 @@ public class ApplicationServerQuery {
             
             if (code.contains(",")) {
                 List<String> codes = Arrays.asList(code.split(","));
-                //searchCriteria.withCodes().thatIn(codes);
-                //temporary fix for client that does not support multiple codes
-                return codes.stream()
-                    .map( c -> {
-                        SampleTypeSearchCriteria criteria = new SampleTypeSearchCriteria();
-                        criteria.withCode().thatEquals(c);
-                        return criteria;
-                    }).flatMap( c -> 
-                            as.searchSampleTypes(sessionToken, c, fetchOptions)
-                                    .getObjects()
-                                    .stream())
-                    .collect(Collectors.toList());
+                searchCriteria.withCodes().thatIn(codes);
             } else {
                 searchCriteria.withCode().thatEquals(code);
             }

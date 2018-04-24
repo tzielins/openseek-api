@@ -51,24 +51,7 @@ public class DataStoreDownload extends DataStoreStream {
 		InputStream stream = dss.downloadFiles(sessionToken, filesToDownload, options);
                 
                 downloadFromDSSStream(stream,destinationFolder);
-                /*
-		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-		DataSetFileDownload file = null;
 
-		while ((file = reader.read()) != null) {
-			InputStream inputStream = file.getInputStream();
-			DataSetFile dataSetFile = file.getDataSetFile();
-			if (dataSetFile.isDirectory()) {
-				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
-				Files.createDirectories(dir);
-			} else {
-				File outputFile = new File(destinationFolder, dataSetFile.getPath());
-				OutputStream fileOutputStream = new FileOutputStream(outputFile);
-
-				IOUtils.copyLarge(inputStream, fileOutputStream);
-				fileOutputStream.close();
-			}
-		}*/
 	}
         
         protected void downloadFromDSSStream(InputStream dssStream, String destinationFolder) throws IOException {
@@ -88,10 +71,10 @@ public class DataStoreDownload extends DataStoreStream {
                                 }
 			} else {
                                 //System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
-                                if (dataSetFile.getFileLength() == 0) {
+                                /*if (dataSetFile.getFileLength() == 0) {
                                     //System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
                                     continue;
-                                }
+                                }*/
                                 Path destPath = Paths.get(destinationFolder, dataSetFile.getPath());
                                 Path destDir = destPath.getParent();
                                 if (!Files.isDirectory(destDir)) {
@@ -118,38 +101,6 @@ public class DataStoreDownload extends DataStoreStream {
                 
                 downloadFromDSSStream(stream,destinationFolder);
                 
-                /*
-		DataSetFileDownloadReader reader = new DataSetFileDownloadReader(stream);
-		DataSetFileDownload file = null;
-
-		while ((file = reader.read()) != null) {
-			InputStream inputStream = file.getInputStream();
-			DataSetFile dataSetFile = file.getDataSetFile();
-			if (dataSetFile.isDirectory()) {
-				Path dir = Paths.get(destinationFolder, dataSetFile.getPath());
-                                System.out.println("Making dir: "+dataSetFile.getPath());
-                                if (!Files.isDirectory(dir)) {
-                                    Files.createDirectories(dir);
-                                }
-			} else {
-                                System.out.println("Dealing with file: "+dataSetFile.getPath()+", s: "+dataSetFile.getFileLength());
-                                if (dataSetFile.getFileLength() == 0) {
-                                    System.out.println("Igoring file with 0 size: "+dataSetFile.getPath());
-                                    continue;
-                                }
-                                Path destPath = Paths.get(destinationFolder, dataSetFile.getPath());
-                                Path destDir = destPath.getParent();
-                                if (!Files.isDirectory(destDir)) {
-                                    Files.createDirectories(destDir);
-                                }
-				//File outputFile = new File(destinationFolder, dataSetFile.getPath());
-				//OutputStream fileOutputStream = new FileOutputStream(outputFile);
-                                try (OutputStream fileOutputStream = Files.newOutputStream(destPath)) {
-                                    IOUtils.copyLarge(inputStream, fileOutputStream);
-                                }
-				//fileOutputStream.close();
-			}
-		}*/
 	}
 
 	public void downloadSingleFile(String permId, String sourceRelative, String destination) throws IOException {
