@@ -12,11 +12,14 @@ import org.junit.Test;
 
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSet;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.DataSetType;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.fetchoptions.DataSetFetchOptions;
+import ch.ethz.sis.openbis.generic.asapi.v3.dto.dataset.search.DataSetSearchCriteria;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.Experiment;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.experiment.ExperimentType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.Sample;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.sample.SampleType;
 import ch.ethz.sis.openbis.generic.asapi.v3.dto.space.Space;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -268,7 +271,7 @@ public class ApplicationServerQueryTest {
         @Test
 	public void allSamplesGivesAll() throws Exception {
 		List<Sample> samples = query.allSamples();
-                assertEquals(6,samples.size());
+                assertEquals(7,samples.size());
 	}        
 
 	@Test
@@ -284,6 +287,8 @@ public class ApplicationServerQueryTest {
             List<DataSet> data = query.allDatasets();
             assertEquals(4,data.size());
         }
+        
+
 
 	@Test
         //@Ignore
@@ -373,7 +378,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(2, res.size());
+            assertEquals(3, res.size());
             
             res.forEach( s -> {
                 assertEquals(typeN, s.getType().getCode());
@@ -402,7 +407,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(3, res.size());
+            assertEquals(4, res.size());
             
             List<String> exp = Arrays.asList("UNKNOWN","EXPERIMENTAL_STEP");
             res.forEach( s -> {

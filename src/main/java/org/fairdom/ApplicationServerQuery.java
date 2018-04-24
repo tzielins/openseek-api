@@ -97,6 +97,11 @@ public class ApplicationServerQuery {
 		return as.searchDataSets(sessionToken, criterion, options).getObjects();
 	}
         
+	protected List<DataSet> dataSetsByCriteria(DataSetSearchCriteria criteria, DataSetFetchOptions fetchOptions) {
+
+		return as.searchDataSets(sessionToken, criteria, fetchOptions).getObjects();
+	}        
+        
         @SuppressWarnings("unchecked")
         public List<DataSet> dataSetsByType(JSONObject query) throws InvalidOptionException {
 
