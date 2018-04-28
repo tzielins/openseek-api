@@ -254,7 +254,7 @@ public class ApplicationServerQuery {
                             break;
                         case "SampleType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
-                            result = sampleTypesByCode(values.get(0));
+                            result = sampleTypesByCodes(values);
                             break;
                         case "DataSetType":
                             if (!"CODE".equals(key)) throw new InvalidOptionException("Unsupported attribute: " + key);
@@ -407,6 +407,20 @@ public class ApplicationServerQuery {
         }    
         
        
+        public List<SampleType> sampleTypesByCodes(List<String> codes) {
+            
+            SampleTypeFetchOptions fetchOptions = new SampleTypeFetchOptions();
+            //fetchOptions.withSemanticAnnotations();
+            //fetchOptions.withPropertyAssignments().withSemanticAnnotations();
+            fetchOptions.withPropertyAssignments();
+            
+            SampleTypeSearchCriteria searchCriteria = new SampleTypeSearchCriteria();
+            
+            searchCriteria.withCodes().thatIn(codes);
+            
+            SearchResult<SampleType> types = as.searchSampleTypes(sessionToken, searchCriteria, fetchOptions);
+            return types.getObjects();            
+        } 
         
         public List<SampleType> sampleTypesByCode(String code) {
             

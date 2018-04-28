@@ -81,16 +81,15 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
-        @Ignore
 	public void getSpacesByPermID() throws Exception {
 		List<String> permids = new ArrayList<>();
-		permids.add("API-SPACE");
+		permids.add("SEEK");
 		List<Space> spaces = query.spacesByAttribute("permId", permids);
 		assertEquals(1, spaces.size());
 		String json = new JSONCreator(spaces).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 
-		spaces = query.spacesByAttribute("permId", "API-SPACE");
+		spaces = query.spacesByAttribute("permId", "SEEK");
 		assertEquals(1, spaces.size());
 		json = new JSONCreator(spaces).getJSON();
 		JSONObject jsonObj = JSONHelper.processJSON(json);
@@ -109,7 +108,7 @@ public class ApplicationServerQueryTest {
 	}
         
 	@Test
-        @Ignore
+        @Ignore("It should no longer fetch those")
 	public void getSpacesByPermIDGetsAllDataSetsExperimentAndSamplesOnes() throws Exception {
 
 		List<Space> spaces = query.spacesByAttribute("permId", "API-SPACE");
@@ -134,7 +133,7 @@ public class ApplicationServerQueryTest {
 	}        
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void getAllSpaces() throws Exception {
 		List<Space> spaces = query.spacesByAttribute("permId", "");
 		assertTrue(spaces.size() > 0);
@@ -199,7 +198,7 @@ public class ApplicationServerQueryTest {
 	@Test
 	public void allExperimentsGetsAll() throws Exception {
             List<Experiment> experiments = query.allExperiments();
-            assertEquals(23,experiments.size());
+            assertEquals(24,experiments.size());
 	}  
         
         @Test
@@ -218,7 +217,7 @@ public class ApplicationServerQueryTest {
             
             List<Experiment> res = query.experimentsByType(crit);
             assertNotNull(res);
-            assertEquals(3, res.size());
+            assertEquals(4, res.size());
             
             List<String> exp = Arrays.asList("DEFAULT_EXPERIMENT","UNKNOWN");
             res.forEach( s -> {
@@ -271,7 +270,7 @@ public class ApplicationServerQueryTest {
         @Test
 	public void allSamplesGivesAll() throws Exception {
 		List<Sample> samples = query.allSamples();
-                assertEquals(11,samples.size());
+                assertEquals(16,samples.size());
 	}        
 
 	@Test
@@ -285,7 +284,7 @@ public class ApplicationServerQueryTest {
         @Test
         public void allDatasetsGivesAll() throws Exception {
             List<DataSet> data = query.allDatasets();
-            assertEquals(5,data.size());
+            assertEquals(6,data.size());
         }
         
 
@@ -378,7 +377,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(6, res.size());
+            assertEquals(8, res.size());
             
             res.forEach( s -> {
                 assertEquals(typeN, s.getType().getCode());
@@ -407,7 +406,7 @@ public class ApplicationServerQueryTest {
             
             List<Sample> res = query.samplesByType(crit);
             assertNotNull(res);
-            assertEquals(6, res.size());
+            assertEquals(8, res.size());
             
             List<String> exp = Arrays.asList("UNKNOWN","EXPERIMENTAL_STEP");
             res.forEach( s -> {
@@ -429,7 +428,7 @@ public class ApplicationServerQueryTest {
             List<SampleType> res = query.allSampleTypes();
             assertNotNull(res);
             assertFalse(res.isEmpty());
-            assertEquals(24,res.size());
+            assertEquals(25,res.size());
             
         }
         
@@ -442,13 +441,23 @@ public class ApplicationServerQueryTest {
 	}   
         
 	@Test
-	public void sampleTypesByCodes() throws Exception {
+	public void sampleTypesByJoinedCodes() throws Exception {
             query = localQuery();
             List<SampleType> res = query.sampleTypesByCode("EXPERIMENTAL_STEP,UNKNOWN");
             assertEquals(2, res.size());
             assertEquals("EXPERIMENTAL_STEP", res.get(0).getCode());
             assertEquals("UNKNOWN", res.get(1).getCode());
 	}        
+        
+	@Test
+	public void sampleTypesByCodes() throws Exception {
+            query = localQuery();
+            List<SampleType> res = query.sampleTypesByCodes(Arrays.asList("EXPERIMENTAL_STEP","UNKNOWN"));
+            assertEquals(2, res.size());
+            assertEquals("EXPERIMENTAL_STEP", res.get(0).getCode());
+            assertEquals("UNKNOWN", res.get(1).getCode());
+	}        
+        
         
         @Test
         @Ignore("Semantic not available")
