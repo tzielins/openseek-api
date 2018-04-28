@@ -232,6 +232,9 @@ public class JSONCreator {
 		List<String> experimentIds = new ArrayList<>();
 		List<String> datasetIds = new ArrayList<>();
                 List<String> sampleIds = new ArrayList<>();
+                
+                // removed by TZ there is no longer need for fetching space objects with the space
+                /*
 		for (Project project : space.getProjects()) {
 			projectIds.add(project.getPermId().getPermId());
 			for (Experiment experiment : project.getExperiments()) {
@@ -257,10 +260,11 @@ public class JSONCreator {
                                 datasetIds.add(dataId);
                         }                        
                     }
-                }
+                }*/
 		map.put("projects", projectIds);
 		map.put("experiments", experimentIds);
 		map.put("datasets", datasetIds);
+                map.put("samples", sampleIds);
 
 		map.put("modificationDate", space.getModificationDate().toString());
 		map.put("registrationDate", space.getRegistrationDate().toString());

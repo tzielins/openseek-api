@@ -69,11 +69,11 @@ public class ApplicationServerQueryTest {
 	}
 
 	@Test
-        @Ignore
+        //@Ignore
 	public void getSpacesByPermIDs() throws Exception {
 		List<String> permids = new ArrayList<>();
-		permids.add("API-SPACE");
-		permids.add("DEFAULT");
+		permids.add("SEEK");
+		permids.add("MATERIALS");
 		List<Space> spaces = query.spacesByAttribute("permId", permids);
 		assertEquals(2, spaces.size());
 		String json = new JSONCreator(spaces).getJSON();
@@ -92,9 +92,13 @@ public class ApplicationServerQueryTest {
 		spaces = query.spacesByAttribute("permId", "SEEK");
 		assertEquals(1, spaces.size());
 		json = new JSONCreator(spaces).getJSON();
+                assertTrue(JSONHelper.isValidJSON(json));
 		JSONObject jsonObj = JSONHelper.processJSON(json);
 		assertNotNull(jsonObj.get("spaces"));
 		JSONObject space = (JSONObject) ((JSONArray) jsonObj.get("spaces")).get(0);
+                
+                /* Space should no longer contain experiments or sampels, too many entries and work
+                to fetch them. And not used anywhere
 		JSONArray experiments = (JSONArray) space.get("experiments");
 		JSONArray datasets = (JSONArray) space.get("datasets");
 		JSONArray projects = (JSONArray) space.get("projects");
@@ -105,7 +109,30 @@ public class ApplicationServerQueryTest {
 		assertEquals("20151216135152196-1", (String) projects.get(0));
 		assertEquals(12, datasets.size());
 		assertTrue(datasets.contains("20160210130359377-22"));
+                */
 	}
+        
+	@Test
+	public void getSpacesByPermIDGivesOnlySpaceNoDetails() throws Exception {
+
+		List<Space> spaces = query.spacesByAttribute("permId", "SEEK");
+		assertEquals(1, spaces.size());
+		String json = new JSONCreator(spaces).getJSON();
+                assertTrue(JSONHelper.isValidJSON(json));
+		JSONObject jsonObj = JSONHelper.processJSON(json);
+		assertNotNull(jsonObj.get("spaces"));
+		JSONObject space = (JSONObject) ((JSONArray) jsonObj.get("spaces")).get(0);
+
+		JSONArray experiments = (JSONArray) space.get("experiments");
+		JSONArray datasets = (JSONArray) space.get("datasets");
+		JSONArray projects = (JSONArray) space.get("projects");
+		JSONArray samples = (JSONArray) space.get("samples");
+
+		assertEquals(0, experiments.size());
+		assertEquals(0, datasets.size());
+		assertEquals(0, projects.size());
+		assertEquals(0, samples.size());
+	}        
         
 	@Test
         @Ignore("It should no longer fetch those")
@@ -136,7 +163,7 @@ public class ApplicationServerQueryTest {
         //@Ignore
 	public void getAllSpaces() throws Exception {
 		List<Space> spaces = query.spacesByAttribute("permId", "");
-		assertTrue(spaces.size() > 0);
+		assertTrue(spaces.size() > 1);
 		String json = new JSONCreator(spaces).getJSON();
 		assertTrue(JSONHelper.isValidJSON(json));
 	}
